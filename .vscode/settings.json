@@ -1,0 +1,38 @@
+{
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.next": true,
+      "**/.firebase": true,
+      "**/lib": true,
+      "**/*.log": true,
+      "**/coverage": true,
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/firebase-debug*.log": true,
+      "**/.nyc_output": true,
+      "**/tmp": true,
+      "**/temp": true,
+      "**/.cache": true,
+      "**/out": true,
+      "**/.turbo": true,
+      "**/functions/lib": true,
+      "**/functions/.tscache": true
+    },
+    "files.watcherExclude": {
+      "**/.git/objects/**": true,
+      "**/.git/subtree-cache/**": true,
+      "**/node_modules/*/**": true,
+      "**/.next/**": true,
+      "**/dist/**": true,
+      "**/build/**": true,
+      "**/lib/**": true,
+      "**/.firebase/**": true,
+      "**/coverage/**": true,
+      "**/.cache/**": true,
+      "**/out/**": true,
+      "**/.turbo/**": true,
+      "**/functions/lib/**": true
+    }
+  } 

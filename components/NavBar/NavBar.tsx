@@ -1,0 +1,99 @@
+"use client";
+
+import { Bot, Home, Bell, Settings, TableOfContents } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+
+export const NavBar = () => {
+  const pathname = usePathname();
+  const { user } = useAuth();
+
+  if (!user) return null;
+
+  return (
+    <div className="top-0 left-0 absolute flex flex-col bg-background-secondary p-6 border-r w-[100px] h-full">
+      {/* Logo at the top */}
+      <div className="flex justify-center mb-8 rounded-md overflow-hidden">
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={55}
+            height={55}
+            className="cursor-pointer"
+          />
+        </Link>
+      </div>
+
+      {/* Main icons in the middle */}
+      <div className="flex flex-col flex-1 items-center gap-10 mt-10">
+        <Link
+          href="/"
+          className={`p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/" ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
+          <Home
+            size={24}
+            color="white"
+            fill={pathname === "/" ? "white" : "none"}
+          />
+        </Link>
+        <Link
+          href="/bot"
+          className={`p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/bot" ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
+          <Bot
+            size={24}
+            color="white"
+            fill={pathname === "/bot" ? "white" : "none"}
+          />
+        </Link>
+        <Link
+          href="/audience"
+          className={`p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/audience" ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
+          <TableOfContents
+            size={24}
+            color="white"
+            fill={pathname === "/audience" ? "white" : "none"}
+          />
+        </Link>
+      </div>
+
+      {/* Settings icons at the bottom */}
+      <div className="flex flex-col items-center gap-10">
+        <Link
+          href="/notifications"
+          className={`p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/notifications" ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
+          <Bell
+            size={24}
+            color="white"
+            fill={pathname === "/notifications" ? "white" : "none"}
+          />
+        </Link>
+        <Link
+          href="/settings"
+          className={`p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/settings" ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
+          <Settings
+            size={24}
+            color="white"
+            fill={pathname === "/settings" ? "white" : "none"}
+          />
+        </Link>
+      </div>
+    </div>
+  );
+};

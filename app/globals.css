@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-inter);
+
+  /* Custom colors from useColors hook */
+  --color-background: #f3f5f7;
+  --color-background-secondary: #1d1d1b;
+  --color-background-secondary-cell: #2f2f2d;
+  --color-text: #1d1d1b;
+  --color-primary: #4CAF50;
+  --color-cell-background: #ffffff;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-inter), sans-serif;
+}
