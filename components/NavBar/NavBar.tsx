@@ -30,9 +30,9 @@ export const NavBar = () => {
       {/* Main icons in the middle */}
       <div className="flex flex-col flex-1 items-center gap-10 mt-10">
         <Link
-          href="/"
+          href="/home"
           className={`p-2 rounded-lg transition-colors duration-200 ${
-            pathname === "/" ? "bg-white/20" : "hover:bg-white/10"
+            pathname === "/home" ? "bg-white/20" : "hover:bg-white/10"
           }`}
         >
           <Home

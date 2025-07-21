@@ -1,5 +1,5 @@
 "use client";
-
+import { Screen } from "@/components/Screen/Screen";
 import { Button } from "@/components/Button";
 import { getAuth, signOut } from "firebase/auth";
 import { app } from "@/firebase-config";
@@ -25,16 +25,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="gap-16 bg-background p-8 min-h-screen font-[family-name:var(--font-inter)]">
-      <main className="pl-[100px]">
-        <div>
-          <h1 className="font-bold text-color-text text-4xl">Settings</h1>
-          <p className="mt-4 text-color-text">
-            Settings page content goes here.
-          </p>
-          <Button onClick={handleLogout}>Logout</Button>
-        </div>
-      </main>
-    </div>
+    <Screen heading="Settings">
+      <Button onClick={handleLogout}>Logout</Button>
+    </Screen>
   );
 }
