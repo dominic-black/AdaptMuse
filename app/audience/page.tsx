@@ -18,6 +18,7 @@ import {
   Tv,
   Gamepad2,
   House,
+  Podcast,
 } from "lucide-react";
 import { Entity } from "@/types/entity";
 
@@ -30,9 +31,7 @@ export default function AudiencePage() {
   }, [selectedInterests]);
 
   const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>([]);
-  const [gender, setGender] = useState<"male" | "female" | "everyone">(
-    "everyone"
-  );
+  const [gender, setGender] = useState<"male" | "female">("male");
 
   const ageGroupOptions = [
     { value: "35_and_younger", label: "35 and younger" },
@@ -49,7 +48,6 @@ export default function AudiencePage() {
   };
 
   const genderOptions = [
-    { value: "everyone", label: "Everyone" },
     { value: "male", label: "Male" },
     { value: "female", label: "Female" },
   ];
@@ -109,21 +107,20 @@ export default function AudiencePage() {
       placeholder: "Add destinations...",
       icon: <MapPin className="w-4 h-4" />,
     },
+    {
+      label: "Podcasts",
+      type: "urn:entity:podcast",
+      placeholder: "Add podcasts...",
+      icon: <Podcast className="w-4 h-4" />,
+    },
   ];
 
   return (
     <Screen heading="Saved Audiences">
       <div className="flex flex-col gap-4">
-        <div className="gap-4 grid grid-cols-2">
+        <div className="gap-4 grid grid-cols-[4fr_1fr]">
           <Cell>
-            <div className="flex flex-col gap-2">
-              <h2 className="font-bold text-color-text text-2xl">
-                Saved Audiences
-              </h2>
-            </div>
-          </Cell>
-          <Cell>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               <h2 className="font-bold text-color-text text-2xl">
                 Create new audience
               </h2>
@@ -135,88 +132,97 @@ export default function AudiencePage() {
                   placeholder="Enter audience name..."
                 />
               </div>
-              <div className="flex flex-col gap-2">
-                <p className="text-gray-500 text-sm">Interests</p>
-                <div className="flex flex-col gap-4">
-                  {interests.map((interest) => (
-                    <ChipInput
-                      key={interest.label}
-                      type={interest.type}
-                      label={interest.label}
-                      placeholder={interest.placeholder}
-                      setChipIds={(newEntity) => {
-                        setSelectedInterests((prev) => [...prev, newEntity]);
-                      }}
-                      icon={interest.icon}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p className="text-gray-500 text-sm">Demographics</p>
-                <div className="mt-2">
-                  <p className="mb-2 text-gray-500 text-sm">Age group</p>
-                  <div className="flex flex-wrap gap-2">
-                    {ageGroupOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => toggleAgeGroup(option.value)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-all duration-200 ${
-                          selectedAgeGroups.includes(option.value)
-                            ? "bg-primary text-white border-primary shadow-md"
-                            : "bg-white text-gray-700 border-gray-300 hover:border-primary hover:bg-primary/5"
-                        }`}
-                      >
-                        <div className="relative">
-                          {selectedAgeGroups.includes(option.value) ? (
-                            <div className="flex justify-center items-center bg-white border border-white rounded-sm w-4 h-4">
-                              <Check className="w-3 h-3 text-primary" />
-                            </div>
-                          ) : (
-                            <Square className="w-4 h-4" />
-                          )}
-                        </div>
-                        {option.label}
-                      </button>
+              <div className="gap-6 grid grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <p className="text-gray-500 text-sm">Interests</p>
+                  <div className="flex flex-col gap-4">
+                    {interests.map((interest) => (
+                      <ChipInput
+                        key={interest.label}
+                        type={interest.type}
+                        label={interest.label}
+                        placeholder={interest.placeholder}
+                        setChipIds={(newEntity) => {
+                          setSelectedInterests((prev) => [...prev, newEntity]);
+                        }}
+                        icon={interest.icon}
+                      />
                     ))}
                   </div>
                 </div>
-              </div>
-              <div className="mt-2">
-                <p className="mb-2 text-gray-500 text-sm">Gender</p>
-                <div className="flex flex-wrap gap-2">
-                  {genderOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() =>
-                        setGender(
-                          option.value as "male" | "female" | "everyone"
-                        )
-                      }
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-all duration-200 ${
-                        gender === option.value
-                          ? "bg-primary text-white border-primary shadow-md"
-                          : "bg-white text-gray-700 border-gray-300 hover:border-primary hover:bg-primary/5"
-                      }`}
-                    >
-                      <div className="relative">
-                        {gender === option.value ? (
-                          <div className="flex justify-center items-center bg-white border border-white rounded-sm w-4 h-4">
-                            <Check className="w-3 h-3 text-primary" />
+                <div className="flex flex-col gap-4">
+                  <div className="mt-2">
+                    <p className="mb-2 text-gray-500 text-sm">Age group</p>
+                    <div className="flex flex-wrap gap-2">
+                      {ageGroupOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => toggleAgeGroup(option.value)}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-all duration-200 ${
+                            selectedAgeGroups.includes(option.value)
+                              ? "bg-primary text-white border-primary shadow-md"
+                              : "bg-white text-gray-700 border-gray-300 hover:border-primary hover:bg-primary/5"
+                          }`}
+                        >
+                          <div className="relative">
+                            {selectedAgeGroups.includes(option.value) ? (
+                              <div className="flex justify-center items-center bg-white border border-white rounded-sm w-4 h-4">
+                                <Check className="w-3 h-3 text-primary" />
+                              </div>
+                            ) : (
+                              <Square className="w-4 h-4" />
+                            )}
                           </div>
-                        ) : (
-                          <Square className="w-4 h-4" />
-                        )}
-                      </div>
-                      {option.label}
-                    </button>
-                  ))}
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="mb-2 text-gray-500 text-sm">Gender</p>
+                    <div className="flex flex-wrap gap-2">
+                      {genderOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() =>
+                            setGender(option.value as "male" | "female")
+                          }
+                          className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-all duration-200 ${
+                            gender === option.value
+                              ? "bg-primary text-white border-primary shadow-md"
+                              : "bg-white text-gray-700 border-gray-300 hover:border-primary hover:bg-primary/5"
+                          }`}
+                        >
+                          <div className="relative">
+                            {gender === option.value ? (
+                              <div className="flex justify-center items-center bg-white border border-white rounded-sm w-4 h-4">
+                                <Check className="w-3 h-3 text-primary" />
+                              </div>
+                            ) : (
+                              <Square className="w-4 h-4" />
+                            )}
+                          </div>
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="mb-2 text-gray-500 text-sm">Audience type</p>
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline">Reset</Button>
                 <Button variant="primary">Create audience</Button>
               </div>
+            </div>
+          </Cell>
+          <Cell>
+            <div className="flex flex-col gap-2">
+              <h2 className="font-bold text-color-text text-2xl">
+                Saved Audiences
+              </h2>
             </div>
           </Cell>
         </div>

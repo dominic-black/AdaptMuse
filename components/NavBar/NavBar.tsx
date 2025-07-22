@@ -14,9 +14,8 @@ export const NavBar = () => {
 
   return (
     <div className="top-0 left-0 absolute flex flex-col bg-background-secondary p-6 border-r w-[100px] h-full">
-      {/* Logo at the top */}
       <div className="flex justify-center mb-8 rounded-md overflow-hidden">
-        <Link href="/">
+        <Link href="/home">
           <Image
             src="/logo.png"
             alt="logo"
@@ -27,7 +26,6 @@ export const NavBar = () => {
         </Link>
       </div>
 
-      {/* Main icons in the middle */}
       <div className="flex flex-col flex-1 items-center gap-10 mt-10">
         <Link
           href="/home"
@@ -67,7 +65,6 @@ export const NavBar = () => {
         </Link>
       </div>
 
-      {/* Settings icons at the bottom */}
       <div className="flex flex-col items-center gap-10">
         <Link
           href="/notifications"
