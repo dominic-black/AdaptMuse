@@ -31,6 +31,7 @@ export default function RootLayout({
             <footer className="flex flex-wrap justify-center items-center gap-[24px] row-start-3"></footer>
           </div>
         </AuthProvider>
+        <div id="modal-root"></div>
       </body>
     </html>
   );

@@ -22,6 +22,8 @@ import { Entity } from "@/types/entity";
 import MultiCheckbox from "@/components/MultiCheckbox/MultiCheckbox";
 import RadioCheckbox from "@/components/RadioCheckbox/RadioCheckbox";
 import { AUDIENCE_OPTIONS } from "@/constants/audiences";
+import Modal from "@/components/Modal/Modal";
+import { Spinner } from "@/components/Spinner";
 
 export default function AudiencePage() {
   const [audienceName, setAudienceName] = useState("");
@@ -112,6 +114,28 @@ export default function AudiencePage() {
     },
   ];
 
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("/api/audience", {
+        method: "POST",
+        body: JSON.stringify({
+          audienceName,
+          audienceData: {
+            entities: selectedInterests,
+            audiences: Object.values(selectedAudienceOptions).flat(),
+            ageGroup: selectedAgeGroups,
+            gender,
+          },
+        }),
+      });
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error submitting audience:", error);
+    }
+  };
+
   return (
     <Screen heading="Saved Audiences">
       <div className="flex flex-col gap-4">
@@ -194,7 +218,9 @@ export default function AudiencePage() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline">Reset</Button>
-                <Button variant="primary">Create audience</Button>
+                <Button variant="primary" onClick={handleSubmit}>
+                  Create audience
+                </Button>
               </div>
             </div>
           </Cell>
@@ -207,6 +233,14 @@ export default function AudiencePage() {
           </Cell>
         </div>
       </div>
+      {/* <Modal isOpen={true} onClose={() => {}} label="">
+        <div className="flex flex-col justify-center items-center gap-4 h-full">
+          <div>
+            <Spinner size="lg" color="primary" className="animate-spin" />
+            <p>Creating target audience fingerprint</p>
+          </div>
+        </div>
+      </Modal> */}
     </Screen>
   );
 }
