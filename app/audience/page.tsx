@@ -8,9 +8,7 @@ import { ChipInput } from "@/components/ChipInput";
 import { Button } from "@/components/Button";
 import {
   Clapperboard,
-  Check,
   PersonStanding,
-  Square,
   Mic2,
   BookOpen,
   ShoppingBag,
@@ -21,14 +19,21 @@ import {
   Podcast,
 } from "lucide-react";
 import { Entity } from "@/types/entity";
+import MultiCheckbox from "@/components/MultiCheckbox/MultiCheckbox";
+import RadioCheckbox from "@/components/RadioCheckbox/RadioCheckbox";
+import { AUDIENCE_OPTIONS } from "@/constants/audiences";
 
 export default function AudiencePage() {
   const [audienceName, setAudienceName] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<Array<Entity>>([]);
+  const [selectedAudienceOptions, setSelectedAudienceOptions] = useState<
+    Record<string, string[]>
+  >({});
 
   useEffect(() => {
-    console.log(selectedInterests);
-  }, [selectedInterests]);
+    console.log("Selected Interests:", selectedInterests);
+    console.log("Selected Audience Options:", selectedAudienceOptions);
+  }, [selectedInterests, selectedAudienceOptions]);
 
   const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>([]);
   const [gender, setGender] = useState<"male" | "female">("male");
@@ -38,14 +43,6 @@ export default function AudiencePage() {
     { value: "36_to_55", label: "36 to 55" },
     { value: "55_and_older", label: "55 and older" },
   ];
-
-  const toggleAgeGroup = (ageGroup: string) => {
-    setSelectedAgeGroups((prev) =>
-      prev.includes(ageGroup)
-        ? prev.filter((group) => group !== ageGroup)
-        : [...prev, ageGroup]
-    );
-  };
 
   const genderOptions = [
     { value: "male", label: "Male" },
@@ -153,63 +150,46 @@ export default function AudiencePage() {
                 <div className="flex flex-col gap-4">
                   <div className="mt-2">
                     <p className="mb-2 text-gray-500 text-sm">Age group</p>
-                    <div className="flex flex-wrap gap-2">
-                      {ageGroupOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => toggleAgeGroup(option.value)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-all duration-200 ${
-                            selectedAgeGroups.includes(option.value)
-                              ? "bg-primary text-white border-primary shadow-md"
-                              : "bg-white text-gray-700 border-gray-300 hover:border-primary hover:bg-primary/5"
-                          }`}
-                        >
-                          <div className="relative">
-                            {selectedAgeGroups.includes(option.value) ? (
-                              <div className="flex justify-center items-center bg-white border border-white rounded-sm w-4 h-4">
-                                <Check className="w-3 h-3 text-primary" />
-                              </div>
-                            ) : (
-                              <Square className="w-4 h-4" />
-                            )}
-                          </div>
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
+                    <MultiCheckbox
+                      options={ageGroupOptions}
+                      selectedOptions={selectedAgeGroups}
+                      onChange={setSelectedAgeGroups}
+                    />
                   </div>
                   <div>
                     <p className="mb-2 text-gray-500 text-sm">Gender</p>
-                    <div className="flex flex-wrap gap-2">
-                      {genderOptions.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() =>
-                            setGender(option.value as "male" | "female")
+                    <RadioCheckbox
+                      options={genderOptions}
+                      selectedOption={gender}
+                      onChange={(selected) =>
+                        setGender(selected as "male" | "female")
+                      }
+                    />
+                  </div>
+                  {Object.entries(AUDIENCE_OPTIONS).map(
+                    ([category, options]) => (
+                      <div key={category}>
+                        <p className="mb-2 text-gray-500 text-sm capitalize">
+                          {category.replace(/_/g, " ").toLowerCase()}
+                        </p>
+                        <MultiCheckbox
+                          options={options.map((option) => ({
+                            value: option.label,
+                            label: option.value,
+                          }))}
+                          selectedOptions={
+                            selectedAudienceOptions[category] || []
                           }
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-all duration-200 ${
-                            gender === option.value
-                              ? "bg-primary text-white border-primary shadow-md"
-                              : "bg-white text-gray-700 border-gray-300 hover:border-primary hover:bg-primary/5"
-                          }`}
-                        >
-                          <div className="relative">
-                            {gender === option.value ? (
-                              <div className="flex justify-center items-center bg-white border border-white rounded-sm w-4 h-4">
-                                <Check className="w-3 h-3 text-primary" />
-                              </div>
-                            ) : (
-                              <Square className="w-4 h-4" />
-                            )}
-                          </div>
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="mb-2 text-gray-500 text-sm">Audience type</p>
-                  </div>
+                          onChange={(newSelection) =>
+                            setSelectedAudienceOptions((prev) => ({
+                              ...prev,
+                              [category]: newSelection,
+                            }))
+                          }
+                        />
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
               <div className="flex justify-end gap-2">
