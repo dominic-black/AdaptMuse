@@ -1,9 +1,9 @@
 "use client";
 
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState, useRef } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { app } from "@/firebase-config";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 type AuthContextType = {
   user: User | null;
@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
+  const initialAuthCheck = useRef(true);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -41,7 +43,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (response.ok) {
             console.log("[AuthProvider] Session cookie created");
             setUser(firebaseUser);
-            router.push("/home");
+
+            // Only redirect to /home if this is the initial auth check and user is on a public page
+            // or if they're on the root page
+            if (
+              initialAuthCheck.current &&
+              (pathname === "/" ||
+                pathname === "/login" ||
+                pathname === "/signup")
+            ) {
+              router.push("/home");
+            }
           } else {
             console.error("[AuthProvider] Failed to create session cookie");
             setUser(null);
@@ -62,10 +74,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       setLoading(false);
+      initialAuthCheck.current = false;
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router, pathname]);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>

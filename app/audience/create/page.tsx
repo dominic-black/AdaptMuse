@@ -141,7 +141,7 @@ export default function CreateAudiencePage() {
   return (
     <Screen heading="Saved Audiences">
       <div className="flex flex-col gap-4">
-        <div className="gap-4 grid grid-cols-[4fr_1fr]">
+        <div className="">
           <Cell>
             <div className="flex flex-col gap-4">
               <h2 className="font-bold text-color-text text-2xl">
@@ -227,13 +227,6 @@ export default function CreateAudiencePage() {
                   Create audience
                 </Button>
               </div>
-            </div>
-          </Cell>
-          <Cell>
-            <div className="flex flex-col gap-2">
-              <h2 className="font-bold text-color-text text-2xl">
-                Saved Audiences
-              </h2>
             </div>
           </Cell>
         </div>
