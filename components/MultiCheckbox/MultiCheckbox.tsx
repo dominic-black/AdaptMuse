@@ -1,5 +1,5 @@
-import React from 'react';
-import Checkbox from '../Checkbox/Checkbox';
+import React from "react";
+import Checkbox from "../Checkbox/Checkbox";
 
 interface MultiCheckboxProps {
   options: { value: string; label: string }[];
@@ -7,14 +7,17 @@ interface MultiCheckboxProps {
   onChange: (selected: string[]) => void;
 }
 
-const MultiCheckbox: React.FC<MultiCheckboxProps> = ({ options, selectedOptions, onChange }) => {
+const MultiCheckbox: React.FC<MultiCheckboxProps> = ({
+  options,
+  selectedOptions,
+  onChange,
+}) => {
   const handleCheckboxChange = (value: string) => {
     const newSelection = selectedOptions.includes(value)
       ? selectedOptions.filter((option) => option !== value)
       : [...selectedOptions, value];
     onChange(newSelection);
   };
-
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((option) => (

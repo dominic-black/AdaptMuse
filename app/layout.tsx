@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <AuthProvider>
           <div className="gap-16 bg-background min-h-screen font-[family-name:var(--font-inter)]">
-            <div className="pl-[100px]">
+            <div>
               <NavBar />
               {children}
             </div>

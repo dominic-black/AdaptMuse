@@ -7,7 +7,6 @@ export const EntityTypes = {
   PLACE: "urn:entity:place",
   TV_SHOW: "urn:entity:tv_show",
   VIDEO_GAME: "urn:entity:videogame",
-  DESTINATION: "urn:entity:destination",
   PODCAST: "urn:entity:podcast",
 };
 

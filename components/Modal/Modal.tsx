@@ -8,9 +8,16 @@ interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   label: string;
+  showCloseButton?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, label }) => {
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  children,
+  label,
+  showCloseButton = true,
+}) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -45,11 +52,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, label }) => {
       <div className={modalClasses} onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center">
           <p className="text-2xl">{label}</p>
-          <Button onClick={handleClose} variant="ghost" size="lg">
-            <X />
-          </Button>
+          {showCloseButton && (
+            <Button onClick={handleClose} variant="ghost" size="lg">
+              <X />
+            </Button>
+          )}
         </div>
-        <div className="mt-2">{children}</div>
+        <div className="h-full">{children}</div>
       </div>
     </div>
   ) : null;
