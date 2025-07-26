@@ -14,7 +14,9 @@ export default function SettingsPage() {
   const router = useRouter();
   const auth = getAuth(app);
   const { userProfile } = useUser();
+  console.log("userProfile = ", userProfile);
   const [isSendingReset, setIsSendingReset] = useState(false);
+  const [hasSentReset, setHasSentReset] = useState(false);
   const [resetPasswordMessage, setResetPasswordMessage] = useState({
     type: "",
     text: "",
@@ -27,7 +29,9 @@ export default function SettingsPage() {
     setResetPasswordMessage({ type: "", text: "" });
 
     try {
+      console.log("auth.currentUser.email = ", auth.currentUser.email);
       await sendPasswordResetEmail(auth, auth.currentUser.email);
+      setHasSentReset(true);
       setResetPasswordMessage({
         type: "success",
         text: "Password reset email sent. Please check your inbox.",
@@ -122,15 +126,17 @@ export default function SettingsPage() {
         >
           <div className="space-y-4 max-w-md">
             <div className="flex flex-col items-start gap-4">
-              <Button
-                onClick={handleResetPassword}
-                disabled={isSendingReset}
-                variant="outline"
-              >
-                {isSendingReset
-                  ? "Sending Email..."
-                  : "Send Password Reset Email"}
-              </Button>
+              {!hasSentReset && (
+                <Button
+                  onClick={handleResetPassword}
+                  disabled={isSendingReset}
+                  variant="outline"
+                >
+                  {isSendingReset
+                    ? "Sending Email..."
+                    : "Send Password Reset Email"}
+                </Button>
+              )}
               {resetPasswordMessage.text && (
                 <p
                   className={`text-sm ${

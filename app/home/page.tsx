@@ -7,9 +7,12 @@ import { useAudiences } from "@/hooks/useAudiences";
 import { Spinner } from "@/components/Spinner";
 import { FileText, Users, BarChart2, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
+import VerifyEmailBanner from "@/components/Banners/VerifyEmail/VerifyEmailBanner";
 
 export default function Home() {
   const { audiences, loading } = useAudiences();
+  const { user } = useAuth();
 
   const StatCard = ({
     title,
@@ -34,6 +37,8 @@ export default function Home() {
   return (
     <Screen heading="Dashboard">
       <div className="space-y-8">
+        {user && !user.emailVerified && <VerifyEmailBanner />}
+
         {/* Quick Stats Section */}
         <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
           <StatCard

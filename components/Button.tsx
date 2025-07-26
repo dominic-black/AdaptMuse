@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Spinner } from "./Spinner";
 
 type ButtonVariant = "primary" | "outline" | "ghost" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
@@ -9,6 +10,7 @@ interface BaseProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   children?: React.ReactNode;
+  isLoading?: boolean;
 }
 
 interface ButtonProps
@@ -17,7 +19,9 @@ interface ButtonProps
   href?: never;
 }
 
-interface LinkProps extends BaseProps, Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> {
+interface LinkProps
+  extends BaseProps,
+    Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
   href: string;
 }
 
@@ -27,6 +31,7 @@ export const Button = (props: ButtonProps | LinkProps) => {
     variant = "primary",
     size = "md",
     children,
+    isLoading = false,
     ...rest
   } = props;
 
@@ -52,15 +57,19 @@ export const Button = (props: ButtonProps | LinkProps) => {
 
   if ("href" in props) {
     return (
-      <Link href={(props as LinkProps).href} className={classes} {...(rest as Omit<LinkProps, 'href'>)}>
-        {children}
+      <Link
+        href={(props as LinkProps).href}
+        className={classes}
+        {...(rest as Omit<LinkProps, "href">)}
+      >
+        {isLoading ? <Spinner size={size} /> : children}
       </Link>
     );
   }
 
   return (
-    <button className={classes} {...(rest as ButtonProps)}>
-      {children}
+    <button className={classes} {...(rest as ButtonProps)} disabled={isLoading}>
+      {isLoading ? <Spinner size={size} /> : children}
     </button>
   );
 };
