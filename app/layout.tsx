@@ -4,6 +4,7 @@ import "./globals.css";
 import { NavBar } from "@/components/NavBar/NavBar";
 import { AuthProvider } from "@/providers/AuthContext";
 import { UserProvider } from "@/providers/UserProvider";
+import { AudienceProvider } from "@/providers/AudienceProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,13 +26,15 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <AuthProvider>
           <UserProvider>
-            <div className="gap-16 bg-background min-h-screen font-[family-name:var(--font-inter)]">
-              <div>
-                <NavBar />
-                {children}
+            <AudienceProvider>
+              <div className="gap-16 bg-background min-h-screen font-[family-name:var(--font-inter)]">
+                <div>
+                  <NavBar />
+                  {children}
+                </div>
+                <footer className="flex flex-wrap justify-center items-center gap-[24px] row-start-3"></footer>
               </div>
-              <footer className="flex flex-wrap justify-center items-center gap-[24px] row-start-3"></footer>
-            </div>
+            </AudienceProvider>
           </UserProvider>
         </AuthProvider>
         <div id="modal-root"></div>

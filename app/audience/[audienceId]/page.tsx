@@ -413,65 +413,69 @@ export default function AudiencePage() {
                       </div>
 
                       {/* Gender Preference */}
-                      <div className="mb-3">
-                        <p className="mb-1 font-medium text-gray-700 text-xs">
-                          Gender Appeal
-                        </p>
-                        <div className="flex items-center space-x-2 text-xs">
-                          <div className="flex items-center">
-                            <div
-                              className={`w-3 h-3 rounded-full mr-1 ${
-                                entity.gender.male > 0
-                                  ? "bg-blue-500"
-                                  : "bg-gray-300"
-                              }`}
-                            />
-                            <span className="text-gray-600">
-                              Male {entity.gender.male > 0 ? "+" : ""}
-                              {(entity.gender.male * 100).toFixed(0)}%
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <div
-                              className={`w-3 h-3 rounded-full mr-1 ${
-                                entity.gender.female > 0
-                                  ? "bg-pink-500"
-                                  : "bg-gray-300"
-                              }`}
-                            />
-                            <span className="text-gray-600">
-                              Female {entity.gender.female > 0 ? "+" : ""}
-                              {(entity.gender.female * 100).toFixed(0)}%
-                            </span>
+                      {entity.gender && (
+                        <div className="mb-3">
+                          <p className="mb-1 font-medium text-gray-700 text-xs">
+                            Gender Appeal
+                          </p>
+                          <div className="flex items-center space-x-2 text-xs">
+                            <div className="flex items-center">
+                              <div
+                                className={`w-3 h-3 rounded-full mr-1 ${
+                                  entity.gender.male > 0
+                                    ? "bg-blue-500"
+                                    : "bg-gray-300"
+                                }`}
+                              />
+                              <span className="text-gray-600">
+                                Male {entity.gender.male > 0 ? "+" : ""}
+                                {(entity.gender.male * 100).toFixed(0)}%
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <div
+                                className={`w-3 h-3 rounded-full mr-1 ${
+                                  entity.gender.female > 0
+                                    ? "bg-pink-500"
+                                    : "bg-gray-300"
+                                }`}
+                              />
+                              <span className="text-gray-600">
+                                Female {entity.gender.female > 0 ? "+" : ""}
+                                {(entity.gender.female * 100).toFixed(0)}%
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Top Age Groups */}
-                      <div>
-                        <p className="mb-1 font-medium text-gray-700 text-xs">
-                          Top Age Groups
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {Object.entries(entity.age)
-                            .sort(([, a], [, b]) => b - a)
-                            .slice(0, 2)
-                            .map(([ageGroup, score]) => (
-                              <span
-                                key={ageGroup}
-                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
-                                  score > 0
-                                    ? "bg-green-100 text-green-700 font-medium"
-                                    : "bg-red-100 text-red-700"
-                                }`}
-                              >
-                                {ageGroup.replace("_", " ")}{" "}
-                                {score > 0 ? "+" : ""}
-                                {(score * 100).toFixed(0)}%
-                              </span>
-                            ))}
+                      {entity.age && (
+                        <div>
+                          <p className="mb-1 font-medium text-gray-700 text-xs">
+                            Top Age Groups
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {Object.entries(entity.age)
+                              .sort(([, a], [, b]) => b - a)
+                              .slice(0, 2)
+                              .map(([ageGroup, score]) => (
+                                <span
+                                  key={ageGroup}
+                                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${
+                                    score > 0
+                                      ? "bg-green-100 text-green-700 font-medium"
+                                      : "bg-red-100 text-red-700"
+                                  }`}
+                                >
+                                  {ageGroup.replace("_", " ")}{" "}
+                                  {score > 0 ? "+" : ""}
+                                  {(score * 100).toFixed(0)}%
+                                </span>
+                              ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   )
                 )}
