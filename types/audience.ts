@@ -1,4 +1,4 @@
-export interface RecommendedEntity {
+export interface QlooEntity {
   id: string;
   name: string;
   subText: string;
@@ -22,8 +22,8 @@ export interface RecommendedEntity {
 export interface Audience {
   id: string;
   name: string;
-  recommendedEntities: RecommendedEntity[];
-  entities: RecommendedEntity[];
+  recommendedEntities: QlooEntity[];
+  entities: QlooEntity[];
   ageTotals: Record<string, number>;
   genderTotals: Record<string, number>;
 }

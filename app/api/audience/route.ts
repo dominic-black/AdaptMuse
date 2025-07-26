@@ -2,7 +2,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EntityTypes } from '@/constants/entity';
 import { auth, db } from '@/lib/firebaseAdmin';
 
+// Define interfaces for API responses
+interface QlooApiEntity {
+  entity_id: string;
+  name: string;
+  popularity?: number;
+  types: string[];
+  properties?: {
+    image?: {
+      url?: string;
+    };
+  };
+  image?: string;
+}
 
+interface EntityWithId {
+  id: string;
+}
+
+interface DemographicData {
+  entity_id: string;
+  query: {
+    age: Record<string, number>;
+    gender: Record<string, number>;
+  };
+}
+
+interface ProcessedEntity {
+  id: string;
+  name: string;
+  popularity: number;
+  type: string;
+  image: string | null;
+  age?: Record<string, number>;
+  gender?: Record<string, number>;
+}
 
 export async function POST(request: NextRequest) {
 
@@ -35,33 +69,53 @@ export async function POST(request: NextRequest) {
 
   const { entities, audiences, gender, ageGroup } = audienceData;
 
+  const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: EntityWithId) => e.id).join(",")}`, {
+    headers: {
+      "x-api-key": qlooApiKey,
+      "accept": "application/json",
+    },
+  });
+  const inputEntitiesData = await inputEntitiesRes.json();
+  const inputEntities: ProcessedEntity[] = inputEntitiesData.results.map((inputEntity: QlooApiEntity) => {
+    return {
+      id: inputEntity.entity_id,
+      name: inputEntity.name,
+      popularity: inputEntity.popularity ?? 0, // Provide default value for undefined popularity
+      type: inputEntity.types[0].split(":").pop()?.toUpperCase() || 'UNKNOWN',
+      image: inputEntity.properties?.image?.url || null,
+    }   
+  })
+
+  
   const recommendedEntities = await Promise.all(
     Object.keys(EntityTypes).map(async (key) => {
-
-      const entityData = await fetch(`https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.gender=${gender}&signal.interests.entities=${entities.map((e: any) => e.id).join(",")}&signal.demographics.audiences=${audiences.join(",")}&signal.demographics.age=${ageGroup}`, {
+      const url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.gender=${gender}&signal.interests.entities=${inputEntities.map((e: EntityWithId) => e.id).join(",")}&signal.demographics.audiences=${audiences.join(",")}`
+      const entityData = await fetch(url, {
         headers: {
           "x-api-key": qlooApiKey,
           "accept": "application/json",
         },
       });
+
+      if(entityData.status !== 200) return null;
       const data = await entityData.json();
-      console.log("data = ", data);
+
       if(data.results.entities.length < 1) return null;
 
+      const entity = data.results.entities[0];
       return {
-        id: data.results.entities[0].entity_id,
-        name: data.results.entities[0].name,
-        subText: "suggested",
-        popularity: data.results.entities[0].popularity,
+        id: entity.entity_id,
+        name: entity.name,
+        popularity: entity.popularity ?? 0, // Provide default value for undefined popularity
         type: key,
-        image: data.results.entities[0].image || null, // Convert undefined to null
+        image: entity.properties?.image?.url || null,
       };
     })
   );
 
-    const audienceEntities = [...recommendedEntities, ...entities];
+    const audienceEntities = [...recommendedEntities, ...inputEntities];
 
-    const demographics = await fetch(`https://hackathon.api.qloo.com/v2/insights?filter.type=urn:demographics&signal.interests.entities=${audienceEntities.map(e => e.id).join(",")}`, {
+    const demographics = await fetch(`https://hackathon.api.qloo.com/v2/insights?filter.type=urn:demographics&signal.interests.entities=${audienceEntities.map(e => e?.id).filter(Boolean).join(",")}`, {
       headers: {
         "x-api-key": qlooApiKey,
         "accept": "application/json",
@@ -69,8 +123,7 @@ export async function POST(request: NextRequest) {
     });
 
     const demographicsData = await demographics.json();
-    console.log('demographicsData ', demographicsData);
-    const demographicsList = demographicsData.results.demographics || [];
+    const demographicsList: DemographicData[] = demographicsData.results.demographics || [];
 
     const demographicsMap: Record<string, { age: Record<string, number>, gender: Record<string, number> }> = {};
     for (const demographic of demographicsList) {
@@ -80,9 +133,9 @@ export async function POST(request: NextRequest) {
       demographicsMap[demographic.entity_id] = { age, gender };
     }
 
-    function addDemographics(arr: Record<string, any>[]) {
+    function addDemographics(arr: ProcessedEntity[]): ProcessedEntity[] {
       return arr.map(entity => {
-        const id = entity.id || entity.entity_id;
+        const id = entity.id;
         const demo = demographicsMap[id];
         if (demo) {
           return { ...entity, ...demo };
@@ -90,8 +143,8 @@ export async function POST(request: NextRequest) {
         return entity;
       });
     }
-    const entitiesWithDemo = addDemographics(entities);
-    const recommendedEntitiesWithDemo = addDemographics(recommendedEntities.filter(Boolean) as Record<string, any>[]);
+    const entitiesWithDemo = addDemographics(inputEntities);
+    const recommendedEntitiesWithDemo = addDemographics(recommendedEntities.filter(Boolean) as ProcessedEntity[]);
 
 
     const ageTotals = {
@@ -109,9 +162,7 @@ export async function POST(request: NextRequest) {
 
     for (const entity of entitiesWithDemo) {
       if (entity.age) {
-        console.log("entity.age = ", entity.age);
         for (const [ageKey, value] of Object.entries(entity.age)) {
-          console.log("ageKey = ", ageKey);
           if (ageKey in ageTotals) {
             ageTotals[ageKey as keyof typeof ageTotals] += Number(value);
           }
@@ -141,10 +192,8 @@ export async function POST(request: NextRequest) {
       ageTotals: roundObj(ageTotals),
       genderTotals: roundObj(genderTotals),
     }
-    console.log("newAudience = ", newAudience);
 
-    const insertAudienceResponse =await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
-    console.log("insertAudienceResponse = ", insertAudienceResponse);
+    const insertAudienceResponse = await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
 
     return NextResponse.json({...newAudience});
 }
