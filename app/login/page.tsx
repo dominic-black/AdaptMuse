@@ -1,21 +1,34 @@
 import Image from "next/image";
 import LoginForm from "@/components/LoginForm/LoginForm";
+import Link from "next/link";
 
 export default function Login() {
   return (
-    <div className="flex flex-col items-center h-screen">
-      <header className="flex flex-row justify-between items-center p-10 w-full">
-        <div className="flex flex-row items-center gap-4">
-          <Image src="/logo.png" alt="AdaptMuse" width={40} height={40} />
-          <h1>AdaptMuse</h1>
+    <div className="flex justify-center items-center bg-gray-100 px-4 sm:px-6 lg:px-8 py-12 min-h-screen">
+      <div className="space-y-8 bg-white shadow-lg p-10 border border-gray-200 rounded-xl w-full max-w-md">
+        <div>
+          <Image
+            className="mx-auto w-auto h-12"
+            src="/logo.png"
+            alt="AdaptMuse Logo"
+            width={48}
+            height={48}
+          />
+          <h2 className="mt-6 font-extrabold text-gray-900 text-3xl text-center">
+            Sign in to your account
+          </h2>
         </div>
-      </header>
-      <main className="flex flex-col justify-center items-center gap-4 bg-background">
-        <div className="flex flex-col gap-4 bg-cell-background shadow-lg p-6 rounded-lg">
-          <p>Sign in to your account</p>
-          <LoginForm />
-        </div>
-      </main>
+        <LoginForm />
+        <p className="mt-2 text-gray-600 text-sm text-center">
+          Or
+          <Link
+            href="/signup"
+            className="ml-1 font-medium text-primary hover:text-primary/80"
+          >
+            create a new account
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

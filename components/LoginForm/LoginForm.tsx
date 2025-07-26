@@ -33,12 +33,11 @@ export default function LoginForm() {
       return;
     }
 
-    // SUCCESS! You now have the uid securely
     console.log("User signed in with UID:", result.uid);
   };
 
   return (
-    <div className="flex flex-col w-[500px]">
+    <div className="flex flex-col">
       <form className="flex flex-col gap-4">
         {errors && (
           <div className="bg-red-50 p-3 border border-red-200 rounded-md">
