@@ -48,7 +48,14 @@ export async function POST(request: NextRequest) {
       console.log("data = ", data);
       if(data.results.entities.length < 1) return null;
 
-      return {id: data.results.entities[0].entity_id, name: data.results.entities[0].name, subText: "suggested", popularity: data.results.entities[0].popularity, type: key, image: data.results.entities[0].image};
+      return {
+        id: data.results.entities[0].entity_id,
+        name: data.results.entities[0].name,
+        subText: "suggested",
+        popularity: data.results.entities[0].popularity,
+        type: key,
+        image: data.results.entities[0].image || null, // Convert undefined to null
+      };
     })
   );
 
@@ -136,8 +143,8 @@ export async function POST(request: NextRequest) {
     }
     console.log("newAudience = ", newAudience);
 
-    // add audience to user audience sub collection
-    await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
-
+    const insertAudienceResponse =await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
+    console.log("insertAudienceResponse = ", insertAudienceResponse);
+    
     return NextResponse.json({...newAudience});
 }
