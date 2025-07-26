@@ -1,9 +1,8 @@
-import { ChevronDownIcon, MapPin, PlusIcon } from "lucide-react";
+import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
-import Image from "next/image";
-import { Spinner } from "./Spinner";
 import { getEntityContent } from "@/utils/Qloo";
 import { Entity } from "@/types/entity";
+import { Chip } from "./Chip/Chip";
 
 type LoadingEntity = {
   name: string;
@@ -16,17 +15,18 @@ export const ChipInput = ({
   setChipIds,
   type,
   icon,
+  onRemoveChip,
 }: {
   label: string;
   placeholder: string;
   setChipIds: (newEntity: Entity) => void;
   type: string;
   icon?: React.ReactNode;
+  onRemoveChip: (removedEntity: Entity) => void;
 }) => {
   const [text, setText] = useState<string>("");
   const [chips, setChips] = useState<Array<Entity | LoadingEntity>>([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
   const onTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
@@ -36,6 +36,14 @@ export const ChipInput = ({
     if (text.trim()) {
       setChips([...chips, { name: text } as LoadingEntity]);
       setText("");
+    }
+  };
+
+  const handleRemoveChip = (removedChip: Entity | LoadingEntity) => {
+    const updatedChips = chips.filter((chip) => chip !== removedChip);
+    setChips(updatedChips);
+    if ("id" in removedChip && removedChip.id) {
+      onRemoveChip(removedChip as Entity);
     }
   };
 
@@ -51,19 +59,22 @@ export const ChipInput = ({
 
       if (newEntity) {
         // Replace the loading chip with the actual entity
-        setChips([...chips, newEntity]);
+        setChips((prev) => {
+          const updatedChips = [...prev];
+          const lastLoadingChipIndex = updatedChips.findIndex(
+            (chip) => chip.name === chipName && !("id" in chip)
+          );
+          if (lastLoadingChipIndex !== -1) {
+            updatedChips[lastLoadingChipIndex] = newEntity;
+          } else {
+            updatedChips.push(newEntity);
+          }
+          return updatedChips;
+        });
         // Set the chip ID for parent component
         setChipIds(newEntity);
       }
     }
-  };
-
-  const handleImageLoad = (index: number) => {
-    setLoadedImages((prev) => new Set(prev).add(index));
-  };
-
-  const isEntity = (chip: Entity | LoadingEntity): chip is Entity => {
-    return "type" in chip;
   };
 
   return (
@@ -114,54 +125,14 @@ export const ChipInput = ({
                 </button>
               </div>
             </div>
-            <div className="flex flex-col flex-wrap gap-2 mt-2 w-full">
+            <div className="flex flex-col flex-wrap gap-2 mt-2 px-2 pt-2 pb-1 w-full">
               {chips.map((chip, idx) => (
-                <div key={idx} className="flex flex-row gap-2">
-                  <div className="bg-cell-background px-4 py-2.5 border border-gray-300 rounded-md w-full">
-                    {!isEntity(chip) ? (
-                      <div>
-                        <div className="flex flex-row gap-2">
-                          <div className="flex justify-center items-center bg-gray-200 rounded-md w-[50px] h-[50px] overflow-hidden">
-                            <Spinner size="sm" />
-                          </div>
-                          <div className="flex flex-col justify-center items-start">
-                            <p>{chip.name}</p>
-                            <p className="text-gray-500 text-sm">loading...</p>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="flex flex-row gap-2">
-                          <div className="relative bg-gray-200 rounded-md min-w-[50px] h-[50px] overflow-hidden">
-                            {chip.imageUrl === "location-img" ? (
-                              <div className="flex justify-center items-center w-full h-full">
-                                <MapPin className="w-4 h-4 text-gray-500" />
-                              </div>
-                            ) : (
-                              <Image
-                                src={chip.imageUrl}
-                                alt={chip.name}
-                                fill
-                                className={`object-cover transition-opacity duration-500 ease-in-out ${
-                                  loadedImages.has(idx)
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                }`}
-                                onLoad={() => handleImageLoad(idx)}
-                              />
-                            )}
-                          </div>
-                          <div className="flex flex-col justify-center items-start">
-                            <p className="text-sm">{chip.name}</p>
-                            <p className="text-gray-500 text-xs">
-                              {chip.subText || ""}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                <div key={idx}>
+                  <Chip
+                    chip={chip}
+                    onRemove={() => handleRemoveChip(chip)}
+                    idx={idx}
+                  />
                 </div>
               ))}
             </div>

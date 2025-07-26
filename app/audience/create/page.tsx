@@ -168,6 +168,11 @@ export default function CreateAudiencePage() {
                         setChipIds={(newEntity) => {
                           setSelectedInterests((prev) => [...prev, newEntity]);
                         }}
+                        onRemoveChip={(removedEntity) => {
+                          setSelectedInterests((prev) =>
+                            prev.filter((entity) => entity.id !== removedEntity.id)
+                          );
+                        }}
                         icon={interest.icon}
                       />
                     ))}
