@@ -1,9 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EntityTypes } from '@/constants/entity';
-import { AUDIENCE_OPTIONS } from '@/constants/audiences';
+import { auth, db } from '@/lib/firebaseAdmin';
+
 
 
 export async function POST(request: NextRequest) {
+
+  const sessionCookie = request.cookies.get('session')?.value;
+
+  if (!sessionCookie) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let decodedClaims;
+  try {
+    decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+  } catch (error) {
+    console.error("Error verifying session cookie:", error);
+    return NextResponse.json({ error: "Invalid or expired session" }, { status: 401 });
+  }
+
+  const uid = decodedClaims.uid;
+
+
+  
   const { audienceName, audienceData } = await request.json();
   const qlooApiKey = process.env.QLOO_API_KEY;
   if (!qlooApiKey || !audienceName || !audienceData) {
@@ -107,13 +127,17 @@ export async function POST(request: NextRequest) {
       return out;
     }
 
-
-    return NextResponse.json({
+    const newAudience = {
+      name: audienceName,
       entities: entitiesWithDemo,
       reccomendedEntities: reccomendedEntitiesWithDemo,
       ageTotals: roundObj(ageTotals),
       genderTotals: roundObj(genderTotals),
-      audienceName,
-      audiences,
-    });
+    }
+    console.log("newAudience = ", newAudience);
+
+    // add audience to user audience sub collection
+    await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
+
+    return NextResponse.json({...newAudience});
 }
