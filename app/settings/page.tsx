@@ -2,68 +2,23 @@
 
 import { Screen } from "@/components/Screen/Screen";
 import { Button } from "@/components/Button";
-import {
-  getAuth,
-  signOut,
-  updateProfile,
-  sendPasswordResetEmail,
-} from "firebase/auth";
+import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { app } from "@/firebase-config";
 import { useRouter } from "next/navigation";
 import { User, KeyRound, LogOut } from "lucide-react";
 import { TextInput } from "@/components/TextInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@/providers/UserProvider";
 
 export default function SettingsPage() {
   const router = useRouter();
   const auth = getAuth(app);
   const { userProfile } = useUser();
-  const [firstName, setFirstName] = useState(userProfile?.firstName || "");
-  const [lastName, setLastName] = useState(userProfile?.lastName || "");
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-  const [updateProfileMessage, setUpdateProfileMessage] = useState({
-    type: "",
-    text: "",
-  });
   const [isSendingReset, setIsSendingReset] = useState(false);
   const [resetPasswordMessage, setResetPasswordMessage] = useState({
     type: "",
     text: "",
   });
-
-  useEffect(() => {
-    if (userProfile?.firstName && userProfile?.lastName && !isInitialized) {
-      setFirstName(userProfile.firstName);
-      setLastName(userProfile.lastName);
-      setIsInitialized(true);
-    }
-  }, [userProfile]);
-
-  const handleUpdateProfile = async () => {
-    if (!auth.currentUser) return;
-
-    setIsUpdatingProfile(true);
-    setUpdateProfileMessage({ type: "", text: "" });
-
-    try {
-      const displayName = `${firstName} ${lastName}`.trim();
-      await updateProfile(auth.currentUser, { displayName });
-      setUpdateProfileMessage({
-        type: "success",
-        text: "Profile updated successfully!",
-      });
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      setUpdateProfileMessage({
-        type: "error",
-        text: "Failed to update profile.",
-      });
-    } finally {
-      setIsUpdatingProfile(false);
-    }
-  };
 
   const handleResetPassword = async () => {
     if (!auth.currentUser?.email) return;
@@ -130,24 +85,24 @@ export default function SettingsPage() {
       <div className="space-y-8 mx-auto max-w-4xl">
         <SettingCard
           title="Profile"
-          description="Manage your public profile and personal information."
+          description="Your account user information."
           icon={<User className="w-5 h-5" />}
         >
           <div className="space-y-4 max-w-md">
             <div className="gap-4 grid grid-cols-2">
               <TextInput
-                key="firstName"
                 label="First Name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={userProfile?.firstName || ""}
+                onChange={() => {}}
                 placeholder=""
+                disabled
               />
               <TextInput
-                key="lastName"
                 label="Last Name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                value={userProfile?.lastName || ""}
+                onChange={() => {}}
                 placeholder=""
+                disabled
               />
             </div>
             <TextInput
@@ -157,26 +112,6 @@ export default function SettingsPage() {
               placeholder=""
               disabled
             />
-            <div className="flex items-center gap-4 pt-2">
-              <Button
-                onClick={handleUpdateProfile}
-                disabled={isUpdatingProfile}
-                variant="outline"
-              >
-                {isUpdatingProfile ? "Updating..." : "Update Profile"}
-              </Button>
-              {updateProfileMessage.text && (
-                <p
-                  className={`text-sm ${
-                    updateProfileMessage.type === "success"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
-                >
-                  {updateProfileMessage.text}
-                </p>
-              )}
-            </div>
           </div>
         </SettingCard>
 

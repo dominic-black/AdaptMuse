@@ -235,7 +235,7 @@ export default function AudiencePage() {
           <Cell>
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-900 text-lg">
-                Recommended Entities
+                Expanded Entities
               </h3>
               <div className="gap-4 grid md:grid-cols-2 lg:grid-cols-3">
                 {audience.recommendedEntities.map(
