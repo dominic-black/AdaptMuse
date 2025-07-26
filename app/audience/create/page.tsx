@@ -16,6 +16,7 @@ import {
   Gamepad2,
   House,
   Podcast,
+  Search,
 } from "lucide-react";
 import { Entity } from "@/types/entity";
 import MultiCheckbox from "@/components/MultiCheckbox/MultiCheckbox";
@@ -29,10 +30,28 @@ export default function CreateAudiencePage() {
   const [selectedAudienceOptions, setSelectedAudienceOptions] = useState<
     Record<string, { value: string[]; label: string }>
   >({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [showAudienceModal, setShowAudienceModal] = useState(false);
   const [audienceFingerprint, setAudienceFingerprint] = useState<any | null>(
     null
+  );
+
+  // Filter AUDIENCE_OPTIONS based on search term
+  const filteredAudienceOptions = Object.entries(AUDIENCE_OPTIONS).reduce(
+    (acc, [category, options]) => {
+      const filteredOptions = options.filter((option) =>
+        option.label.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      if (filteredOptions.length > 0) {
+        acc[category] = filteredOptions;
+      }
+      return acc;
+    },
+    {} as Record<
+      string,
+      (typeof AUDIENCE_OPTIONS)[keyof typeof AUDIENCE_OPTIONS]
+    >
   );
 
   useEffect(() => {
@@ -199,33 +218,51 @@ export default function CreateAudiencePage() {
                       }
                     />
                   </div>
-                  {Object.entries(AUDIENCE_OPTIONS).map(
-                    ([category, options]) => (
-                      <div key={category}>
-                        <p className="mb-2 text-gray-500 text-sm capitalize">
-                          {category.replace(/_/g, " ").toLowerCase()}
-                        </p>
-                        <MultiCheckbox
-                          options={options}
-                          selectedOptions={
-                            selectedAudienceOptions[category]?.value || []
-                          }
-                          onChange={(newSelection) => {
-                            setSelectedAudienceOptions((prev) => ({
-                              ...prev,
-                              [category]: {
-                                value: newSelection,
-                                label:
-                                  options.find(
-                                    (option) => option.value === newSelection[0]
-                                  )?.label || "unknown",
-                              },
-                            }));
-                          }}
+                  <div className="flex flex-col gap-4">
+                    <div className="">
+                      <p className="mb-2 text-gray-500 text-sm">
+                        Search audience options
+                      </p>
+                      <div className="relative">
+                        <Search className="top-1/2 left-3 absolute w-4 h-4 text-gray-400 -translate-y-1/2 transform" />
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="py-2 pr-4 pl-10 border border-gray-300 focus:border-transparent rounded-lg outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
                       </div>
-                    )
-                  )}
+                    </div>
+                    {Object.entries(filteredAudienceOptions).map(
+                      ([category, options]) => (
+                        <div key={category}>
+                          <p className="mb-2 text-gray-500 text-sm capitalize">
+                            {category.replace(/_/g, " ").toLowerCase()}
+                          </p>
+                          <MultiCheckbox
+                            options={options}
+                            selectedOptions={
+                              selectedAudienceOptions[category]?.value || []
+                            }
+                            onChange={(newSelection) => {
+                              setSelectedAudienceOptions((prev) => ({
+                                ...prev,
+                                [category]: {
+                                  value: newSelection,
+                                  label:
+                                    options.find(
+                                      (option) =>
+                                        option.value === newSelection[0]
+                                    )?.label || "unknown",
+                                },
+                              }));
+                            }}
+                          />
+                        </div>
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end gap-2">
