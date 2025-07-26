@@ -17,17 +17,17 @@ export default function Signup() {
           <h2 className="mt-6 font-extrabold text-gray-900 text-3xl text-center">
             Create your account
           </h2>
+          <p className="mt-2 text-gray-600 text-sm text-center">
+            Or
+            <Link
+              href="/login"
+              className="ml-1 font-medium text-primary hover:text-primary/80"
+            >
+              sign in to your existing account
+            </Link>
+          </p>
         </div>
         <SignupForm />
-        <p className="mt-2 text-gray-600 text-sm text-center">
-          Or
-          <Link
-            href="/login"
-            className="ml-1 font-medium text-primary hover:text-primary/80"
-          >
-            sign in to your existing account
-          </Link>
-        </p>
       </div>
     </div>
   );

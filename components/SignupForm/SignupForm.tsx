@@ -7,6 +7,14 @@ import { SignupFormData } from "@/types/forms";
 import { validateSignupForm } from "@/utils/validation";
 import { createFirebaseUser } from "@/utils/auth";
 
+const firebaseAuthErrorMap: { [key: string]: string } = {
+  "auth/email-already-in-use": "This email address is already in use.",
+  "auth/invalid-email": "The email address is not valid.",
+  "auth/operation-not-allowed": "Email/password accounts are not enabled.",
+  "auth/weak-password": "Password should be at least 6 characters.",
+  "auth/network-request-failed": "Network error. Please check your internet connection.",
+};
+
 export default function SignupForm() {
   const [formData, setFormData] = useState<SignupFormData>({
     firstName: "",
@@ -31,7 +39,8 @@ export default function SignupForm() {
 
     const result = await createFirebaseUser(formData);
     if (!result.success) {
-      setErrors(result.error || "An error occurred during signup");
+      const errorMessage = firebaseAuthErrorMap[result.error || ""] || "An unexpected error occurred. Please try again.";
+      setErrors(errorMessage);
       return;
     }
 
