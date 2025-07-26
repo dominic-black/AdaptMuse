@@ -2,26 +2,55 @@
 
 import { Cell } from "@/components/Cell/Cell";
 import { Screen } from "@/components/Screen/Screen";
-import { DropdownInput } from "@/components/DropdownInput/DropdownInput";
 import { useAudiences } from "@/providers/AudienceProvider";
 import { Audience } from "@/types/audience";
 import { useState } from "react";
 import Image from "next/image";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, Sparkles, Pencil } from "lucide-react";
+import { Button } from "@/components/Button";
+import { TextInput } from "@/components/TextInput";
 
 export default function BotPage() {
   const { audiences } = useAudiences();
   const [selectedAudience, setSelectedAudience] = useState<Audience | null>(
     null
   );
+  const [action, setAction] = useState<"generate" | "alter">("generate");
+  const [contentType, setContentType] = useState("");
+  const [existingContent, setExistingContent] = useState("");
+  const [additionalContext, setAdditionalContext] = useState("");
+
+  const ActionButton = ({
+    selected,
+    onClick,
+    icon,
+    text,
+  }: {
+    selected: boolean;
+    onClick: () => void;
+    icon: React.ReactNode;
+    text: string;
+  }) => (
+    <button
+      onClick={onClick}
+      className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all duration-200 ${
+        selected
+          ? "border-primary bg-primary/5 shadow-md"
+          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+      }`}
+    >
+      {icon}
+      <span className="font-medium">{text}</span>
+    </button>
+  );
 
   return (
     <Screen heading="Create content">
-      <div className="gap-4 grid grid-cols-[1fr_3fr]">
+      <div className="gap-4 grid grid-cols-[1fr_2fr]">
         <Cell>
           <div>
             <p className="mb-4 font-medium text-gray-700">
-              Select a target audience
+              1. Select a target audience
             </p>
             <div className="space-y-2">
               {audiences.map((audience) => (
@@ -74,13 +103,71 @@ export default function BotPage() {
           </div>
         </Cell>
         <Cell>
-          <div>
-            <p>Content to alter</p>
-            <textarea className="p-2 border border-gray-300 rounded-md w-full h-40" />
-          </div>
-          <div>
-            <p>Additional context</p>
-            <textarea className="p-2 border border-gray-300 rounded-md w-full h-40" />
+          <div className="flex flex-col gap-6">
+            <div>
+              <p className="mb-4 font-medium text-gray-700">
+                2. Choose what you want to do
+              </p>
+              <div className="flex gap-4">
+                <ActionButton
+                  selected={action === "generate"}
+                  onClick={() => setAction("generate")}
+                  icon={<Sparkles className="w-5 h-5 text-primary" />}
+                  text="Generate new content"
+                />
+                <ActionButton
+                  selected={action === "alter"}
+                  onClick={() => setAction("alter")}
+                  icon={<Pencil className="w-5 h-5 text-gray-600" />}
+                  text="Alter existing content"
+                />
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-4 font-medium text-gray-700">
+                3. Provide content details
+              </p>
+              <div className="space-y-4">
+                <TextInput
+                  label="Content Type"
+                  placeholder="e.g. Ad copy, public speech, marketing email..."
+                  value={contentType}
+                  onChange={(e) => setContentType(e.target.value)}
+                />
+
+                {action === "alter" && (
+                  <div>
+                    <label className="block mb-1 font-medium text-gray-700 text-sm">
+                      Content to alter
+                    </label>
+                    <textarea
+                      value={existingContent}
+                      onChange={(e) => setExistingContent(e.target.value)}
+                      placeholder="Paste your existing content here..."
+                      className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:ring-primary w-full h-40 resize-none"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block mb-1 font-medium text-gray-700 text-sm">
+                    Additional Context
+                  </label>
+                  <textarea
+                    value={additionalContext}
+                    onChange={(e) => setAdditionalContext(e.target.value)}
+                    placeholder="Provide any additional context, like brand voice, key message, etc."
+                    className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:ring-primary w-full h-40 resize-none"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button disabled={!selectedAudience}>
+                {action === "generate" ? "Generate Content" : "Alter Content"}
+              </Button>
+            </div>
           </div>
         </Cell>
       </div>
