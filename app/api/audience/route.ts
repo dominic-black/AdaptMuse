@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
   
   const recommendedEntities = await Promise.all(
     Object.keys(EntityTypes).map(async (key) => {
-      const url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.gender=${gender}&signal.interests.entities=${inputEntities.map((e: EntityWithId) => e.id).join(",")}&signal.demographics.audiences=${audiences.join(",")}`
+      const url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.gender=${gender}&signal.interests.entities=${inputEntities.map((e: EntityWithId) => e.id).join(",")}&signal.demographics.audiences=${audiences.join(",")}&signal.demographics.age=${ageGroup}`
       const entityData = await fetch(url, {
         headers: {
           "x-api-key": qlooApiKey,
