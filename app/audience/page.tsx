@@ -9,6 +9,9 @@ import { Cell } from "@/components/Cell/Cell";
 import { Screen } from "@/components/Screen/Screen";
 import { Audience } from "@/types/audience";
 import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
+import { AudienceList } from "@/components/AudienceList/AudienceList";
 
 export default function AudiencePage() {
   const { user } = useAuth();
@@ -52,17 +55,7 @@ export default function AudiencePage() {
             {loading ? (
               <p>Loading audiences...</p>
             ) : audiences.length > 0 ? (
-              <ul className="space-y-2">
-                {audiences.map((audience) => (
-                  <li key={audience.id}>
-                    <Link href={`/audience/${audience.id}`}>
-                      <div className="block hover:bg-gray-100 p-4 rounded-lg transition-colors">
-                        {audience.name}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <AudienceList audiences={audiences} />
             ) : (
               <div className="flex flex-col justify-center items-center gap-2">
                 <p>You have not created any audiences yet.</p>
