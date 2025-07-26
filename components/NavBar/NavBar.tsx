@@ -40,15 +40,17 @@ export const NavBar = () => {
           />
         </Link>
         <Link
-          href="/bot"
+          href="/generate-content"
           className={`p-2 rounded-lg transition-colors duration-200 ${
-            pathname === "/bot" ? "bg-white/20" : "hover:bg-white/10"
+            pathname === "/generate-content"
+              ? "bg-white/20"
+              : "hover:bg-white/10"
           }`}
         >
           <Bot
             size={24}
             color="white"
-            fill={pathname === "/bot" ? "white" : "none"}
+            fill={pathname === "/generate-content" ? "white" : "none"}
           />
         </Link>
         <Link

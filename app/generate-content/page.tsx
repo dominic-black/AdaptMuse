@@ -45,13 +45,13 @@ export default function BotPage() {
 
   return (
     <Screen heading="AI Content Generator">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start h-full">
+      <div className="items-start gap-8 grid grid-cols-1 lg:grid-cols-3 h-full">
         {/* Left Column: Audience Selection */}
-        <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm h-full flex flex-col">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="flex flex-col lg:col-span-1 bg-white shadow-sm p-6 rounded-lg h-full">
+          <h2 className="mb-4 font-semibold text-gray-800 text-lg">
             1. Select Target Audience
           </h2>
-          <div className="space-y-2 overflow-y-auto flex-1 pr-2">
+          <div className="flex-1 space-y-2 pr-2 overflow-y-auto">
             {audiences.map((audience) => (
               <div
                 key={audience.id}
@@ -91,14 +91,14 @@ export default function BotPage() {
             ))}
 
             {audiences.length === 0 && (
-              <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-lg h-full flex flex-col justify-center">
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-                  <Users className="h-6 w-6" />
+              <div className="flex flex-col justify-center py-16 border-2 border-gray-200 border-dashed rounded-lg h-full text-center">
+                <div className="flex justify-center items-center bg-gray-100 mx-auto rounded-full w-12 h-12 text-gray-400">
+                  <Users className="w-6 h-6" />
                 </div>
-                <h3 className="mt-4 text-sm font-medium text-gray-900">
+                <h3 className="mt-4 font-medium text-gray-900 text-sm">
                   No audiences found
                 </h3>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-gray-500 text-xs">
                   Create one to get started.
                 </p>
                 <div className="mt-4">
@@ -112,11 +112,11 @@ export default function BotPage() {
         </div>
 
         {/* Right Column: Content Form */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm h-full flex flex-col">
-          <div className="flex-1 overflow-y-auto pr-2">
+        <div className="flex flex-col lg:col-span-2 bg-white shadow-sm p-6 rounded-lg h-full">
+          <div className="flex-1 pr-2 overflow-y-auto">
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                <h2 className="mb-4 font-semibold text-gray-800 text-lg">
                   2. Choose Action
                 </h2>
                 <div className="flex gap-4">
@@ -136,7 +136,7 @@ export default function BotPage() {
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                <h2 className="mb-4 font-semibold text-gray-800 text-lg">
                   3. Provide Details
                 </h2>
                 <div className="space-y-4">
@@ -149,34 +149,34 @@ export default function BotPage() {
 
                   {action === "alter" && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block mb-1 font-medium text-gray-700 text-sm">
                         Existing Content
                       </label>
                       <textarea
                         value={existingContent}
                         onChange={(e) => setExistingContent(e.target.value)}
                         placeholder="Paste your existing content here..."
-                        className="w-full h-32 p-2 bg-white border border-gray-300 rounded-md focus:ring-primary focus:border-primary resize-none"
+                        className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 w-full h-32 resize-none"
                       />
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block mb-1 font-medium text-gray-700 text-sm">
                       Additional Context
                     </label>
                     <textarea
                       value={additionalContext}
                       onChange={(e) => setAdditionalContext(e.target.value)}
                       placeholder="Provide any additional context, like brand voice, key message, etc."
-                      className="w-full h-32 p-2 bg-white border border-gray-300 rounded-md focus:ring-primary focus:border-primary resize-none"
+                      className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 w-full h-32 resize-none"
                     />
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex justify-end pt-6 border-t border-gray-200">
+          <div className="flex justify-end pt-6 border-gray-200 border-t">
             <Button disabled={!selectedAudience}>
               {action === "generate" ? "Generate Content" : "Alter Content"}
             </Button>
