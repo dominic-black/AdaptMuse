@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   const { entities, audiences, gender, ageGroup } = audienceData;
 
-  const reccomendedEntities = await Promise.all(
+  const recommendedEntities = await Promise.all(
     Object.keys(EntityTypes).map(async (key) => {
 
       const entityData = await fetch(`https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.gender=${gender}&signal.interests.entities=${entities.map((e: any) => e.id).join(",")}&signal.demographics.audiences=${audiences.join(",")}&signal.demographics.age=${ageGroup}`, {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     })
   );
 
-    const audienceEntities = [...reccomendedEntities, ...entities];
+    const audienceEntities = [...recommendedEntities, ...entities];
 
     const demographics = await fetch(`https://hackathon.api.qloo.com/v2/insights?filter.type=urn:demographics&signal.interests.entities=${audienceEntities.map(e => e.id).join(",")}`, {
       headers: {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       });
     }
     const entitiesWithDemo = addDemographics(entities);
-    const reccomendedEntitiesWithDemo = addDemographics(reccomendedEntities.filter(Boolean) as Record<string, any>[]);
+    const recommendedEntitiesWithDemo = addDemographics(recommendedEntities.filter(Boolean) as Record<string, any>[]);
 
 
     const ageTotals = {
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     const newAudience = {
       name: audienceName,
       entities: entitiesWithDemo,
-      reccomendedEntities: reccomendedEntitiesWithDemo,
+      recommendedEntities: recommendedEntitiesWithDemo,
       ageTotals: roundObj(ageTotals),
       genderTotals: roundObj(genderTotals),
     }
@@ -145,6 +145,6 @@ export async function POST(request: NextRequest) {
 
     const insertAudienceResponse =await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
     console.log("insertAudienceResponse = ", insertAudienceResponse);
-    
+
     return NextResponse.json({...newAudience});
 }
