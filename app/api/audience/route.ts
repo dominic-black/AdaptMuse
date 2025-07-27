@@ -16,10 +16,6 @@ interface QlooApiEntity {
   image?: string;
 }
 
-interface EntityWithId {
-  id: string;
-}
-
 interface DemographicData {
   entity_id: string;
   query: {
@@ -69,7 +65,7 @@ export async function POST(request: NextRequest) {
 
   const { entities, audiences, gender, ageGroup } = audienceData;
 
-  const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: EntityWithId) => e.id).join(",")}`, {
+  const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: any) => e.id).join(",")}`, {
     headers: {
       "x-api-key": qlooApiKey,
       "accept": "application/json",
@@ -89,17 +85,19 @@ export async function POST(request: NextRequest) {
   
   const recommendedEntities = await Promise.all(
     Object.keys(EntityTypes).map(async (key) => {
-      const url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.gender=${gender}&signal.interests.entities=${inputEntities.map((e: EntityWithId) => e.id).join(",")}&signal.demographics.audiences=${audiences.join(",")}&signal.demographics.age=${ageGroup}`
+      const entityIds = inputEntities.map((e: any) => e.id).join(",");
+      const audienceIds = audiences.map((e: any) => e.value).join(",");
+      let url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.interests.entities=${entityIds}&signal.demographics.audiences=${audienceIds}&signal.demographics.age=${ageGroup}`
+      if(gender == "male" || gender == "female") url += `&signal.demographics.gender=${gender}`
       const entityData = await fetch(url, {
         headers: {
           "x-api-key": qlooApiKey,
           "accept": "application/json",
         },
       });
-
+      console.log("entityData", entityData);
       if(entityData.status !== 200) return null;
       const data = await entityData.json();
-
       if(data.results.entities.length < 1) return null;
 
       const entity = data.results.entities[0];
@@ -192,8 +190,8 @@ export async function POST(request: NextRequest) {
       ageTotals: roundObj(ageTotals),
       genderTotals: roundObj(genderTotals),
     }
-
-    const insertAudienceResponse = await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
+    console.log("newAudience", newAudience);
+    await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
 
     return NextResponse.json({...newAudience});
 }

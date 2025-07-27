@@ -9,7 +9,7 @@ export type Entity = {
 
 export type AgeGroup = "24_and_younger" | "25_to_29" | "30_to_34" | "35_to_44" | "45_to_54" | "55_and_older";
 
-export type Gender = "M" | "F";
+export type Gender = "all" | "male" | "female";
 
 export type AudienceData = {
   audienceName: string;

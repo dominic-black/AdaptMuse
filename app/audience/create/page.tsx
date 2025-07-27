@@ -17,10 +17,10 @@ import {
   Podcast,
   Search,
 } from "lucide-react";
-import { Entity } from "@/types/entity";
+import { AgeGroup, Entity, Gender } from "@/types/entity";
 import MultiCheckbox from "@/components/ui/MultiCheckbox/MultiCheckbox";
 import RadioCheckbox from "@/components/ui/RadioCheckbox/RadioCheckbox";
-import { AUDIENCE_OPTIONS } from "@/constants/audiences";
+import { AUDIENCE_OPTIONS, AudienceOption } from "@/constants/audiences";
 import { ChipInput } from "@/features/audience/ChipInput/ChipInput";
 import { AudienceCreatedModal } from "@/features/audience/AudienceCreatedModal/AudienceCreatedModal";
 
@@ -28,7 +28,7 @@ export default function CreateAudiencePage() {
   const [audienceName, setAudienceName] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<Array<Entity>>([]);
   const [selectedAudienceOptions, setSelectedAudienceOptions] = useState<
-    Record<string, { value: string[]; label: string }>
+    Record<string, AudienceOption[]>
   >({});
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -55,12 +55,18 @@ export default function CreateAudiencePage() {
   );
 
   useEffect(() => {
+    console.log("filteredAudienceOptions", selectedAudienceOptions);
+  }, [selectedAudienceOptions]);
+
+  useEffect(() => {
     console.log("Selected Interests:", selectedInterests);
     console.log("Selected Audience Options:", selectedAudienceOptions);
   }, [selectedInterests, selectedAudienceOptions]);
 
-  const [selectedAgeGroups, setSelectedAgeGroups] = useState<string[]>([]);
-  const [gender, setGender] = useState<"male" | "female">("male");
+  const [selectedAgeGroups, setSelectedAgeGroups] = useState<Array<AgeGroup>>(
+    []
+  );
+  const [gender, setGender] = useState<Gender>("all");
 
   const ageGroupOptions = [
     { value: "24_and_younger", label: "24 and younger" },
@@ -72,7 +78,7 @@ export default function CreateAudiencePage() {
   ];
 
   const genderOptions = [
-    { value: "both", label: "Both" },
+    { value: "all", label: "All" },
     { value: "male", label: "Male" },
     { value: "female", label: "Female" },
   ];
@@ -205,7 +211,9 @@ export default function CreateAudiencePage() {
                     <MultiCheckbox
                       options={ageGroupOptions}
                       selectedOptions={selectedAgeGroups}
-                      onChange={setSelectedAgeGroups}
+                      onChange={(selected) =>
+                        setSelectedAgeGroups(selected as AgeGroup[])
+                      }
                     />
                   </div>
                   <div>
@@ -243,19 +251,24 @@ export default function CreateAudiencePage() {
                           <MultiCheckbox
                             options={options}
                             selectedOptions={
-                              selectedAudienceOptions[category]?.value || []
+                              selectedAudienceOptions[category]?.map(option => option.value) || []
                             }
-                            onChange={(newSelection) => {
+                            onChange={(newSelection: string[]) => {
                               setSelectedAudienceOptions((prev) => ({
                                 ...prev,
-                                [category]: {
-                                  value: newSelection,
-                                  label:
-                                    options.find(
-                                      (option) =>
-                                        option.value === newSelection[0]
-                                    )?.label || "unknown",
-                                },
+                                [category]: newSelection.map(
+                                  (selectedValue) => {
+                                    const selectedOption = options.find(
+                                      (option) => option.value === selectedValue
+                                    );
+                                    return (
+                                      selectedOption || {
+                                        value: selectedValue,
+                                        label: "unknown",
+                                      }
+                                    );
+                                  }
+                                ),
                               }));
                             }}
                           />
