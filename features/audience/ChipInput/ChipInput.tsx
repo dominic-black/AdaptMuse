@@ -126,7 +126,7 @@ export const ChipInput = ({
               </div>
             </div>
             <div className="flex flex-col flex-wrap gap-2 mt-2 px-2 pt-2 pb-1 w-full">
-              {chips.map((chip, idx) => (
+              {chips.slice().reverse().map((chip, idx) => (
                 <div key={idx}>
                   <Chip
                     chip={chip}
