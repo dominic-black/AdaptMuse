@@ -187,6 +187,7 @@ export async function POST(request: NextRequest) {
       name: audienceName,
       entities: entitiesWithDemo,
       recommendedEntities: recommendedEntitiesWithDemo,
+      demographics: audiences,
       ageTotals: roundObj(ageTotals),
       genderTotals: roundObj(genderTotals),
     }

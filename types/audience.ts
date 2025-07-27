@@ -26,4 +26,8 @@ export interface Audience {
   entities: QlooEntity[];
   ageTotals: Record<string, number>;
   genderTotals: Record<string, number>;
+  demographics: {
+    label: string;
+    value: string;
+  }[];
 }
