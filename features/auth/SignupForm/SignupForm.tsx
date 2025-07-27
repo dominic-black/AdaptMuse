@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "../Button";
-import { TextInput } from "../TextInput";
 import { useState } from "react";
 import { SignupFormData } from "@/types/forms";
 import { validateSignupForm } from "@/utils/validation";
 import { createFirebaseUser } from "@/utils/auth";
 import { getAuth, sendEmailVerification } from "firebase/auth";
-import { app } from "@/firebase-config";
+import { app } from "@/firebase/firebase-config";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { TextInput } from "@/components/ui/TextInput";
 
 const firebaseAuthErrorMap: { [key: string]: string } = {
   "auth/email-already-in-use": "This email address is already in use.",

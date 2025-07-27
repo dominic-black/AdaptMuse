@@ -2,7 +2,7 @@
 
 import React, { createContext, useEffect, useState, useRef } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { app } from "@/firebase-config";
+import { app } from "@/firebase/firebase-config";
 import { useRouter, usePathname } from "next/navigation";
 
 type AuthContextType = {

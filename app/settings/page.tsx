@@ -1,12 +1,12 @@
 "use client";
 
-import { Screen } from "@/components/Screen/Screen";
-import { Button } from "@/components/Button";
+import { Screen } from "@/components/shared/Screen/Screen";
+import { Button } from "@/components/ui/Button";
 import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
-import { app } from "@/firebase-config";
+import { app } from "@/firebase/firebase-config";
 import { useRouter } from "next/navigation";
 import { User, KeyRound, LogOut } from "lucide-react";
-import { TextInput } from "@/components/TextInput";
+import { TextInput } from "@/components/ui/TextInput";
 import { useState } from "react";
 import { useUser } from "@/providers/UserProvider";
 

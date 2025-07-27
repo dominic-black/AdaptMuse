@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "../Button";
-import { TextInput } from "../TextInput";
 import { useState } from "react";
 import { LoginFormData } from "@/types/forms";
 import { validateLoginForm } from "@/utils/validation";
 import { signIntoFirebase } from "@/utils/auth";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import { app } from "@/firebase-config";
+import { app } from "@/firebase/firebase-config";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { TextInput } from "@/components/ui/TextInput";
 
 const firebaseAuthErrorMap: { [key: string]: string } = {
   "auth/invalid-email": "The email address is not valid.",

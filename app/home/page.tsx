@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@/components/Button";
-import { Screen } from "@/components/Screen/Screen";
-import { AudienceList } from "@/components/AudienceList/AudienceList";
+import { Button } from "@/components/ui/Button";
+import { Screen } from "@/components/shared/Screen/Screen";
+import { AudienceList } from "@/features/audience/AudienceList/AudienceList";
 import { useAudiences } from "@/hooks/useAudiences";
-import { Spinner } from "@/components/Spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import { FileText, Users, BarChart2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import VerifyEmailBanner from "@/components/Banners/VerifyEmail/VerifyEmailBanner";
+import VerifyEmailBanner from "@/features/auth/banners/VerifyEmail/VerifyEmailBanner";
 
 export default function Home() {
   const { audiences, loading } = useAudiences();

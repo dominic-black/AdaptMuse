@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { doc, onSnapshot, getFirestore } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
 import { UserProfile } from "@/types/user";
-import { app } from "@/firebase-config";
+import { app } from "@/firebase/firebase-config";
 
 interface UserContextType {
   userProfile: UserProfile | null;

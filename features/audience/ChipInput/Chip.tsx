@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { MapPin, X } from "lucide-react";
 import { Entity } from "@/types/entity";
-import { Spinner } from "@/components/Spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import { useState } from "react";
 
 type LoadingEntity = {

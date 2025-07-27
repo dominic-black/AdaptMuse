@@ -2,7 +2,7 @@ import { ChevronDownIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { getEntityContent } from "@/utils/Qloo";
 import { Entity } from "@/types/entity";
-import { Chip } from "./Chip/Chip";
+import { Chip } from "./Chip";
 
 type LoadingEntity = {
   name: string;

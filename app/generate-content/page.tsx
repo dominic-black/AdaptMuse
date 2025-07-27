@@ -1,13 +1,13 @@
 "use client";
 
-import { Screen } from "@/components/Screen/Screen";
+import { Screen } from "@/components/shared/Screen/Screen";
 import { useAudiences } from "@/providers/AudienceProvider";
 import { Audience } from "@/types/audience";
 import { useState } from "react";
 import Image from "next/image";
 import { CheckIcon, Sparkles, Pencil, Users } from "lucide-react";
-import { Button } from "@/components/Button";
-import { TextInput } from "@/components/TextInput";
+import { Button } from "@/components/ui/Button";
+import { TextInput } from "@/components/ui/TextInput";
 
 export default function BotPage() {
   const { audiences } = useAudiences();

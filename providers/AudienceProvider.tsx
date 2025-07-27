@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 
-import { db } from "@/firebase-config";
+import { db } from "@/firebase/firebase-config";
 import { useAuth } from "@/hooks/useAuth";
 import { Audience } from "@/types/audience";
 
@@ -16,7 +16,11 @@ export const AudienceContext = createContext<AudienceContextType | undefined>(
   undefined
 );
 
-export const AudienceProvider = ({ children }: { children: React.ReactNode }) => {
+export const AudienceProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { user } = useAuth();
   const [audiences, setAudiences] = useState<Audience[]>([]);
   const [loading, setLoading] = useState(true);

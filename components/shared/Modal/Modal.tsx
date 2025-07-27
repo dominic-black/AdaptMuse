@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { Button } from "../Button";
+import { Button } from "@/components/ui/Button";
 import { X } from "lucide-react";
 
 interface ModalProps {

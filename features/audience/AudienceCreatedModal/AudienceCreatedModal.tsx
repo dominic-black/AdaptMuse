@@ -1,5 +1,5 @@
-import Modal from "@/components/Modal/Modal";
-import { Spinner } from "@/components/Spinner";
+import Modal from "@/components/shared/Modal/Modal";
+import { Spinner } from "@/components/ui/Spinner";
 import {
   BarChart,
   Bar,
@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import Image from "next/image";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui/Button";
 
 export const AudienceCreatedModal = ({
   showAudienceModal,

@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "next/navigation";
-import { Screen } from "@/components/Screen/Screen";
-import { db } from "@/firebase-config";
+import { Screen } from "@/components/shared/Screen/Screen";
+import { db } from "@/firebase/firebase-config";
 import { useAuth } from "@/hooks/useAuth";
-import { Audience, RecommendedEntity } from "@/types/audience";
 import {
   BarChart,
   Bar,
@@ -16,8 +15,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Cell } from "@/components/Cell/Cell";
-import { EntityCard } from "@/components/EntityCard/EntityCard";
+import { Cell } from "@/components/ui/Cell/Cell";
+import { Audience, QlooEntity } from "@/types/audience";
+import { EntityCard } from "@/features/audience/EntityCard/EntityCard";
 
 export default function AudiencePage() {
   const { audienceId } = useParams();
@@ -226,7 +226,7 @@ export default function AudiencePage() {
                 Input Entities
               </h3>
               <div className="gap-4 grid md:grid-cols-2 lg:grid-cols-3">
-                {audience.entities.map((entity: RecommendedEntity) => (
+                {audience.entities.map((entity: QlooEntity) => (
                   <EntityCard key={entity.id} entity={entity} />
                 ))}
               </div>
@@ -238,11 +238,9 @@ export default function AudiencePage() {
                 Expanded Entities
               </h3>
               <div className="gap-4 grid md:grid-cols-2 lg:grid-cols-3">
-                {audience.recommendedEntities.map(
-                  (entity: RecommendedEntity) => (
-                    <EntityCard key={entity.id} entity={entity} />
-                  )
-                )}
+                {audience.recommendedEntities.map((entity: QlooEntity) => (
+                  <EntityCard key={entity.id} entity={entity} />
+                ))}
               </div>
             </div>
           </Cell>

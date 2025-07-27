@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui/Button";
 import { MailWarning } from "lucide-react";
 import { useState } from "react";
 import { getAuth, sendEmailVerification } from "firebase/auth";
-import { app } from "@/firebase-config";
+import { app } from "@/firebase/firebase-config";
 
 export default function VerifyEmailBanner() {
   const auth = getAuth(app);

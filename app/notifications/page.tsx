@@ -1,4 +1,4 @@
-import { Screen } from "@/components/Screen/Screen";
+import { Screen } from "@/components/shared/Screen/Screen";
 import { getNotifications } from "@/lib/getNotifications";
 import { GlobalNotification } from "@/types/notifications";
 import { getServerUser } from "@/utils/getServerUser";

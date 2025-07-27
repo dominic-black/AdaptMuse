@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Cell } from "@/components/Cell/Cell";
-import { Screen } from "@/components/Screen/Screen";
-import { TextInput } from "@/components/TextInput";
-import { ChipInput } from "@/components/ChipInput";
-import { Button } from "@/components/Button";
+import { Cell } from "@/components/ui/Cell/Cell";
+import { Screen } from "@/components/shared/Screen/Screen";
+import { TextInput } from "@/components/ui/TextInput";
+import { Button } from "@/components/ui/Button";
 import {
   Clapperboard,
   PersonStanding,
@@ -19,10 +18,11 @@ import {
   Search,
 } from "lucide-react";
 import { Entity } from "@/types/entity";
-import MultiCheckbox from "@/components/MultiCheckbox/MultiCheckbox";
-import RadioCheckbox from "@/components/RadioCheckbox/RadioCheckbox";
+import MultiCheckbox from "@/components/ui/MultiCheckbox/MultiCheckbox";
+import RadioCheckbox from "@/components/ui/RadioCheckbox/RadioCheckbox";
 import { AUDIENCE_OPTIONS } from "@/constants/audiences";
-import { AudienceCreatedModal } from "@/components/Modals/AudienceCreatedModal/AudienceCreatedModal";
+import { ChipInput } from "@/features/audience/ChipInput/ChipInput";
+import { AudienceCreatedModal } from "@/features/audience/AudienceCreatedModal/AudienceCreatedModal";
 
 export default function CreateAudiencePage() {
   const [audienceName, setAudienceName] = useState("");
