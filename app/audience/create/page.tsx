@@ -251,7 +251,9 @@ export default function CreateAudiencePage() {
                           <MultiCheckbox
                             options={options}
                             selectedOptions={
-                              selectedAudienceOptions[category]?.map(option => option.value) || []
+                              selectedAudienceOptions[category]?.map(
+                                (option) => option.value
+                              ) || []
                             }
                             onChange={(newSelection: string[]) => {
                               setSelectedAudienceOptions((prev) => ({
@@ -289,7 +291,8 @@ export default function CreateAudiencePage() {
         </div>
       </div>
       <AudienceCreatedModal
-        showAudienceModal={showAudienceModal}
+        showAudienceModal={true}
+        // showAudienceModal={showAudienceModal}
         audienceFingerprint={audienceFingerprint}
       />
     </Screen>

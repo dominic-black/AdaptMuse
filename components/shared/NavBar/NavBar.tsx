@@ -36,7 +36,7 @@ export const NavBar = () => {
           <Home
             size={24}
             color="white"
-            fill={pathname === "/" ? "white" : "none"}
+            fill={pathname === "/home" ? "white" : "none"}
           />
         </Link>
         <Link

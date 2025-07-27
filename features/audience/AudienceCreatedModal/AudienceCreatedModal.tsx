@@ -1,5 +1,4 @@
 import Modal from "@/components/shared/Modal/Modal";
-import { Spinner } from "@/components/ui/Spinner";
 import {
   BarChart,
   Bar,
@@ -12,6 +11,7 @@ import {
 } from "recharts";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
+import { GeneratingAudienceAnimation } from "@/components/animations/audience/GeneratingAudienceAnimation";
 
 export const AudienceCreatedModal = ({
   showAudienceModal,
@@ -99,37 +99,17 @@ export const AudienceCreatedModal = ({
             </div>
           </div>
         ) : (
-          <div>
-            <Spinner size="lg" color="primary" className="animate-spin" />
-            <p>Creating target audience fingerprint</p>
+          <div className="flex flex-col justify-center items-center gap-4 w-full h-full">
+            <div className="flex flex-col gap-4">
+              <p className="font-semibold text-lg text-center">
+                Creating target audience fingerprint
+              </p>
+              <div className="flex justify-center items-center w-full h-60">
+                <GeneratingAudienceAnimation width={300} height={300} />
+              </div>
+            </div>
           </div>
         )}
-        <div className="flex gap-4 w-full">
-          <Button
-            variant="primary"
-            style={{ width: "50%" }}
-            onClick={() => {
-              window.open(
-                `https://hackathon.qloo.com/audience/${audienceFingerprint.audienceName}`,
-                "_blank"
-              );
-            }}
-          >
-            <p>Analyze audience</p>
-          </Button>
-          <Button
-            variant="primary"
-            style={{ width: "50%" }}
-            onClick={() => {
-              window.open(
-                `https://hackathon.qloo.com/audience/${audienceFingerprint.audienceName}`,
-                "_blank"
-              );
-            }}
-          >
-            <p>Generate content for audience</p>
-          </Button>
-        </div>
       </div>
     </Modal>
   );
