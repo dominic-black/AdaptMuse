@@ -5,7 +5,7 @@ import { Screen } from "@/components/shared/Screen/Screen";
 import { AudienceList } from "@/features/audience/AudienceList/AudienceList";
 import { useAudiences } from "@/hooks/useAudiences";
 import { Spinner } from "@/components/ui/Spinner";
-import { FileText, Users, BarChart2, ArrowRight } from "lucide-react";
+import { FileText, Users, BarChart2, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import VerifyEmailBanner from "@/features/auth/banners/VerifyEmail/VerifyEmailBanner";
@@ -75,7 +75,10 @@ export default function Home() {
                 Your recent content generation jobs will appear here.
               </p>
               <div className="mt-6">
-                <Button href="/generate-content">Generate Content</Button>
+                <Button href="/generate-content">
+                  <Sparkles className="mr-2 w-4 h-4" />
+                  Generate Content
+                </Button>
               </div>
             </div>
           </div>

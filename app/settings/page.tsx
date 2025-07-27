@@ -158,6 +158,7 @@ export default function SettingsPage() {
           icon={<LogOut className="w-5 h-5" />}
         >
           <Button onClick={handleLogout} variant="danger">
+            <LogOut className="mr-2 w-4 h-4" />
             Logout
           </Button>
         </SettingCard>

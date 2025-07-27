@@ -60,7 +60,7 @@ export const GenerationForm = ({
                   value={existingContent}
                   onChange={(e) => setExistingContent(e.target.value)}
                   placeholder="Paste your existing content here..."
-                  className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 w-full h-32 resize-none"
+                  className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 w-full h-48 resize-none"
                 />
               </div>
             )}
