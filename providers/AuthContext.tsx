@@ -44,14 +44,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             console.log("[AuthProvider] Session cookie created");
             setUser(firebaseUser);
 
-            // Only redirect to /home if this is the initial auth check and user is on a public page
-            // or if they're on the root page
-            if (
-              initialAuthCheck.current &&
-              (pathname === "/" ||
-                pathname === "/login" ||
-                pathname === "/signup")
-            ) {
+            // Navigate to /home in these cases:
+            // 1. Initial auth check and user is on a public page
+            // 2. User just logged in (they're on /login page)
+            const isOnPublicPage =
+              pathname === "/" ||
+              pathname === "/login" ||
+              pathname === "/signup";
+            const shouldNavigate = initialAuthCheck.current
+              ? isOnPublicPage
+              : pathname === "/login";
+
+            if (shouldNavigate) {
+              console.log("[AuthProvider] Navigating to /home");
               router.push("/home");
             }
           } else {

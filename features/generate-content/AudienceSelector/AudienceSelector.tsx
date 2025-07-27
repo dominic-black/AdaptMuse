@@ -29,12 +29,15 @@ export const AudienceSelector = ({
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="flex justify-center items-center bg-gray-100 rounded-lg w-10 h-10 overflow-hidden">
+              <div className="flex justify-center items-center bg-gray-100 rounded-full w-10 h-10 overflow-hidden">
                 <Image
-                  src="https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+                  src={
+                    audience?.imageUrl ||
+                    "https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+                  }
                   alt={audience.name}
-                  width={32}
-                  height={32}
+                  width={40}
+                  height={40}
                   className="object-cover"
                 />
               </div>

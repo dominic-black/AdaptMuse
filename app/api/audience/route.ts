@@ -65,13 +65,11 @@ interface AudienceData {
 }
 
 async function generateAndUploadAvatar(audienceName: string, ageGroup: AgeGroup[], gender: Gender, entities: InputEntity[], audiences: AudienceOption[]): Promise<string> {
-  const prompt = `Create a high-quality, close-up headshot avatar in a semi-cartoon, stylized illustration style. The avatar should represent the target audience: ${audienceName}, identifying as ${gender}, aged ${ageGroup.join(" and ")}. 
-
-  They are passionate about topics such as ${audiences.map((e: AudienceOption) => e.label).join(", ")}, and they enjoy ${entities.map((e: InputEntity) => e.name).join(", ")}.
+  const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender != "all" && gender} individual aged: ${ageGroup.join(" and ")}.
   
-  The face should appear expressive and engaging, showing personality traits of curiosity, creativity, and modern sensibilities. Avoid using specific brands, logos, or copyrighted characters.
+  The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(", ")} and is interested in ${entities.map((e: InputEntity) => e.name).join(", ")}.
   
-  Use a plain or minimal background. The character should face forward or at a 3/4 angle, capturing only the head and shoulders. Use a soft, colorful, professional aesthetic similar to character concept art or editorial avatars.`;
+  The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
   
   
   const response = await openai.images.generate({
@@ -93,7 +91,7 @@ async function generateAndUploadAvatar(audienceName: string, ageGroup: AgeGroup[
   }
   const imageBuffer = await imageResponse.arrayBuffer();
 
-  const bucketName = `${process.env.FIREBASE_PROJECT_ID}`;
+  const bucketName = `${process.env.FIREBASE_STORAGE_BUCKET}`;
   const bucket = storage.bucket(bucketName);
   const fileName = `audience_avatars/${audienceName.replace(/\s+/g, '_')}_${Date.now()}.png`;
   const file = bucket.file(fileName);

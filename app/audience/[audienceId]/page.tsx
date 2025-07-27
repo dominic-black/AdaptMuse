@@ -225,7 +225,8 @@ export default function AudiencePage() {
                     <h3 className="font-semibold text-gray-900 text-lg">
                       Demographic tags
                     </h3>
-                    {audience.demographics.length > 0 ? (
+                    {audience.demographics &&
+                    audience.demographics.length > 0 ? (
                       <div className="flex flex-row flex-wrap gap-4 h-28 overflow-y-scroll">
                         {audience.demographics.map((demographic: any) => (
                           <div

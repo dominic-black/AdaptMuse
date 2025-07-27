@@ -6,7 +6,6 @@ import { validateLoginForm } from "@/utils/validation";
 import { signIntoFirebase } from "@/utils/auth";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { app } from "@/firebase/firebase-config";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/TextInput";
 
@@ -36,7 +35,7 @@ export default function LoginForm() {
   });
 
   const auth = getAuth(app);
-  const router = useRouter();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -45,9 +44,11 @@ export default function LoginForm() {
     e.preventDefault();
     setIsLoading(true);
     setErrors("");
+
     const validationErrors = validateLoginForm(formData);
     if (validationErrors !== "") {
       setErrors(validationErrors);
+      setIsLoading(false);
       return;
     }
 
@@ -61,7 +62,8 @@ export default function LoginForm() {
       return;
     }
 
-    router.push("/home");
+    console.log("result", result);
+    setIsLoading(false);
   };
 
   const handlePasswordReset = async () => {
@@ -80,9 +82,10 @@ export default function LoginForm() {
         type: "success",
         text: "Password reset email sent! Check your inbox.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
       const errorMessage =
-        firebaseAuthErrorMap[error.code] ||
+        firebaseAuthErrorMap[firebaseError.code || ""] ||
         "Failed to send password reset email.";
       setResetPasswordMessage({ type: "error", text: errorMessage });
     } finally {

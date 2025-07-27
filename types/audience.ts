@@ -22,6 +22,7 @@ export interface QlooEntity {
 export interface Audience {
   id: string;
   name: string;
+  imageUrl?: string;
   recommendedEntities: QlooEntity[];
   entities: QlooEntity[];
   ageTotals: Record<string, number>;
