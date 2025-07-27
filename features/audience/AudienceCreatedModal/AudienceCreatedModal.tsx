@@ -1,17 +1,11 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Modal from "@/components/shared/Modal/Modal";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ReferenceLine,
-  ResponsiveContainer,
-} from "recharts";
 import Image from "next/image";
-import { Button } from "@/components/ui/Button";
 import { GeneratingAudienceAnimation } from "@/components/animations/audience/GeneratingAudienceAnimation";
+import { Button } from "@/components/ui/Button";
+import { useRouter } from "next/navigation";
 
 export const AudienceCreatedModal = ({
   showAudienceModal,
@@ -20,7 +14,19 @@ export const AudienceCreatedModal = ({
   showAudienceModal: boolean;
   audienceFingerprint: any | null;
 }) => {
-  console.log("audienceFingerprint = ", audienceFingerprint);
+  const [isContentVisible, setIsContentVisible] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    if (audienceFingerprint) {
+      const timer = setTimeout(() => {
+        setIsContentVisible(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setIsContentVisible(false);
+    }
+  }, [audienceFingerprint]);
+
   return (
     <Modal
       isOpen={showAudienceModal}
@@ -28,84 +34,51 @@ export const AudienceCreatedModal = ({
       label=""
       showCloseButton={false}
     >
-      <div className="flex flex-col justify-between items-between gap-4 h-full">
-        {!!audienceFingerprint ? (
-          <div className="flex flex-col gap-4 w-full">
-            <p className="font-semibold text-lg text-center">
-              Audience created successfully
-            </p>
-            <div className="flex flex-col items-center gap-2">
-              <Image
-                src="https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
-                alt="Audience created"
-                width={100}
-                height={100}
-              />
-              <p>{audienceFingerprint.audienceName}</p>
-            </div>
-            <div className="flex flex-col gap-10 w-full">
-              <div className="w-full h-60">
-                <p>Age</p>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    layout="vertical"
-                    data={Object.entries(audienceFingerprint.ageTotals).map(
-                      ([key, value]) => ({
-                        name: key,
-                        value,
-                      })
-                    )}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" domain={["dataMin", "dataMax"]} />
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      width={70}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <Tooltip />
-                    <ReferenceLine x={0} stroke="#000" />
-                    <Bar dataKey="value" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="w-full h-24">
-                <p>Gender</p>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    layout="vertical"
-                    data={Object.entries(audienceFingerprint.genderTotals).map(
-                      ([key, value]) => ({
-                        name: key,
-                        value,
-                      })
-                    )}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" domain={["dataMin", "dataMax"]} />
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      width={70}
-                      tick={{ fontSize: 12 }}
-                    />
-                    <Tooltip />
-                    <ReferenceLine x={0} stroke="#000" />
-                    <Bar dataKey="value" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col justify-center items-center gap-4 w-full h-full">
+      <div className="relative flex flex-col justify-center items-center gap-4 pb-10 w-full h-full">
+        {/* Loading State */}
+        {!audienceFingerprint && (
+          <div className="flex flex-col justify-center items-center gap-4 opacity-100 w-full h-full transition-opacity duration-500 ease-in-out">
             <div className="flex flex-col gap-4">
               <p className="font-semibold text-lg text-center">
                 Creating target audience fingerprint
               </p>
-              <div className="flex justify-center items-center w-full h-60">
-                <GeneratingAudienceAnimation width={300} height={300} />
+              <GeneratingAudienceAnimation width={300} height={300} />
+            </div>
+          </div>
+        )}
+
+        {/* Success State */}
+        {audienceFingerprint && (
+          <div
+            className={`flex flex-col justify-center items-center gap-4 w-full h-full transition-opacity duration-500 ease-in-out ${
+              isContentVisible ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <div className="flex flex-col gap-4">
+              <p className="font-semibold text-lg text-center">
+                {audienceFingerprint.name}
+              </p>
+              <div className="flex justify-center items-center w-[300px] h-[300px]">
+                <Image
+                  src="https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+                  alt="Audience created"
+                  width={250}
+                  height={250}
+                />
+              </div>
+              <div className="bottom-0 left-0 absolute flex gap-4 w-full">
+                <Button
+                  variant="primary"
+                  className="w-full"
+                  onClick={() => {
+                    router.push(`/audience/${audienceFingerprint.id}`);
+                  }}
+                >
+                  Analyze audience
+                </Button>
+                <Button variant="primary" className="w-full">
+                  Generate content for audience
+                </Button>
               </div>
             </div>
           </div>

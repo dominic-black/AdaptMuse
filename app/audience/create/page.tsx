@@ -291,8 +291,7 @@ export default function CreateAudiencePage() {
         </div>
       </div>
       <AudienceCreatedModal
-        showAudienceModal={true}
-        // showAudienceModal={showAudienceModal}
+        showAudienceModal={showAudienceModal}
         audienceFingerprint={audienceFingerprint}
       />
     </Screen>

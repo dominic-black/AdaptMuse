@@ -191,8 +191,8 @@ export async function POST(request: NextRequest) {
       ageTotals: roundObj(ageTotals),
       genderTotals: roundObj(genderTotals),
     }
-    console.log("newAudience", newAudience);
-    await db.collection("users").doc(uid).collection("audiences").doc().set(newAudience);
+    const docRef = db.collection("users").doc(uid).collection("audiences").doc();
+    await docRef.set(newAudience);
 
-    return NextResponse.json({...newAudience});
+    return NextResponse.json({...newAudience, id: docRef.id});
 }
