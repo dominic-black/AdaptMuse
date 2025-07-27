@@ -1,6 +1,7 @@
 import { initializeApp, cert, getApps, App } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 const adminConfig = {
   credential: cert({
@@ -8,13 +9,15 @@ const adminConfig = {
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
     privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
   }),
+  storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`,
 };
 
 const app: App = !getApps().length ? initializeApp(adminConfig) : getApps()[0];
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { app, auth, db };
+export { app, auth, db, storage };
 
 export async function verifySessionCookie(sessionCookie: string) {
     try {

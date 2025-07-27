@@ -18,7 +18,6 @@ import {
 import { Cell } from "@/components/ui/Cell/Cell";
 import { Audience, QlooEntity } from "@/types/audience";
 import { EntityCard } from "@/features/audience/EntityCard/EntityCard";
-import { Entity } from "@/types/entity";
 
 export default function AudiencePage() {
   const { audienceId } = useParams();
