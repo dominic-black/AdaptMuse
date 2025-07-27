@@ -226,18 +226,26 @@ export default function AudiencePage() {
                     <h3 className="font-semibold text-gray-900 text-lg">
                       Demographic tags
                     </h3>
-                    <div className="flex flex-row flex-wrap gap-4 h-28 overflow-y-scroll">
-                      {audience.demographics.map((demographic: any) => (
-                        <div
-                          key={demographic.value}
-                          className="flex items-center gap-2"
-                        >
-                          <div className="bg-gray-100 px-2 py-1 rounded-md text-gray-500 text-sm">
-                            {demographic.label}
+                    {audience.demographics.length > 0 ? (
+                      <div className="flex flex-row flex-wrap gap-4 h-28 overflow-y-scroll">
+                        {audience.demographics.map((demographic: any) => (
+                          <div
+                            key={demographic.value}
+                            className="flex items-center gap-2"
+                          >
+                            <div className="bg-gray-100 px-2 py-1 rounded-md text-gray-500 text-sm">
+                              {demographic.label}
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex justify-center items-center h-full">
+                        <p className="mt-6 text-gray-500 text-sm">
+                          No demographics
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Cell>
