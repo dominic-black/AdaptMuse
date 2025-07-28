@@ -227,7 +227,7 @@ export default function AudiencePage() {
                     </h3>
                     {audience.demographics &&
                     audience.demographics.length > 0 ? (
-                      <div className="flex flex-row flex-wrap gap-4 h-28 overflow-y-scroll">
+                      <div className="flex flex-row flex-wrap justify-start items-start gap-4 h-28 overflow-y-scroll">
                         {audience.demographics.map((demographic: any) => (
                           <div
                             key={demographic.value}
