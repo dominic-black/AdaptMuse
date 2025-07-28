@@ -34,57 +34,46 @@ export const AudienceCreatedModal = ({
     <Modal
       isOpen={showAudienceModal}
       onClose={() => {}}
-      label=""
+      label="Audience Creation"
       showCloseButton={false}
     >
-      <div className="relative flex flex-col justify-center items-center w-full min-h-[500px]">
-        {/* Loading State */}
-        {!audienceFingerprint && (
-          <div className="flex flex-col justify-center items-center gap-6 opacity-100 w-full transition-opacity duration-500 ease-in-out">
-            <div className="flex flex-col items-center gap-6 text-center">
-              <div className="flex flex-col items-center gap-4">
-                <div className="space-y-2">
-                  <h2 className="font-semibold text-gray-900 text-xl">
-                    Creating Your Audience
-                  </h2>
-                  <p className="max-w-sm text-gray-600 text-sm">
-                    Analyzing data and generating your target audience
-                    fingerprint...
-                  </p>
-                </div>
-              </div>
+      <div className="flex flex-col w-full h-full">
+        {!audienceFingerprint ? (
+          <div className="flex flex-col flex-grow justify-center items-center p-4 sm:p-6 md:p-8 text-center">
+            <div className="w-[200px] h-[200px]">
               <GeneratingAudienceAnimation width={200} height={200} />
             </div>
+            <h2 className="mt-6 font-semibold text-gray-900 text-xl sm:text-2xl">
+              Creating Your Audience
+            </h2>
+            <p className="mt-2 max-w-sm text-gray-600 text-sm sm:text-base">
+              Analyzing data and generating your target audience fingerprint...
+            </p>
           </div>
-        )}
-
-        {/* Success State */}
-        {audienceFingerprint && (
+        ) : (
           <div
-            className={`flex flex-col justify-center items-center gap-8 w-full transition-all duration-500 ease-in-out ${
+            className={`flex flex-col justify-center items-center gap-6 sm:gap-8 w-full h-full transition-all duration-500 ease-in-out p-4 sm:p-6 md:p-8 ${
               isContentVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-4"
             }`}
           >
-            {/* Success Header with Green Check */}
-            <div className="flex flex-col items-center gap-6 text-center">
-              <div className="flex justify-center items-center bg-green-100 rounded-full w-16 h-16">
-                <CheckCircle className="w-10 h-10 text-green-600" />
+            <div className="flex flex-col items-center gap-4 sm:gap-6 text-center">
+              <div className="flex justify-center items-center bg-green-100 rounded-full w-14 sm:w-16 h-14 sm:h-16">
+                <CheckCircle className="w-8 sm:w-10 h-8 sm:h-10 text-green-600" />
               </div>
               <div className="space-y-2">
-                <h2 className="font-bold text-gray-900 text-2xl">
+                <h2 className="font-bold text-gray-900 text-2xl sm:text-3xl">
                   Audience Created Successfully!
                 </h2>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 text-sm sm:text-base">
                   Your target audience fingerprint is ready for analysis
                 </p>
               </div>
             </div>
 
-            {/* Audience Info Card */}
             <div className="w-full max-w-md">
-              <div className="bg-white shadow-sm p-6 border border-gray-200 rounded-lg">
+              <div className="bg-white shadow-sm p-4 sm:p-6 border border-gray-200 rounded-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex justify-center items-center bg-gray-50 p-1 rounded-lg w-10 h-10">
                     <Image
@@ -95,26 +84,25 @@ export const AudienceCreatedModal = ({
                       className="object-contain"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-lg truncate">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">
                       {audienceFingerprint.name}
                     </h3>
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-500 text-sm truncate">
                       {audienceFingerprint.entities.length} entities analyzed
                     </p>
                   </div>
                 </div>
 
-                {/* Quick Stats */}
                 <div className="gap-3 grid grid-cols-2">
                   <div className="bg-gray-50 p-3 rounded-lg text-center">
-                    <div className="font-semibold text-gray-900 text-lg">
+                    <div className="font-semibold text-gray-900 text-base sm:text-lg">
                       {Object.keys(audienceFingerprint.ageTotals).length}
                     </div>
                     <div className="text-gray-600 text-xs">Age Groups</div>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-lg text-center">
-                    <div className="font-semibold text-gray-900 text-lg">
+                    <div className="font-semibold text-gray-900 text-base sm:text-lg">
                       {audienceFingerprint.demographics.length}
                     </div>
                     <div className="text-gray-600 text-xs">Data Points</div>
@@ -123,11 +111,10 @@ export const AudienceCreatedModal = ({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex sm:flex-row flex-col gap-3 w-full max-w-md">
               <Button
                 variant="primary"
-                className="flex-1 gap-2 h-12"
+                className="flex-1 gap-2 h-12 text-sm sm:text-base"
                 onClick={() => {
                   router.push(`/audience/${audienceFingerprint.id}`);
                 }}
@@ -137,7 +124,7 @@ export const AudienceCreatedModal = ({
               </Button>
               <Button
                 variant="outline"
-                className="flex-1 gap-2 h-12"
+                className="flex-1 gap-2 h-12 text-sm sm:text-base"
                 onClick={() => {
                   router.push(`/generate-content`);
                 }}

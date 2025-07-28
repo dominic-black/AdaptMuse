@@ -23,7 +23,15 @@ const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     setIsBrowser(true);
-  }, []);
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -34,31 +42,32 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   const overlayClasses = `
-    fixed top-0 left-0 w-full h-full bg-gray-100 flex items-center justify-center
+    fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8
     ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}
   `;
 
   const modalClasses = `
-    bg-white p-5 rounded-lg max-w-[800px] w-[80%] max-h-[800px] h-[80%] shadow-lg
+    bg-white rounded-lg shadow-lg flex flex-col
+    w-full max-w-4xl max-h-[90vh] h-full
     ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}
   `;
 
   const modalContent = isOpen ? (
     <div
       className={overlayClasses}
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       onClick={handleClose}
     >
       <div className={modalClasses} onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center">
-          <p className="text-2xl">{label}</p>
+        <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-5 border-b border-gray-200">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">{label}</h2>
           {showCloseButton && (
-            <Button onClick={handleClose} variant="ghost" size="lg">
-              <X />
+            <Button onClick={handleClose} variant="ghost" size="icon" className="rounded-full">
+              <X className="w-5 h-5" />
             </Button>
           )}
         </div>
-        <div className="h-full">{children}</div>
+        <div className="flex-grow overflow-y-auto">{children}</div>
       </div>
     </div>
   ) : null;

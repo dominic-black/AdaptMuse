@@ -24,7 +24,7 @@ export const GeneratingModal = ({
     if (generatedContent) {
       const timer = setTimeout(() => {
         setIsContentVisible(true);
-      }, 100);
+      }, 400);
       return () => clearTimeout(timer);
     } else {
       setIsContentVisible(false);
@@ -60,49 +60,66 @@ export const GeneratingModal = ({
       label="Content Generation"
       showCloseButton={true}
     >
-      <div className="relative flex flex-col justify-center items-center p-8 w-full min-h-[400px] text-center">
+      <div className="flex flex-col w-full h-full">
         {!generatedContent ? (
-          <div className="flex flex-col items-center">
-            <GeneratingContentAnimation width={300} height={300} />
-            <p className="mt-4 font-medium text-gray-600 text-lg">
-              Generating Content...
+          <div className="flex flex-col flex-grow justify-center items-center p-4 sm:p-6 md:p-8 text-center">
+            <div className="w-[200px] h-[200px]">
+              <GeneratingContentAnimation width={200} height={200} />
+            </div>
+            <h2 className="mt-6 font-semibold text-gray-900 text-xl sm:text-2xl">
+              Generating Content
+            </h2>
+            <p className="mt-2 max-w-sm text-gray-600 text-sm sm:text-base">
+              Our AI is crafting content for your audience, please wait a
+              moment.
             </p>
-            <p className="text-gray-500 text-sm">Please wait a moment.</p>
           </div>
         ) : (
           <div
-            className={`flex flex-col items-center transition-opacity duration-500 w-full ${
-              isContentVisible ? "opacity-100" : "opacity-0"
+            className={`flex flex-col w-full h-full transition-all duration-500 ease-in-out ${
+              isContentVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
             }`}
           >
-            <div className="bg-green-100 mb-4 p-3 rounded-full">
-              <CheckCircle className="w-12 h-12 text-green-600" />
+            <div className="flex-grow p-4 sm:p-6 md:p-8 overflow-y-auto text-center">
+              <div className="flex flex-col items-center mx-auto max-w-2xl">
+                <div className="flex justify-center items-center bg-green-100 rounded-full w-14 sm:w-16 h-14 sm:h-16">
+                  <CheckCircle className="w-8 sm:w-10 h-8 sm:h-10 text-green-600" />
+                </div>
+                <h2 className="mt-4 font-bold text-gray-900 text-2xl sm:text-3xl">
+                  Content Generated!
+                </h2>
+                <p className="mt-2 mb-6 text-gray-600 text-sm sm:text-base">
+                  Review the generated content below.
+                </p>
+                <div className="relative bg-gray-50 mb-6 p-4 border border-gray-200 rounded-lg w-full max-h-72 overflow-y-auto text-left">
+                  <pre className="text-gray-800 text-sm break-words whitespace-pre-wrap">
+                    {generatedContent}
+                  </pre>
+                  <button
+                    onClick={handleCopy}
+                    className="top-2 right-2 absolute flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md font-semibold text-gray-700 text-xs"
+                  >
+                    <Copy size={12} />
+                    {copyButtonText}
+                  </button>
+                </div>
+              </div>
             </div>
-            <h2 className="mb-2 font-bold text-gray-900 text-2xl">
-              Content Generated Successfully!
-            </h2>
-            <p className="mb-6 max-w-md text-gray-600">
-              Here is the content generated for your audience. You can copy it
-              or close this window.
-            </p>
-            <div className="relative bg-gray-50 mb-6 p-4 border border-gray-200 rounded-lg w-full max-w-2xl max-h-60 overflow-y-auto">
-              <pre className="text-gray-800 text-sm text-left break-words whitespace-pre-wrap">
-                {generatedContent}
-              </pre>
-              <button
-                onClick={handleCopy}
-                className="top-2 right-2 absolute flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md font-semibold text-gray-700 text-xs"
-              >
-                <Copy size={12} />
-                {copyButtonText}
-              </button>
-            </div>
-            <div className="flex gap-4">
-              <Button onClick={handleMakeChanges} variant="outline">
-                Make Changes
-              </Button>
-              <Button variant="outline">View Comparison</Button>
-              <Button onClick={onClose}>Close</Button>
+            <div className="flex-shrink-0 bg-white p-4 border-gray-200 border-t">
+              <div className="flex sm:flex-row flex-col justify-center gap-3 mx-auto w-full max-w-lg">
+                <Button
+                  onClick={handleMakeChanges}
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  Make Changes
+                </Button>
+                <Button variant="primary" className="w-full sm:w-auto">
+                  View Comparison
+                </Button>
+              </div>
             </div>
           </div>
         )}
