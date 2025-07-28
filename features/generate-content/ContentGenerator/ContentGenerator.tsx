@@ -7,6 +7,21 @@ import { AudienceSelector } from "@/features/generate-content/AudienceSelector/A
 import { GenerationPanel } from "@/features/generate-content/GenerationPanel/GenerationPanel";
 import { GeneratingModal } from "@/features/generate-content/GeneratingModal/GeneratingModal";
 
+interface JobResponse {
+  id: string;
+  title: string;
+  audience: {
+    id: string;
+    name: string;
+    imageUrl?: string | null;
+  };
+  contentType: string;
+  originalContent?: string;
+  generatedContent: string;
+  context?: string;
+  createdAt: unknown;
+}
+
 export const ContentGenerator = ({
   loading = false,
 }: {
@@ -20,14 +35,15 @@ export const ContentGenerator = ({
   const [contentType, setContentType] = useState("");
   const [existingContent, setExistingContent] = useState("");
   const [additionalContext, setAdditionalContext] = useState("");
+  const [generationJobTitle, setGenerationJobTitle] = useState("");
 
   const [showGeneratingModal, setShowGeneratingModal] = useState(false);
-  const [generatedContent, setGeneratedContent] = useState<string | null>(null);
+  const [generatedJob, setGeneratedJob] = useState<JobResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCloseModal = () => {
     setShowGeneratingModal(false);
-    setGeneratedContent(null);
+    setGeneratedJob(null);
   };
 
   const handleMakeChanges = (content: string) => {
@@ -39,6 +55,10 @@ export const ContentGenerator = ({
   const validateForm = () => {
     if (!selectedAudience) {
       alert("Please select an audience.");
+      return false;
+    }
+    if (!generationJobTitle) {
+      alert("Please provide a generation job title.");
       return false;
     }
     if (!contentType) {
@@ -56,11 +76,12 @@ export const ContentGenerator = ({
     if (!validateForm()) return;
 
     setIsLoading(true);
-    setGeneratedContent(null);
+    setGeneratedJob(null);
     setShowGeneratingModal(true);
 
     const body = {
       audienceId: selectedAudience!.id,
+      generationJobTitle,
       contentType,
       content: existingContent,
       context: additionalContext,
@@ -78,7 +99,7 @@ export const ContentGenerator = ({
       const data = await response.json();
 
       if (response.ok) {
-        setGeneratedContent(data.content);
+        setGeneratedJob(data);
       } else {
         const errorMessage = data.error || "An unknown error occurred.";
         setShowGeneratingModal(false); // Close modal to show alert
@@ -117,11 +138,13 @@ export const ContentGenerator = ({
           setExistingContent={setExistingContent}
           additionalContext={additionalContext}
           setAdditionalContext={setAdditionalContext}
+          generationJobTitle={generationJobTitle}
+          setGenerationJobTitle={setGenerationJobTitle}
         />
       </div>
       <GeneratingModal
         showModal={showGeneratingModal}
-        generatedContent={generatedContent}
+        job={generatedJob}
         onClose={handleCloseModal}
         onMakeChanges={handleMakeChanges}
       />

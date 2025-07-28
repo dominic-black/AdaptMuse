@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { auth, db } from "@/lib/firebaseAdmin";
 import { Entity } from "@/types";
+import { Timestamp } from "firebase-admin/firestore";
+import { Job } from "@/types/job";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -25,10 +27,10 @@ export async function POST(request: NextRequest) {
 
     const uid = decodedClaims.uid;
   
-    const { audienceId, contentType, content, context }: { audienceId: string, contentType: string, content: string | undefined, context: string | undefined } = await request.json();
+    const { audienceId, generationJobTitle, contentType, content, context }: { audienceId: string, generationJobTitle: string, contentType: string, content: string | undefined, context: string | undefined } = await request.json();
 
-    if (!audienceId || !contentType || !context) {
-        return NextResponse.json({ error: "audienceId, contentType, and context are required" }, { status: 400 });
+    if (!audienceId || !generationJobTitle || !contentType || !context) {
+        return NextResponse.json({ error: "audienceId, generationJobTitle, contentType, and context are required" }, { status: 400 });
     }
     if(content && content.length > 5000) {
         return NextResponse.json({ error: "Content must be less than 5000 characters" }, { status: 400 });
@@ -60,17 +62,25 @@ export async function POST(request: NextRequest) {
             messages: [{ role: "user", content: prompt }],
         });
 
+        
         const docRef = db.collection("users").doc(uid).collection("jobs").doc();
-
-        await docRef.set({
-            audienceId,
+        const newJob = {
+            id: docRef.id,
+            title: generationJobTitle,
+            audience: {
+                id: audienceId,
+                name: audienceData.name || '',
+                imageUrl: audienceData.imageUrl || null,
+            },
             contentType,
-            content: chatCompletion.choices[0].message.content,
-            context,
-            createdAt: new Date(),
-        });
+            generatedContent: chatCompletion.choices[0].message.content || '',
+            context: context || '',
+            createdAt: Timestamp.fromDate(new Date()),
+        } as Job;
+        await docRef.set(newJob);
+        console.log("new job : ", newJob)
 
-        return NextResponse.json({ content: chatCompletion.choices[0].message.content, jobId: docRef.id });
+        return NextResponse.json(newJob);
     } catch (error) {
         console.error("Error generating content:", error);
         return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });

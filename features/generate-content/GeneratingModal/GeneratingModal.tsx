@@ -6,14 +6,29 @@ import { Button } from "@/components/ui/Button";
 import { CheckCircle, Copy } from "lucide-react";
 import { GeneratingContentAnimation } from "@/components/animations/editing/GeneratingContentAnimation";
 
+interface JobResponse {
+  id: string;
+  title: string;
+  audience: {
+    id: string;
+    name: string;
+    imageUrl?: string | null;
+  };
+  contentType: string;
+  originalContent?: string;
+  generatedContent: string;
+  context?: string;
+  createdAt: unknown; // Flexible timestamp handling for both server and client timestamps
+}
+
 export const GeneratingModal = ({
   showModal,
-  generatedContent,
+  job,
   onClose,
   onMakeChanges,
 }: {
   showModal: boolean;
-  generatedContent: string | null;
+  job: JobResponse | null;
   onClose: () => void;
   onMakeChanges: (content: string) => void;
 }) => {
@@ -21,7 +36,7 @@ export const GeneratingModal = ({
   const [copyButtonText, setCopyButtonText] = useState("Copy");
 
   useEffect(() => {
-    if (generatedContent) {
+    if (job?.generatedContent) {
       const timer = setTimeout(() => {
         setIsContentVisible(true);
       }, 400);
@@ -29,7 +44,7 @@ export const GeneratingModal = ({
     } else {
       setIsContentVisible(false);
     }
-  }, [generatedContent]);
+  }, [job?.generatedContent]);
 
   useEffect(() => {
     if (copyButtonText === "Copied!") {
@@ -40,16 +55,28 @@ export const GeneratingModal = ({
     }
   }, [copyButtonText]);
 
-  const handleCopy = () => {
-    if (generatedContent) {
-      navigator.clipboard.writeText(generatedContent);
-      setCopyButtonText("Copied!");
+  const handleCopy = async () => {
+    if (job?.generatedContent) {
+      try {
+        await navigator.clipboard.writeText(job.generatedContent);
+        setCopyButtonText("Copied!");
+      } catch (error) {
+        console.error("Failed to copy content:", error);
+        // Fallback for older browsers or when clipboard API is not available
+        const textArea = document.createElement("textarea");
+        textArea.value = job.generatedContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        setCopyButtonText("Copied!");
+      }
     }
   };
 
   const handleMakeChanges = () => {
-    if (generatedContent) {
-      onMakeChanges(generatedContent);
+    if (job?.generatedContent) {
+      onMakeChanges(job.generatedContent);
     }
   };
 
@@ -61,7 +88,7 @@ export const GeneratingModal = ({
       showCloseButton={true}
     >
       <div className="flex flex-col w-full h-full">
-        {!generatedContent ? (
+        {!job?.generatedContent ? (
           <div className="flex flex-col flex-grow justify-center items-center p-4 sm:p-6 md:p-8 text-center">
             <div className="w-[200px] h-[200px]">
               <GeneratingContentAnimation width={200} height={200} />
@@ -95,11 +122,13 @@ export const GeneratingModal = ({
                 </p>
                 <div className="relative bg-gray-50 mb-6 p-4 border border-gray-200 rounded-lg w-full max-h-72 overflow-y-auto text-left">
                   <pre className="text-gray-800 text-sm break-words whitespace-pre-wrap">
-                    {generatedContent}
+                    {job?.generatedContent}
                   </pre>
                   <button
                     onClick={handleCopy}
-                    className="top-2 right-2 absolute flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md font-semibold text-gray-700 text-xs"
+                    className="top-2 right-2 absolute flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md font-semibold text-gray-700 text-xs transition-colors duration-200"
+                    aria-label="Copy generated content to clipboard"
+                    title="Copy to clipboard"
                   >
                     <Copy size={12} />
                     {copyButtonText}

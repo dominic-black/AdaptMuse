@@ -9,13 +9,12 @@ export const JobList = ({ jobs }: { jobs: Job[] }) => {
     <div className="space-y-4">
       {jobs.map((job) => (
         <Link href={`/jobs/${job.id}`} key={job.id}>
-          <div
-            className="flex justify-between items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-          >
+          <div className="flex justify-between items-center hover:bg-gray-50 p-4 border border-gray-200 rounded-lg transition-colors">
             <div>
-              <p className="font-semibold text-gray-800">{job.contentType}</p>
+              <p className="font-semibold text-gray-800">{job.title}</p>
+              <p className="text-gray-800">{job.contentType}</p>
               <p className="text-gray-500 text-sm">
-                Targeting: {job.audienceName}
+                Targeting: {job.audience.name}
               </p>
             </div>
             <p className="text-gray-400 text-sm">

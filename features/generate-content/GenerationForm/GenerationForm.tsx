@@ -13,6 +13,8 @@ export const GenerationForm = ({
   setExistingContent,
   additionalContext,
   setAdditionalContext,
+  generationJobTitle,
+  setGenerationJobTitle,
 }: {
   action: string;
   setAction: (action: Action) => void;
@@ -22,13 +24,28 @@ export const GenerationForm = ({
   setExistingContent: (value: string) => void;
   additionalContext: string;
   setAdditionalContext: (value: string) => void;
+  generationJobTitle: string;
+  setGenerationJobTitle: (value: string) => void;
 }) => {
   return (
     <div className="flex-1 pr-2 overflow-y-auto">
       <div className="space-y-6">
         <div>
           <h2 className="mb-4 font-semibold text-gray-800 text-lg">
-            2. Choose Action
+            2. Generation Job Title
+          </h2>
+          <div className="flex gap-4">
+            <TextInput
+              label=""
+              placeholder="Name of your generation job"
+              value={generationJobTitle}
+              onChange={(e) => setGenerationJobTitle(e.target.value)}
+            />
+          </div>
+        </div>
+        <div>
+          <h2 className="mb-4 font-semibold text-gray-800 text-lg">
+            3. Choose Action
           </h2>
           <div className="flex gap-4">
             <ActionButton
@@ -48,7 +65,7 @@ export const GenerationForm = ({
 
         <div>
           <h2 className="mb-4 font-semibold text-gray-800 text-lg">
-            3. Provide Details
+            4. Provide Details
           </h2>
           <div className="space-y-4">
             <TextInput

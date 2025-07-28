@@ -19,7 +19,7 @@ export const GeneratingContentAnimation = ({
         width={width}
         height={height}
       />
-      <div className="absolute ml-4">
+      <div className="absolute ml-3">
         <LottieAnimation
           animationData={writingAnimation}
           loop={true}

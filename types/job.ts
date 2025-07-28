@@ -2,8 +2,12 @@ import { Timestamp } from "firebase/firestore";
 
 export interface Job {
   id: string;
-  audienceId: string;
-  audienceName: string;
+  title: string;
+  audience: {
+    id: string;
+    name: string;
+    imageUrl?: string;
+  };
   contentType: string;
   originalContent?: string;
   generatedContent: string;
