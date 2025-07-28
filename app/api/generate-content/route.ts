@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { auth, db } from "@/lib/firebaseAdmin";
-import { doc, getDoc } from "firebase/firestore";
 import { Entity } from "@/types/entity";
 
 const openai = new OpenAI({
@@ -28,18 +27,15 @@ export async function POST(request: NextRequest) {
   
     const { audienceId, contentType, content, context }: { audienceId: string, contentType: string, content: string | undefined, context: string | undefined } = await request.json();
 
-    if (!audienceId || !contentType || !content) {
-        return NextResponse.json({ error: "audienceId, contentType, and content are required" }, { status: 400 });
+    if (!audienceId || !contentType || !context) {
+        return NextResponse.json({ error: "audienceId, contentType, and context are required" }, { status: 400 });
     }
-
-    if(content.length > 5000) {
+    if(content && content.length > 5000) {
         return NextResponse.json({ error: "Content must be less than 5000 characters" }, { status: 400 });
     }
     if(context && context.length > 2000) {
         return NextResponse.json({ error: "Context must be less than 2000 characters" }, { status: 400 });
     }
-
-
 
     const audienceRef = await db.collection("users").doc(uid).collection("audiences").doc(audienceId).get();
     const audienceData = audienceRef.data();
@@ -49,8 +45,6 @@ export async function POST(request: NextRequest) {
     }
 
     const audienceDescription = `The audience is named ${audienceData.name}. Their interests include ${audienceData.entities.map((e: Entity) => e.name).join(', ')}. Age distribution: ${JSON.stringify(audienceData.ageTotals)}. Gender distribution: ${JSON.stringify(audienceData.genderTotals)}.`;
-
-
 
     const prompt = `You are an AI assistant specialized in tailoring ${contentType} content for specific target audiences. ${audienceDescription}.
     
@@ -76,7 +70,7 @@ export async function POST(request: NextRequest) {
             createdAt: new Date(),
         });
 
-        return NextResponse.json({ generatedContent: chatCompletion.choices[0].message.content, jobId: docRef.id });
+        return NextResponse.json({ content: chatCompletion.choices[0].message.content, jobId: docRef.id });
     } catch (error) {
         console.error("Error generating content:", error);
         return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });

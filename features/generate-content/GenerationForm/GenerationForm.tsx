@@ -1,6 +1,5 @@
 import { Sparkles, Pencil } from "lucide-react";
 import { TextInput } from "@/components/ui/TextInput";
-import { useState } from "react";
 import { ActionButton } from "./ActionButton";
 
 type Action = "generate" | "alter";
@@ -8,14 +7,22 @@ type Action = "generate" | "alter";
 export const GenerationForm = ({
   action,
   setAction,
+  contentType,
+  setContentType,
+  existingContent,
+  setExistingContent,
+  additionalContext,
+  setAdditionalContext,
 }: {
   action: string;
   setAction: (action: Action) => void;
+  contentType: string;
+  setContentType: (value: string) => void;
+  existingContent: string;
+  setExistingContent: (value: string) => void;
+  additionalContext: string;
+  setAdditionalContext: (value: string) => void;
 }) => {
-  const [contentType, setContentType] = useState("");
-  const [existingContent, setExistingContent] = useState("");
-  const [additionalContext, setAdditionalContext] = useState("");
-
   return (
     <div className="flex-1 pr-2 overflow-y-auto">
       <div className="space-y-6">
@@ -57,7 +64,7 @@ export const GenerationForm = ({
                   <label className="block mb-1 font-medium text-gray-700 text-sm">
                     Existing Content
                   </label>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-gray-500 text-sm">
                     {existingContent.length} / 5000
                   </span>
                 </div>
@@ -76,7 +83,7 @@ export const GenerationForm = ({
                 <label className="block mb-1 font-medium text-gray-700 text-sm">
                   Additional Context
                 </label>
-                <span className="text-sm text-gray-500">
+                <span className="text-gray-500 text-sm">
                   {additionalContext.length} / 2000
                 </span>
               </div>
