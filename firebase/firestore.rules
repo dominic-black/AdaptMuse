@@ -20,6 +20,15 @@ service cloud.firestore {
       match /audiences/{audienceId} {
         allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
       }
+
+      // Jobs Subcollection
+      // - A user can only read their own job documents.
+      // - A user can create their own job documents.
+      // - A user can update their own job documents.
+      // - A user can delete their own job documents.
+      match /jobs/{jobId} {
+        allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }

@@ -1,17 +1,20 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/Button";
-import { Screen } from "@/components/shared/Screen/Screen";
-import { AudienceList } from "@/features/audience/AudienceList/AudienceList";
-import { useAudiences } from "@/hooks/useAudiences";
-import { Spinner } from "@/components/ui/Spinner";
-import { FileText, Users, BarChart2, ArrowRight, Sparkles } from "lucide-react";
-import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
-import VerifyEmailBanner from "@/features/auth/banners/VerifyEmail/VerifyEmailBanner";
+import { Button } from '@/components/ui/Button';
+import { Screen } from '@/components/shared/Screen/Screen';
+import { AudienceList } from '@/features/audience/AudienceList/AudienceList';
+import { useAudiences } from '@/hooks/useAudiences';
+import { useJobs } from '@/providers/JobsProvider';
+import { Spinner } from '@/components/ui/Spinner';
+import { FileText, Users, BarChart2, ArrowRight, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
+import VerifyEmailBanner from '@/features/auth/banners/VerifyEmail/VerifyEmailBanner';
+import { JobList } from '@/features/jobs/JobList/JobList';
 
 export default function Home() {
-  const { audiences, loading } = useAudiences();
+  const { audiences, loading: audiencesLoading } = useAudiences();
+  const { jobs, loading: jobsLoading } = useJobs();
   const { user } = useAuth();
 
   const StatCard = ({
@@ -24,7 +27,7 @@ export default function Home() {
     icon: React.ReactNode;
   }) => (
     <div className="flex items-center gap-4 bg-white shadow-sm p-4 border border-gray-200 rounded-lg">
-      <div className="flex flex-shrink-0 justify-center items-center bg-primary/10 rounded-full w-10 h-10 text-primary">
+      <div className="flex-shrink-0 flex justify-center items-center bg-primary/10 rounded-full w-10 h-10 text-primary">
         {icon}
       </div>
       <div>
@@ -43,12 +46,12 @@ export default function Home() {
         <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
           <StatCard
             title="Content Generated"
-            value="0"
+            value={jobsLoading ? '...' : String(jobs.length)}
             icon={<FileText className="w-5 h-5" />}
           />
           <StatCard
             title="Audiences Created"
-            value={loading ? "..." : String(audiences.length)}
+            value={audiencesLoading ? '...' : String(audiences.length)}
             icon={<Users className="w-5 h-5" />}
           />
           <StatCard
@@ -64,23 +67,31 @@ export default function Home() {
             <h2 className="mb-4 font-semibold text-gray-800 text-xl">
               Recent Activity
             </h2>
-            <div className="py-16 border-2 border-gray-200 border-dashed rounded-lg text-center">
-              <div className="flex justify-center items-center bg-gray-100 mx-auto rounded-full w-12 h-12 text-gray-400">
-                <FileText className="w-6 h-6" />
+            {jobsLoading ? (
+              <div className="flex justify-center items-center h-40">
+                <Spinner />
               </div>
-              <h3 className="mt-4 font-medium text-gray-900 text-lg">
-                No content generated yet
-              </h3>
-              <p className="mt-1 text-gray-500 text-sm">
-                Your recent content generation jobs will appear here.
-              </p>
-              <div className="mt-6">
-                <Button href="/generate-content">
-                  <Sparkles className="mr-2 w-4 h-4" />
-                  Generate Content
-                </Button>
+            ) : jobs.length > 0 ? (
+              <JobList jobs={jobs.slice(0, 5)} />
+            ) : (
+              <div className="py-16 border-2 border-gray-200 border-dashed rounded-lg text-center">
+                <div className="flex justify-center items-center bg-gray-100 mx-auto rounded-full w-12 h-12 text-gray-400">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <h3 className="mt-4 font-medium text-gray-900 text-lg">
+                  No content generated yet
+                </h3>
+                <p className="mt-1 text-gray-500 text-sm">
+                  Your recent content generation jobs will appear here.
+                </p>
+                <div className="mt-6">
+                  <Button href="/generate-content">
+                    <Sparkles className="mr-2 w-4 h-4" />
+                    Generate Content
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Saved Audiences */}
@@ -94,7 +105,7 @@ export default function Home() {
                 View all <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            {loading ? (
+            {audiencesLoading ? (
               <div className="flex justify-center items-center h-40">
                 <Spinner />
               </div>

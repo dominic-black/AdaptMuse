@@ -5,6 +5,7 @@ import { NavBar } from "@/components/shared/NavBar/NavBar";
 import { AuthProvider } from "@/providers/AuthContext";
 import { UserProvider } from "@/providers/UserProvider";
 import { AudienceProvider } from "@/providers/AudienceProvider";
+import { JobsProvider } from "@/providers/JobsProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,13 +28,15 @@ export default function RootLayout({
         <AuthProvider>
           <UserProvider>
             <AudienceProvider>
-              <div className="gap-16 bg-background min-h-screen font-[family-name:var(--font-inter)]">
-                <div>
-                  <NavBar />
-                  {children}
+              <JobsProvider>
+                <div className="gap-16 bg-background min-h-screen font-[family-name:var(--font-inter)]">
+                  <div>
+                    <NavBar />
+                    {children}
+                  </div>
+                  <footer className="flex flex-wrap justify-center items-center gap-[24px] row-start-3"></footer>
                 </div>
-                <footer className="flex flex-wrap justify-center items-center gap-[24px] row-start-3"></footer>
-              </div>
+              </JobsProvider>
             </AudienceProvider>
           </UserProvider>
         </AuthProvider>
