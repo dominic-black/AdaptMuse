@@ -8,7 +8,6 @@ import VerifyEmailBanner from "@/features/auth/banners/VerifyEmail/VerifyEmailBa
 import { StatCards } from "@/features/dashboard/StatCards/StatCards";
 import { RecentActivity } from "@/features/dashboard/RecentActivity/RecentActivity";
 import { SavedAudiences } from "@/features/dashboard/SavedAudiences/SavedAudiences";
-import { DashboardSkeleton } from "@/components/shared/LoadingSkeleton";
 import { useMemo } from "react";
 
 export default function Home() {
@@ -33,23 +32,28 @@ export default function Home() {
 
   return (
     <Screen heading="Dashboard">
-      {!isDataReady ? (
-        <DashboardSkeleton />
-      ) : (
-        <div className="space-y-8">
-          {user && !user.emailVerified && <VerifyEmailBanner />}
-          <StatCards
-            jobs={jobs}
-            jobsLoading={false}
+      <div className="space-y-8">
+        {user && !user.emailVerified && <VerifyEmailBanner />}
+
+        {/* Always show StatCards component - it handles its own loading state */}
+        <StatCards
+          jobs={jobs}
+          jobsLoading={!isDataReady}
+          audiences={audiences}
+          audiencesLoading={!isDataReady}
+        />
+
+        <div className="items-start gap-8 grid grid-cols-1 lg:grid-cols-3">
+          {/* Always show RecentActivity component - it handles its own loading state */}
+          <RecentActivity jobs={jobs} jobsLoading={!isDataReady} />
+
+          {/* Always show SavedAudiences component - it handles its own loading state */}
+          <SavedAudiences
             audiences={audiences}
-            audiencesLoading={false}
+            audiencesLoading={!isDataReady}
           />
-          <div className="items-start gap-8 grid grid-cols-1 lg:grid-cols-3">
-            <RecentActivity jobs={jobs} jobsLoading={false} />
-            <SavedAudiences audiences={audiences} audiencesLoading={false} />
-          </div>
         </div>
-      )}
+      </div>
     </Screen>
   );
 }

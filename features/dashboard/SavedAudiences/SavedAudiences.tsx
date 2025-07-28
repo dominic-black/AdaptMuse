@@ -1,9 +1,28 @@
-import { Spinner } from "@/components/ui/Spinner";
 import { ArrowRight, Users } from "lucide-react";
 import { AudienceList } from "@/features/audience/AudienceList/AudienceList";
 import { Audience } from "@/types/audience";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+
+const AudienceListSkeleton = () => (
+  <ul className="space-y-4 animate-pulse">
+    {/* Match exact AudienceList structure: ul with space-y-4, li with p-4 border-2 items */}
+    {[1, 2, 3, 4, 5].map((index) => (
+      <li key={index}>
+        <div className="flex justify-between items-center p-4 border-2 border-gray-200 rounded-lg">
+          <div className="flex items-center gap-3">
+            <div className="bg-gray-200 rounded-full w-10 h-10" />
+            <div>
+              <div className="bg-gray-300 mb-2 rounded w-24 h-4" />
+              <div className="bg-gray-200 rounded w-16 h-3" />
+            </div>
+          </div>
+          <div className="bg-gray-200 rounded w-5 h-5" />
+        </div>
+      </li>
+    ))}
+  </ul>
+);
 
 export const SavedAudiences = ({
   audiencesLoading,
@@ -24,9 +43,7 @@ export const SavedAudiences = ({
         </Link>
       </div>
       {audiencesLoading ? (
-        <div className="flex justify-center items-center h-40">
-          <Spinner />
-        </div>
+        <AudienceListSkeleton />
       ) : audiences.length > 0 ? (
         <AudienceList audiences={audiences.slice(0, 5)} />
       ) : (

@@ -3,61 +3,87 @@ import { Audience } from "@/types/audience";
 import Image from "next/image";
 import { CheckIcon, Users } from "lucide-react";
 
+const AudienceCardsSkeleton = () => (
+  <div className="space-y-2">
+    {[1, 2, 3].map((index) => (
+      <div
+        key={index}
+        className="flex justify-between items-center p-4 border-2 border-gray-200 rounded-lg animate-pulse"
+      >
+        <div className="flex items-center gap-3">
+          <div className="bg-gray-200 rounded-full w-10 h-10" />
+          <div>
+            <div className="bg-gray-300 mb-2 rounded w-20 h-4" />
+            <div className="bg-gray-200 rounded w-16 h-3" />
+          </div>
+        </div>
+        <div className="bg-gray-200 rounded-full w-6 h-6" />
+      </div>
+    ))}
+  </div>
+);
+
 export const AudienceSelector = ({
   audiences,
   selectedAudience,
   setSelectedAudience,
+  loading = false,
 }: {
   audiences: Audience[];
   selectedAudience: Audience | null;
   setSelectedAudience: (audience: Audience) => void;
+  loading?: boolean;
 }) => {
   return (
     <div className="flex flex-col lg:col-span-1 bg-white shadow-sm p-6 rounded-lg h-full">
+      {/* Static heading - always visible */}
       <h2 className="mb-4 font-semibold text-gray-800 text-lg">
         1. Select Target Audience
       </h2>
+
       <div className="flex-1 space-y-2 pr-2 overflow-y-auto">
-        {audiences.map((audience) => (
-          <div
-            key={audience.id}
-            onClick={() => setSelectedAudience(audience)}
-            className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-              selectedAudience?.id === audience.id
-                ? "border-primary bg-primary/5 shadow-md"
-                : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex justify-center items-center bg-gray-100 rounded-full w-10 h-10 overflow-hidden">
-                <Image
-                  src={
-                    audience?.imageUrl ||
-                    "https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
-                  }
-                  alt={audience.name}
-                  width={40}
-                  height={40}
-                  className="object-cover"
-                />
+        {loading ? (
+          <AudienceCardsSkeleton />
+        ) : audiences.length > 0 ? (
+          audiences.map((audience) => (
+            <div
+              key={audience.id}
+              onClick={() => setSelectedAudience(audience)}
+              className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                selectedAudience?.id === audience.id
+                  ? "border-primary bg-primary/5 shadow-md"
+                  : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex justify-center items-center bg-gray-100 rounded-full w-10 h-10 overflow-hidden">
+                  <Image
+                    src={
+                      audience?.imageUrl ||
+                      "https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+                    }
+                    alt={audience.name}
+                    width={40}
+                    height={40}
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">{audience.name}</h3>
+                  <p className="text-gray-500 text-sm">
+                    {audience.entities.length} entities
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium text-gray-900">{audience.name}</h3>
-                <p className="text-gray-500 text-sm">
-                  {audience.entities.length} entities
-                </p>
-              </div>
+
+              {selectedAudience?.id === audience.id && (
+                <div className="flex justify-center items-center bg-primary rounded-full w-6 h-6">
+                  <CheckIcon className="w-4 h-4 text-white" />
+                </div>
+              )}
             </div>
-
-            {selectedAudience?.id === audience.id && (
-              <div className="flex justify-center items-center bg-primary rounded-full w-6 h-6">
-                <CheckIcon className="w-4 h-4 text-white" />
-              </div>
-            )}
-          </div>
-        ))}
-
-        {audiences.length === 0 && (
+          ))
+        ) : (
           <div className="flex flex-col justify-center py-16 border-2 border-gray-200 border-dashed rounded-lg h-full text-center">
             <div className="flex justify-center items-center bg-gray-100 mx-auto rounded-full w-12 h-12 text-gray-400">
               <Users className="w-6 h-6" />

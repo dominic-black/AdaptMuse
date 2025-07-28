@@ -1,8 +1,25 @@
 import { Button } from "@/components/ui/Button";
 import { JobList } from "@/features/jobs/JobList/JobList";
 import { FileText, Sparkles } from "lucide-react";
-import { Spinner } from "@/components/ui/Spinner";
 import { Job } from "@/types/job";
+
+const JobListSkeleton = () => (
+  <div className="space-y-4 animate-pulse">
+    {/* Match exact JobList structure: space-y-4 container with p-4 border items */}
+    {[1, 2, 3, 4, 5].map((index) => (
+      <div
+        key={index}
+        className="flex justify-between items-center p-4 border border-gray-200 rounded-lg"
+      >
+        <div>
+          <div className="bg-gray-300 mb-2 rounded w-32 h-5" />
+          <div className="bg-gray-200 rounded w-24 h-4" />
+        </div>
+        <div className="bg-gray-200 rounded w-16 h-4" />
+      </div>
+    ))}
+  </div>
+);
 
 export const RecentActivity = ({
   jobs,
@@ -17,9 +34,7 @@ export const RecentActivity = ({
         Recent Activity
       </h2>
       {jobsLoading ? (
-        <div className="flex justify-center items-center h-40">
-          <Spinner />
-        </div>
+        <JobListSkeleton />
       ) : jobs.length > 0 ? (
         <JobList jobs={jobs.slice(0, 5)} />
       ) : (

@@ -1,48 +1,52 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useAudiences } from '@/providers/AudienceProvider';
-import { Audience } from '@/types/audience';
-import { AudienceSelector } from '@/features/generate-content/AudienceSelector/AudienceSelector';
-import { GenerationPanel } from '@/features/generate-content/GenerationPanel/GenerationPanel';
-import { GeneratingModal } from '@/features/generate-content/GeneratingModal/GeneratingModal';
+import { useState } from "react";
+import { useAudiences } from "@/hooks/useAudiences";
+import { Audience } from "@/types/audience";
+import { AudienceSelector } from "@/features/generate-content/AudienceSelector/AudienceSelector";
+import { GenerationPanel } from "@/features/generate-content/GenerationPanel/GenerationPanel";
+import { GeneratingModal } from "@/features/generate-content/GeneratingModal/GeneratingModal";
 
-export const ContentGenerator = () => {
+export const ContentGenerator = ({
+  loading = false,
+}: {
+  loading?: boolean;
+}) => {
   const { audiences } = useAudiences();
-  const [selectedAudience, setSelectedAudience] = useState<Audience | null>(null);
-  const [action, setAction] = useState<'generate' | 'alter'>('generate');
-  const [contentType, setContentType] = useState('');
-  const [existingContent, setExistingContent] = useState('');
-  const [additionalContext, setAdditionalContext] = useState('');
+  const [selectedAudience, setSelectedAudience] = useState<Audience | null>(
+    null
+  );
+  const [action, setAction] = useState<"generate" | "alter">("generate");
+  const [contentType, setContentType] = useState("");
+  const [existingContent, setExistingContent] = useState("");
+  const [additionalContext, setAdditionalContext] = useState("");
 
   const [showGeneratingModal, setShowGeneratingModal] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleCloseModal = () => {
     setShowGeneratingModal(false);
     setGeneratedContent(null);
-    setError(null);
   };
 
   const handleMakeChanges = (content: string) => {
-    setAction('alter');
+    setAction("alter");
     setExistingContent(content);
     handleCloseModal();
   };
 
   const validateForm = () => {
     if (!selectedAudience) {
-      alert('Please select an audience.');
+      alert("Please select an audience.");
       return false;
     }
     if (!contentType) {
-      alert('Please specify the type of content to generate.');
+      alert("Please specify the type of content to generate.");
       return false;
     }
-    if (action === 'alter' && !existingContent) {
-      alert('Please provide the existing content to alter.');
+    if (action === "alter" && !existingContent) {
+      alert("Please provide the existing content to alter.");
       return false;
     }
     return true;
@@ -53,7 +57,6 @@ export const ContentGenerator = () => {
 
     setIsLoading(true);
     setGeneratedContent(null);
-    setError(null);
     setShowGeneratingModal(true);
 
     const body = {
@@ -64,10 +67,10 @@ export const ContentGenerator = () => {
     };
 
     try {
-      const response = await fetch('/api/generate-content', {
-        method: 'POST',
+      const response = await fetch("/api/generate-content", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
       });
@@ -77,15 +80,15 @@ export const ContentGenerator = () => {
       if (response.ok) {
         setGeneratedContent(data.content);
       } else {
-        const errorMessage = data.error || 'An unknown error occurred.';
-        setError(errorMessage);
+        const errorMessage = data.error || "An unknown error occurred.";
         setShowGeneratingModal(false); // Close modal to show alert
         alert(`Error: ${errorMessage}`);
       }
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : 'An unknown network error occurred.';
-      setError(errorMessage);
+        err instanceof Error
+          ? err.message
+          : "An unknown network error occurred.";
       setShowGeneratingModal(false); // Close modal on error
       alert(`Error: ${errorMessage}`);
     } finally {
@@ -100,6 +103,7 @@ export const ContentGenerator = () => {
           audiences={audiences}
           selectedAudience={selectedAudience}
           setSelectedAudience={setSelectedAudience}
+          loading={loading}
         />
         <GenerationPanel
           selectedAudience={selectedAudience}

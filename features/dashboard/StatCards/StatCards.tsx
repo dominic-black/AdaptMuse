@@ -18,18 +18,21 @@ export const StatCards = ({
     <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
       <StatCard
         title="Content Generated"
-        value={jobsLoading ? "..." : String(jobs.length)}
+        value={String(jobs.length)}
         icon={<FileText className="w-5 h-5" />}
+        loading={jobsLoading}
       />
       <StatCard
         title="Audiences Created"
-        value={audiencesLoading ? "..." : String(audiences.length)}
+        value={String(audiences.length)}
         icon={<Users className="w-5 h-5" />}
+        loading={audiencesLoading}
       />
       <StatCard
         title="Usage"
         value="N/A"
         icon={<BarChart2 className="w-5 h-5" />}
+        loading={false}
       />
     </div>
   );
