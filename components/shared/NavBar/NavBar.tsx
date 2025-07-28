@@ -4,13 +4,12 @@ import { Bot, Home, Bell, Settings, Users, List } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
 
 export const NavBar = () => {
   const pathname = usePathname();
-  const { user } = useAuth();
 
-  if (!user) return null;
+  const publicRoutes = ["/", "/login", "/signup"];
+  if (publicRoutes.includes(pathname)) return null;
 
   return (
     <div className="top-0 left-0 absolute flex flex-col bg-background-secondary p-6 border-r w-[100px] h-full">
