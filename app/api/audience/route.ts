@@ -2,72 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EntityTypes } from '@/constants/entity';
 import { auth, db, storage } from '@/lib/firebaseAdmin';
 import OpenAI from 'openai';
+import { QlooApiEntity, DemographicData, Entity, AgeGroup, Gender, AudienceOption, AudienceApiData } from '@/types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Define interfaces for API responses
-interface QlooApiEntity {
-  entity_id: string;
-  name: string;
-  popularity?: number;
-  types: string[];
-  properties?: {
-    image?: {
-      url?: string;
-    };
-  };
-  image?: string;
-}
-
-interface DemographicData {
-  entity_id: string;
-  query: {
-    age: Record<string, number>;
-    gender: Record<string, number>;
-  };
-}
-
-interface ProcessedEntity {
-  id: string;
-  name: string;
-  popularity: number;
-  type: string;
-  image: string | null;
-  age?: Record<string, number>;
-  gender?: Record<string, number>;
-}
-
-// Add new interfaces for audienceData
-interface InputEntity {
-  id: string;
-  name: string;
-  subText?: string;
-  popularity: number;
-  type: string;
-  imageUrl: string;
-}
-
-interface AudienceOption {
-  value: string;
-  label: string;
-}
-
-type AgeGroup = '24_and_younger' | '25_to_29' | '30_to_34' | '35_to_44' | '45_to_54' | '55_and_older';
-type Gender = 'all' | 'male' | 'female';
-
-interface AudienceData {
-  entities: InputEntity[];
-  audiences: AudienceOption[];
-  ageGroup: AgeGroup[];
-  gender: Gender;
-}
-
-async function generateAndUploadAvatar(audienceName: string, ageGroup: AgeGroup[], gender: Gender, entities: InputEntity[], audiences: AudienceOption[]): Promise<string> {
-  const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender != "all" && gender} individual aged: ${ageGroup.join(" and ")}.
+async function generateAndUploadAvatar(audienceName: string, ageGroup: AgeGroup[], gender: Gender, entities: Entity[], audiences: AudienceOption[]): Promise<string> {
+  const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender !== "all" ? gender : ""} individual aged: ${ageGroup.join(" and ")}.
   
-  The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(", ")} and is interested in ${entities.map((e: InputEntity) => e.name).join(", ")}.
+  The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(", ")} and is interested in ${entities.map((e: Entity) => e.name).join(", ")}.
   
   The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
   
@@ -133,9 +77,7 @@ export async function POST(request: NextRequest) {
 
   const uid = decodedClaims.uid;
 
-
-  
-  const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceData } = await request.json();
+  const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceApiData } = await request.json();
   const qlooApiKey = process.env.QLOO_API_KEY;
   if (!qlooApiKey || !audienceName || !audienceData) {
     return NextResponse.json(
@@ -147,30 +89,30 @@ export async function POST(request: NextRequest) {
   const { entities, audiences, gender, ageGroup } = audienceData;
   console.log("audienceData", audienceData);
 
-  const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: InputEntity) => e.id).join(",")}`, {
+  const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: Entity) => e.id).join(",")}`, {
     headers: {
       "x-api-key": qlooApiKey,
       "accept": "application/json",
     },
   });
   const inputEntitiesData = await inputEntitiesRes.json();
-  const inputEntities: ProcessedEntity[] = inputEntitiesData.results.map((inputEntity: QlooApiEntity) => {
+  const inputEntities: Entity[] = inputEntitiesData.results.map((inputEntity: QlooApiEntity) => {
     return {
       id: inputEntity.entity_id,
       name: inputEntity.name,
       popularity: inputEntity.popularity ?? 0,
       type: inputEntity.types[0].split(":").pop()?.toUpperCase() || 'UNKNOWN',
-      image: inputEntity.properties?.image?.url || null,
+      imageUrl: inputEntity.properties?.image?.url || null,
     }   
   })
 
   
   const recommendedEntities = await Promise.all(
     Object.keys(EntityTypes).map(async (key) => {
-      const entityIds = inputEntities.map((e: ProcessedEntity) => e.id).join(",");
+      const entityIds = inputEntities.map((e: Entity) => e.id).join(",");
       const audienceIds = audiences.map((e: AudienceOption) => e.value).join(",");
       let url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.interests.entities=${entityIds}&signal.demographics.audiences=${audienceIds}&signal.demographics.age=${ageGroup}`
-      if(gender == "male" || gender == "female") url += `&signal.demographics.gender=${gender}`
+      if(gender === "male" || gender === "female") url += `&signal.demographics.gender=${gender}`
       const entityData = await fetch(url, {
         headers: {
           "x-api-key": qlooApiKey,
@@ -188,7 +130,7 @@ export async function POST(request: NextRequest) {
         name: entity.name,
         popularity: entity.popularity ?? 0, // Provide default value for undefined popularity
         type: key,
-        image: entity.properties?.image?.url || null,
+        imageUrl: entity.properties?.image?.url || null,
       };
     })
   );
@@ -213,7 +155,7 @@ export async function POST(request: NextRequest) {
       demographicsMap[demographic.entity_id] = { age, gender };
     }
 
-    function addDemographics(arr: ProcessedEntity[]): ProcessedEntity[] {
+    function addDemographics(arr: Entity[]): Entity[] {
       return arr.map(entity => {
         const id = entity.id;
         const demo = demographicsMap[id];
@@ -224,10 +166,10 @@ export async function POST(request: NextRequest) {
       });
     }
     const entitiesWithDemo = addDemographics(inputEntities);
-    const recommendedEntitiesWithDemo = addDemographics(recommendedEntities.filter(Boolean) as ProcessedEntity[]);
+    const recommendedEntitiesWithDemo = addDemographics(recommendedEntities.filter(Boolean) as Entity[]);
 
 
-    const ageTotals = {
+    const ageTotals: Record<AgeGroup, number> = {
       "24_and_younger": 0,
       "25_to_29": 0,
       "30_to_34": 0,
@@ -235,7 +177,7 @@ export async function POST(request: NextRequest) {
       "45_to_54": 0,
       "55_and_older": 0,
     }
-    const genderTotals = {
+    const genderTotals: Record<Gender, number> = {
       "male": 0,
       "female": 0,
     }
@@ -244,25 +186,25 @@ export async function POST(request: NextRequest) {
       if (entity.age) {
         for (const [ageKey, value] of Object.entries(entity.age)) {
           if (ageKey in ageTotals) {
-            ageTotals[ageKey as keyof typeof ageTotals] += Number(value);
+            ageTotals[ageKey as AgeGroup] += Number(value);
           }
         }
       }
       if (entity.gender) {
         for (const [genderKey, value] of Object.entries(entity.gender)) {
           if (genderKey in genderTotals) {
-            genderTotals[genderKey as keyof typeof genderTotals] += Number(value);
+            genderTotals[genderKey as Gender] += Number(value);
           }
         }
       }
     }
 
-    function roundObj(obj: Record<string, number>, decimals = 4) {
+    function roundObj<T extends Record<string, number>>(obj: T, decimals = 4): T {
       const out: Record<string, number> = {};
       for (const key in obj) {
         out[key] = Math.round((obj[key] + Number.EPSILON) * 10**decimals) / 10**decimals;
       }
-      return out;
+      return out as T;
     }
 
     const imageUrl = await generateAndUploadAvatar(audienceName, ageGroup, gender, entities, audiences);

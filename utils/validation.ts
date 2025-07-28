@@ -1,4 +1,4 @@
-import { LoginFormData, SignupFormData } from "@/types/forms";
+import { LoginFormData, SignupFormData } from "@/types";
 
 export const validateSignupForm = (formData: SignupFormData) => {
   const { firstName, lastName, email, password } = formData;

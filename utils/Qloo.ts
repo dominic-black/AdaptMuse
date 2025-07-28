@@ -1,4 +1,4 @@
-import { Entity } from "@/types/entity";
+import { Entity } from "@/types";
 
 export const getEntityContent = async (query: string, type: string): Promise<Entity | null> => {
     const response = await fetch(`/api/entity?query=${encodeURIComponent(query)}&type=${encodeURIComponent(type)}`);

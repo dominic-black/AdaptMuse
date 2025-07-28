@@ -1,6 +1,6 @@
 // lib/getNotifications.ts
 import { db } from "@/lib/firebaseAdmin";
-import { GlobalNotification } from "@/types/notifications";
+import { GlobalNotification } from "@/types";
 
 export async function getNotifications() {
   const notifications = await db.collection('global_notifications').get();

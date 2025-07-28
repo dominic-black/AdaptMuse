@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { auth, db } from "@/lib/firebaseAdmin";
-import { Entity } from "@/types/entity";
+import { Entity } from "@/types";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

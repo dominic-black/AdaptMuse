@@ -1,5 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { SignupFormData, AuthResponse, LoginFormData } from "@/types/forms";
+import { SignupFormData, AuthResponse, LoginFormData } from "@/types";
 import { app } from '../firebase/firebase-config'
 
 export const createFirebaseUser = async (formData: SignupFormData): Promise<AuthResponse> => {  
