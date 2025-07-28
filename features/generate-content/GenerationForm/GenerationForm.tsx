@@ -53,27 +53,39 @@ export const GenerationForm = ({
 
             {action === "alter" && (
               <div>
-                <label className="block mb-1 font-medium text-gray-700 text-sm">
-                  Existing Content
-                </label>
+                <div className="flex justify-between">
+                  <label className="block mb-1 font-medium text-gray-700 text-sm">
+                    Existing Content
+                  </label>
+                  <span className="text-sm text-gray-500">
+                    {existingContent.length} / 5000
+                  </span>
+                </div>
                 <textarea
                   value={existingContent}
                   onChange={(e) => setExistingContent(e.target.value)}
                   placeholder="Paste your existing content here..."
                   className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 w-full h-48 resize-none"
+                  maxLength={5000}
                 />
               </div>
             )}
 
             <div>
-              <label className="block mb-1 font-medium text-gray-700 text-sm">
-                Additional Context
-              </label>
+              <div className="flex justify-between">
+                <label className="block mb-1 font-medium text-gray-700 text-sm">
+                  Additional Context
+                </label>
+                <span className="text-sm text-gray-500">
+                  {additionalContext.length} / 2000
+                </span>
+              </div>
               <textarea
                 value={additionalContext}
                 onChange={(e) => setAdditionalContext(e.target.value)}
                 placeholder="Provide any additional context, like brand voice, key message, etc."
                 className="bg-white p-2 border border-gray-300 focus:border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 w-full h-32 resize-none"
+                maxLength={2000}
               />
             </div>
           </div>

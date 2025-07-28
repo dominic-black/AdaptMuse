@@ -28,6 +28,18 @@ export async function POST(request: NextRequest) {
   
     const { audienceId, contentType, content, context }: { audienceId: string, contentType: string, content: string | undefined, context: string | undefined } = await request.json();
 
+    if (!audienceId || !contentType || !content) {
+        return NextResponse.json({ error: "audienceId, contentType, and content are required" }, { status: 400 });
+    }
+
+    if(content.length > 5000) {
+        return NextResponse.json({ error: "Content must be less than 5000 characters" }, { status: 400 });
+    }
+    if(context && context.length > 2000) {
+        return NextResponse.json({ error: "Context must be less than 2000 characters" }, { status: 400 });
+    }
+
+
 
     const audienceRef = await db.collection("users").doc(uid).collection("audiences").doc(audienceId).get();
     const audienceData = audienceRef.data();
@@ -39,9 +51,6 @@ export async function POST(request: NextRequest) {
     const audienceDescription = `The audience is named ${audienceData.name}. Their interests include ${audienceData.entities.map((e: Entity) => e.name).join(', ')}. Age distribution: ${JSON.stringify(audienceData.ageTotals)}. Gender distribution: ${JSON.stringify(audienceData.genderTotals)}.`;
 
 
-    if (!audienceId || !contentType || !content) {
-        return NextResponse.json({ error: "Content is required" }, { status: 400 });
-    }
 
     const prompt = `You are an AI assistant specialized in tailoring ${contentType} content for specific target audiences. ${audienceDescription}.
     
