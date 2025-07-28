@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { createContext, useContext, useEffect, useState, useRef } from "react";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
-import { db } from '@/firebase/firebase-config';
-import { useAuth } from '@/hooks/useAuth';
-import { Job } from '@/types/job';
+import { db } from "@/firebase/firebase-config";
+import { useAuth } from "@/hooks/useAuth";
+import { Job } from "@/types/job";
 
 interface JobsContextType {
   jobs: Job[];
@@ -20,24 +20,38 @@ export const JobsProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
+  const hasReceivedData = useRef(false);
 
   useEffect(() => {
     if (user) {
-      const jobsRef = collection(db, 'users', user.uid, 'jobs');
-      const q = query(jobsRef, orderBy('createdAt', 'desc'));
+      hasReceivedData.current = false;
+      setLoading(true);
+
+      const jobsRef = collection(db, "users", user.uid, "jobs");
+      const q = query(jobsRef, orderBy("createdAt", "desc"));
 
       const unsubscribe = onSnapshot(
         q,
         (snapshot) => {
+          // Check if this is a complete snapshot (not from cache or pending)
+          const isComplete =
+            !snapshot.metadata.hasPendingWrites && !snapshot.metadata.fromCache;
+
           const newJobs = snapshot.docs.map((doc) => ({
             id: doc.id,
-            ...(doc.data() as Omit<Job, 'id'>),
+            ...(doc.data() as Omit<Job, "id">),
           }));
           setJobs(newJobs);
-          setLoading(false);
+
+          // Only set loading to false when we get a complete snapshot from server
+          if (isComplete && !hasReceivedData.current) {
+            hasReceivedData.current = true;
+            setLoading(false);
+          }
         },
         (error) => {
-          console.error('Error fetching jobs:', error);
+          console.error("Error fetching jobs:", error);
+          hasReceivedData.current = true;
           setLoading(false);
         }
       );
@@ -45,6 +59,7 @@ export const JobsProvider = ({ children }: { children: React.ReactNode }) => {
       return () => unsubscribe();
     } else {
       setJobs([]);
+      hasReceivedData.current = true;
       setLoading(false);
     }
   }, [user]);
@@ -59,7 +74,7 @@ export const JobsProvider = ({ children }: { children: React.ReactNode }) => {
 export const useJobs = () => {
   const context = useContext(JobsContext);
   if (context === undefined) {
-    throw new Error('useJobs must be used within a JobsProvider');
+    throw new Error("useJobs must be used within a JobsProvider");
   }
   return context;
 };
