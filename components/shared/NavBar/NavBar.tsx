@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Home, Bell, Settings, TableOfContents } from "lucide-react";
+import { Bot, Home, Bell, Settings, Users, List } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -59,10 +59,22 @@ export const NavBar = () => {
             pathname === "/audience" ? "bg-white/20" : "hover:bg-white/10"
           }`}
         >
-          <TableOfContents
+          <Users
             size={24}
             color="white"
             fill={pathname === "/audience" ? "white" : "none"}
+          />
+        </Link>
+        <Link
+          href="/jobs"
+          className={`p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/jobs" ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
+          <List
+            size={24}
+            color="white"
+            fill={pathname === "/jobs" ? "white" : "none"}
           />
         </Link>
       </div>
