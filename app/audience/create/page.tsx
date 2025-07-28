@@ -23,6 +23,7 @@ import RadioCheckbox from "@/components/ui/RadioCheckbox/RadioCheckbox";
 import { AUDIENCE_OPTIONS, AudienceOption } from "@/constants/audiences";
 import { ChipInput } from "@/features/audience/ChipInput/ChipInput";
 import { AudienceCreatedModal } from "@/features/audience/AudienceCreatedModal/AudienceCreatedModal";
+import { Audience } from "@/types/audience";
 
 export default function CreateAudiencePage() {
   const [audienceName, setAudienceName] = useState("");
@@ -33,7 +34,7 @@ export default function CreateAudiencePage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [showAudienceModal, setShowAudienceModal] = useState(false);
-  const [audienceFingerprint, setAudienceFingerprint] = useState<any | null>(
+  const [audienceFingerprint, setAudienceFingerprint] = useState<Audience | null>(
     null
   );
 

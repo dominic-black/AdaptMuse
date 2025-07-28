@@ -228,7 +228,7 @@ export default function AudiencePage() {
                     {audience.demographics &&
                     audience.demographics.length > 0 ? (
                       <div className="flex flex-row flex-wrap justify-start items-start gap-4 h-28 overflow-y-scroll">
-                        {audience.demographics.map((demographic: any) => (
+                        {audience.demographics.map((demographic: { value: string, label: string }) => (
                           <div
                             key={demographic.value}
                             className="flex items-center gap-2"
