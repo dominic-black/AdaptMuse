@@ -39,7 +39,7 @@ const Modal: React.FC<ModalProps> = ({
   `;
 
   const modalClasses = `
-    bg-white p-5 rounded-lg max-w-[700px] w-[80%] max-h-[700px] h-[80%] shadow-lg
+    bg-white p-5 rounded-lg max-w-[800px] w-[80%] max-h-[800px] h-[80%] shadow-lg
     ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}
   `;
 

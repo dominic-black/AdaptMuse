@@ -22,7 +22,6 @@ export default function BotPage() {
   const [showGeneratingModal, setShowGeneratingModal] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
 
   const handleCloseModal = () => {
@@ -31,14 +30,13 @@ export default function BotPage() {
     setError(null);
   };
 
+  const handleMakeChanges = (content: string) => {
+    setAction("alter");
+    setExistingContent(content);
+    handleCloseModal();
+  };
+
   const onSubmit = async () => {
-    console.log(
-      "onSubmit",
-      selectedAudience,
-      contentType,
-      existingContent,
-      additionalContext
-    );
     if (!selectedAudience) {
       alert("Please select an audience.");
       return;
@@ -47,11 +45,6 @@ export default function BotPage() {
       alert("Please specify the type of content to generate.");
       return;
     }
-    if (!additionalContext) {
-      alert("Please provide additional context.");
-      return;
-    }
-
     if (action === "alter" && !existingContent) {
       alert("Please provide the existing content to alter.");
       return;
@@ -81,7 +74,6 @@ export default function BotPage() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log(data);
         setGeneratedContent(data.content);
       } else {
         const errorMessage = data.error || "An unknown error occurred.";
@@ -137,9 +129,9 @@ export default function BotPage() {
       </div>
       <GeneratingModal
         showModal={showGeneratingModal}
-        jobId={null}
         generatedContent={generatedContent}
         onClose={handleCloseModal}
+        onMakeChanges={handleMakeChanges}
       />
     </Screen>
   );
