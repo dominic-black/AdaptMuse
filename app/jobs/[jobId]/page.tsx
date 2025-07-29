@@ -8,6 +8,9 @@ import { db } from "@/firebase/firebase-config";
 import { useAuth } from "@/hooks/useAuth";
 import { Cell } from "@/components/ui/Cell/Cell";
 import { Job } from "@/types/job";
+import { format } from "date-fns";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function JobPage() {
   const { jobId } = useParams();
@@ -38,60 +41,131 @@ export default function JobPage() {
     }
   }, [user, jobId]);
 
-  console.log("job : ", job);
-
   return (
-    <Screen heading={job ? job.contentType : "Job"}>
+    <Screen heading={job ? job.contentType : "Job Details"}>
       {loading ? (
-        <p>Loading...</p>
+        <div className="flex justify-center items-center min-h-[200px]">
+          <p className="text-gray-500 text-sm sm:text-base text-center">
+            Loading job details...
+          </p>
+        </div>
       ) : job ? (
-        <div className="flex flex-col gap-4">
-          <Cell>
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900 text-lg">
-                Job Details
-              </h3>
-              <div className="space-y-2">
-                <p>
-                  <span className="font-semibold">Audience:</span>{" "}
-                  {job.audience.name}
-                </p>
-                <p>
-                  <span className="font-semibold">Content Type:</span>{" "}
-                  {job.contentType}
-                </p>
-                {job.context && (
-                  <p>
-                    <span className="font-semibold">Context:</span>{" "}
-                    {job.context}
-                  </p>
-                )}
+        <div className="flex flex-col gap-4 sm:gap-6">
+          {/* Job Overview and Target Audience - Responsive Grid */}
+          <div className="gap-4 sm:gap-6 grid grid-cols-1 lg:grid-cols-2">
+            {/* Job Overview */}
+            <Cell>
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="font-semibold text-gray-900 text-lg sm:text-xl">
+                  Job Overview
+                </h3>
+                <div className="space-y-2 sm:space-y-3 text-gray-700 text-sm sm:text-base">
+                  <div className="flex sm:flex-row flex-col sm:items-center gap-1 sm:gap-2">
+                    <span className="min-w-[100px] sm:min-w-[120px] font-medium text-gray-900">
+                      Content Type:
+                    </span>
+                    <span className="break-words">{job.contentType}</span>
+                  </div>
+
+                  <div className="flex sm:flex-row flex-col sm:items-center gap-1 sm:gap-2">
+                    <span className="min-w-[100px] sm:min-w-[120px] font-medium text-gray-900">
+                      Generated On:
+                    </span>
+                    <span className="break-words">
+                      {job.createdAt
+                        ? format(job.createdAt.toDate(), "PPP p")
+                        : "N/A"}
+                    </span>
+                  </div>
+
+                  {job.context && (
+                    <div className="flex sm:flex-row flex-col sm:items-start gap-1 sm:gap-2">
+                      <span className="flex-shrink-0 min-w-[100px] sm:min-w-[120px] font-medium text-gray-900">
+                        Context:
+                      </span>
+                      <span className="break-words">{job.context}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </Cell>
+            </Cell>
+
+            {/* Target Audience */}
+            <Cell>
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="font-semibold text-gray-900 text-lg sm:text-xl">
+                  Target Audience
+                </h3>
+                <div className="bg-gray-100 p-3 sm:p-4 rounded-lg">
+                  <Link
+                    href={`/audiences/${job.audience.id}`}
+                    className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity"
+                  >
+                    {job.audience.imageUrl && (
+                      <div className="flex-shrink-0">
+                        <Image
+                          src={
+                            job.audience.imageUrl ||
+                            "https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+                          }
+                          alt={job.audience.name}
+                          width={48}
+                          height={48}
+                          className="border-2 border-gray-600 rounded-full w-10 sm:w-12 h-10 sm:h-12 object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 text-base sm:text-lg truncate">
+                        {job.audience.name}
+                      </h4>
+                    </div>
+                  </Link>
+                </div>
+              </div>
+            </Cell>
+          </div>
+
+          {/* Original Content */}
           {job.originalContent && (
             <Cell>
-              <div className="space-y-4">
-                <h3 className="font-semibold text-gray-900 text-lg">
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="font-semibold text-gray-900 text-lg sm:text-xl">
                   Original Content
                 </h3>
-                <p>{job.originalContent}</p>
+                <div className="bg-gray-50 p-3 sm:p-4 border border-gray-200 rounded-lg">
+                  <div className="max-h-96 overflow-y-auto text-gray-800 text-sm sm:text-base leading-relaxed">
+                    <p className="break-words whitespace-pre-wrap">
+                      {job.originalContent}
+                    </p>
+                  </div>
+                </div>
               </div>
             </Cell>
           )}
+
+          {/* Generated Content */}
           <Cell>
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900 text-lg">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="font-semibold text-gray-900 text-lg sm:text-xl">
                 Generated Content
               </h3>
-              <pre className="overflow-hidden break-words whitespace-pre-wrap">
-                {job.generatedContent}
-              </pre>
+              <div className="bg-gray-50 p-3 sm:p-4 border border-gray-200 rounded-lg">
+                <div className="max-h-96 overflow-y-auto text-gray-800 text-sm sm:text-base leading-relaxed">
+                  <pre className="font-sans break-words whitespace-pre-wrap">
+                    {job.generatedContent}
+                  </pre>
+                </div>
+              </div>
             </div>
           </Cell>
         </div>
       ) : (
-        <p>Job not found.</p>
+        <div className="flex justify-center items-center min-h-[200px]">
+          <p className="text-gray-500 text-sm sm:text-base text-center">
+            Job not found or an error occurred.
+          </p>
+        </div>
       )}
     </Screen>
   );
