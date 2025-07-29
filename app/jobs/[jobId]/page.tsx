@@ -19,13 +19,7 @@ export default function JobPage() {
     if (user && jobId) {
       const getJob = async () => {
         try {
-          const docRef = doc(
-            db,
-            "users",
-            user.uid,
-            "jobs",
-            jobId as string
-          );
+          const docRef = doc(db, "users", user.uid, "jobs", jobId as string);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
@@ -44,6 +38,8 @@ export default function JobPage() {
     }
   }, [user, jobId]);
 
+  console.log("job : ", job);
+
   return (
     <Screen heading={job ? job.contentType : "Job"}>
       {loading ? (
@@ -56,26 +52,41 @@ export default function JobPage() {
                 Job Details
               </h3>
               <div className="space-y-2">
-                <p><span className="font-semibold">Audience:</span> {job.audienceName}</p>
-                <p><span className="font-semibold">Content Type:</span> {job.contentType}</p>
-                {job.context && <p><span className="font-semibold">Context:</span> {job.context}</p>}
+                <p>
+                  <span className="font-semibold">Audience:</span>{" "}
+                  {job.audience.name}
+                </p>
+                <p>
+                  <span className="font-semibold">Content Type:</span>{" "}
+                  {job.contentType}
+                </p>
+                {job.context && (
+                  <p>
+                    <span className="font-semibold">Context:</span>{" "}
+                    {job.context}
+                  </p>
+                )}
               </div>
             </div>
           </Cell>
-          <Cell>
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900 text-lg">
-                Original Content
-              </h3>
-              <p>{job.originalContent}</p>
-            </div>
-          </Cell>
+          {job.originalContent && (
+            <Cell>
+              <div className="space-y-4">
+                <h3 className="font-semibold text-gray-900 text-lg">
+                  Original Content
+                </h3>
+                <p>{job.originalContent}</p>
+              </div>
+            </Cell>
+          )}
           <Cell>
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-900 text-lg">
                 Generated Content
               </h3>
-              <p>{job.generatedContent}</p>
+              <pre className="overflow-hidden break-words whitespace-pre-wrap">
+                {job.generatedContent}
+              </pre>
             </div>
           </Cell>
         </div>

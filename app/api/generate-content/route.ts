@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
             },
             contentType,
             generatedContent: chatCompletion.choices[0].message.content || '',
+            originalContent: content || '',
             context: context || '',
             createdAt: Timestamp.fromDate(new Date()),
         } as Job;
