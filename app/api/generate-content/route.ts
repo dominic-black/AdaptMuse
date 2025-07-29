@@ -4,6 +4,7 @@ import { auth, db } from "@/lib/firebaseAdmin";
 import { Entity } from "@/types";
 import { Timestamp } from "firebase-admin/firestore";
 import { Job } from "@/types/job";
+import { jobIconNames } from "@/constants/jobIcons";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -48,6 +49,8 @@ export async function POST(request: NextRequest) {
 
     const audienceDescription = `The audience is named ${audienceData.name}. Their interests include ${audienceData.entities.map((e: Entity) => e.name).join(', ')}. Age distribution: ${JSON.stringify(audienceData.ageTotals)}. Gender distribution: ${JSON.stringify(audienceData.genderTotals)}.`;
 
+    console.log("jobIcon keys : ", Object.keys(jobIconNames))
+    console.log("jobIcon names : ", jobIconNames)
     const prompt = `You are an AI assistant specialized in tailoring ${contentType} content for specific target audiences. ${audienceDescription}.
     
     !!IMPORTANT: Additional Context: ${context}
@@ -56,11 +59,27 @@ export async function POST(request: NextRequest) {
     
     !!IMPORTANT: your response should **ONLY** be the refined content.`;
 
+    const iconSelectionPrompt = `You are an AI assistant specialized in selecting the most appropriate icon for a given job. The job is ${contentType}
+    
+    The icon options are: ${Object.keys(jobIconNames).join(', ')}    
+
+    !!IMPORTANT: your response should **ONLY** be the icon name and NOTHING ELSE.
+    !!IMPORTANT: Make sure the first letter of the icon name is capitalized.
+    `;
+
+    console.log(iconSelectionPrompt)
+
     try {
-        const chatCompletion = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [{ role: "user", content: prompt }],
-        });
+        const [chatCompletion, iconCompletion] = await Promise.all([
+            openai.chat.completions.create({
+                model: "gpt-4o",
+                messages: [{ role: "user", content: prompt }],
+            }),
+            openai.chat.completions.create({
+                model: "gpt-4o",
+                messages: [{ role: "user", content: iconSelectionPrompt }],
+            }),
+        ])
 
         
         const docRef = db.collection("users").doc(uid).collection("jobs").doc();
@@ -72,6 +91,7 @@ export async function POST(request: NextRequest) {
                 name: audienceData.name || '',
                 imageUrl: audienceData.imageUrl || null,
             },
+            icon: iconCompletion.choices[0].message.content || 'Default',
             contentType,
             generatedContent: chatCompletion.choices[0].message.content || '',
             originalContent: content || '',

@@ -10,20 +10,18 @@ import { Button } from "@/components/ui/Button";
 import { FileText, Sparkles } from "lucide-react";
 
 const JobListSkeleton = () => (
-  <div className="space-y-4 animate-pulse">
+  <div className="flex flex-col gap-4 animate-pulse">
     {[1, 2, 3, 4, 5].map((index) => (
       <div
         key={index}
-        className="flex justify-between items-center p-4 border-2 border-gray-200 rounded-lg"
+        className="flex justify-between items-center p-4 border border-gray-200 rounded-lg"
       >
-        <div className="flex items-center gap-3">
-          <div className="bg-gray-200 rounded-full w-10 h-10" />
-          <div>
-            <div className="bg-gray-300 mb-2 rounded w-24 h-4" />
-            <div className="bg-gray-200 rounded w-16 h-3" />
-          </div>
+        <div>
+          <div className="bg-gray-300 mb-2 rounded w-32 h-5" />
+          <div className="bg-gray-200 mb-2 rounded w-48 h-5" />
+          <div className="bg-gray-200 rounded w-40 h-4" />
         </div>
-        <div className="bg-gray-200 rounded w-5 h-5" />
+        <div className="bg-gray-200 rounded w-24 h-4" />
       </div>
     ))}
   </div>

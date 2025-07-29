@@ -51,9 +51,7 @@ export default function JobPage() {
         </div>
       ) : job ? (
         <div className="flex flex-col gap-4 sm:gap-6">
-          {/* Job Overview and Target Audience - Responsive Grid */}
           <div className="gap-4 sm:gap-6 grid grid-cols-1 lg:grid-cols-2">
-            {/* Job Overview */}
             <Cell>
               <div className="space-y-3 sm:space-y-4">
                 <h3 className="font-semibold text-gray-900 text-lg sm:text-xl">
@@ -90,7 +88,6 @@ export default function JobPage() {
               </div>
             </Cell>
 
-            {/* Target Audience */}
             <Cell>
               <div className="space-y-3 sm:space-y-4">
                 <h3 className="font-semibold text-gray-900 text-lg sm:text-xl">

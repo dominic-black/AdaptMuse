@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { jobIcons } from "@/features/jobs/JobList/JobList";
 
 export interface Job {
   id: string;
@@ -8,6 +9,7 @@ export interface Job {
     name: string;
     imageUrl?: string;
   };
+  icon: keyof typeof jobIcons;
   contentType: string;
   originalContent?: string;
   generatedContent: string;
