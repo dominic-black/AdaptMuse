@@ -95,7 +95,7 @@ export const Chip = ({
           <div>
             <div className="flex flex-row gap-2">
               <div className="relative bg-gray-200 rounded-md min-w-[50px] h-[50px] overflow-hidden">
-                {chip.imageUrl === "location-img" ? (
+                {!chip.imageUrl || chip.imageUrl === "location-img" ? (
                   <div className="flex justify-center items-center w-full h-full">
                     <MapPin className="w-4 h-4 text-gray-500" />
                   </div>
