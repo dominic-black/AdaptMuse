@@ -18,8 +18,8 @@ export const NavBar = () => {
           <Image
             src="/logo.png"
             alt="logo"
-            width={55}
-            height={55}
+            width={40}
+            height={40}
             className="cursor-pointer"
           />
         </Link>

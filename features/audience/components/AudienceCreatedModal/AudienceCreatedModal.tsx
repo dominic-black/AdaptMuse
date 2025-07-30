@@ -6,7 +6,18 @@ import Image from "next/image";
 import { GeneratingAudienceAnimation } from "@/components/animations/audience/GeneratingAudienceAnimation";
 import { Button } from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
-import { BarChart3, Sparkles, CheckCircle } from "lucide-react";
+import {
+  BarChart3,
+  Sparkles,
+  CheckCircle,
+  Users,
+  Target,
+  TrendingUp,
+  Eye,
+  ArrowRight,
+  Star,
+  Zap,
+} from "lucide-react";
 import { Audience } from "@/types/audience";
 
 export const AudienceCreatedModal = ({
@@ -19,18 +30,44 @@ export const AudienceCreatedModal = ({
   onClose?: () => void;
 }) => {
   const [isContentVisible, setIsContentVisible] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (audienceFingerprint) {
       const timer = setTimeout(() => {
         setIsContentVisible(true);
-      }, 400);
+        setTimeout(() => setShowInsights(true), 300);
+      }, 500);
       return () => clearTimeout(timer);
     } else {
       setIsContentVisible(false);
+      setShowInsights(false);
     }
   }, [audienceFingerprint]);
+
+  // Calculate insights
+  const getTopAgeGroup = () => {
+    if (!audienceFingerprint?.ageTotals) return "Mixed";
+    const topAge = Object.entries(audienceFingerprint.ageTotals).sort(
+      ([, a], [, b]) => b - a
+    )[0];
+    return topAge ? topAge[0].replace("_", "-").replace("and", "+") : "Mixed";
+  };
+
+  const getDominantGender = () => {
+    if (!audienceFingerprint?.genderTotals) return "Mixed";
+    const { male = 0, female = 0 } = audienceFingerprint.genderTotals;
+    if (Math.abs(male - female) < 0.1) return "Mixed";
+    return male > female ? "Male-leaning" : "Female-leaning";
+  };
+
+  const getTopInterests = () => {
+    if (!audienceFingerprint?.entities) return [];
+    return audienceFingerprint.entities
+      .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+      .slice(0, 3);
+  };
 
   return (
     <Modal
@@ -41,101 +78,206 @@ export const AudienceCreatedModal = ({
     >
       <div className="flex flex-col w-full h-full">
         {!audienceFingerprint ? (
-          <div className="flex flex-col flex-grow justify-center items-center p-4 sm:p-6 md:p-8 text-center">
-            <div className="w-[200px] h-[200px]">
-              <GeneratingAudienceAnimation width={200} height={200} />
+          // Loading State
+          <div className="flex flex-col flex-grow justify-center items-center p-8 text-center">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl rounded-full" />
+              <div className="relative w-[240px] h-[240px]">
+                <GeneratingAudienceAnimation width={240} height={240} />
+              </div>
             </div>
-            <h2 className="mt-6 font-semibold text-gray-900 text-xl sm:text-2xl">
-              Creating Your Audience
-            </h2>
-            <p className="mt-2 max-w-sm text-gray-600 text-sm sm:text-base">
-              Analyzing data and generating your target audience fingerprint...
-            </p>
+
+            <div className="space-y-4 mt-8">
+              <h2 className="bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 font-bold text-gray-900 text-transparent text-3xl">
+                Crafting Your Audience
+              </h2>
+              <p className="max-w-md text-gray-600 text-lg leading-relaxed">
+                Our AI is analyzing thousands of data points to create your
+                perfect audience fingerprint
+              </p>
+
+              <div className="flex justify-center items-center gap-2 mt-6">
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full bg-blue-500 animate-pulse`}
+                      style={{ animationDelay: `${i * 0.2}s` }}
+                    />
+                  ))}
+                </div>
+                <span className="ml-2 text-gray-500 text-sm">
+                  Processing insights...
+                </span>
+              </div>
+            </div>
           </div>
         ) : (
+          // Success State
           <div
-            className={`flex flex-col justify-center items-center gap-6 sm:gap-8 w-full h-full transition-all duration-500 ease-in-out p-4 sm:p-6 md:p-8 ${
+            className={`flex flex-col w-full h-full transition-all duration-700 ease-out p-8 ${
               isContentVisible
                 ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+                : "opacity-0 translate-y-8"
             }`}
           >
-            <div className="flex flex-col items-center gap-4 sm:gap-6 text-center">
-              <div className="flex justify-center items-center bg-green-100 rounded-full w-14 sm:w-16 h-14 sm:h-16">
-                <CheckCircle className="w-8 sm:w-10 h-8 sm:h-10 text-green-600" />
+            {/* Header */}
+            <div className="flex flex-col items-center mb-8 text-center">
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400/30 to-emerald-400/30 blur-2xl rounded-full animate-pulse" />
+                <div className="relative flex justify-center items-center bg-gradient-to-r from-green-100 to-emerald-100 rounded-full w-20 h-20">
+                  <CheckCircle className="w-12 h-12 text-green-600" />
+                </div>
               </div>
-              <div className="space-y-2">
-                <h2 className="font-bold text-gray-900 text-2xl sm:text-3xl">
-                  Audience Created Successfully!
-                </h2>
-                <p className="text-gray-600 text-sm sm:text-base">
-                  Your target audience fingerprint is ready for analysis
-                </p>
-              </div>
+
+              <h2 className="mb-3 font-bold text-gray-900 text-4xl">
+                Audience Created Successfully!
+              </h2>
+              <p className="max-w-lg text-gray-600 text-lg leading-relaxed">
+                Your AI-powered audience fingerprint is ready. Here&apos;s what
+                we discovered about your target audience.
+              </p>
             </div>
 
-            <div className="w-full max-w-md">
-              <div className="bg-white shadow-sm p-4 sm:p-6 border border-gray-200 rounded-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex justify-center items-center bg-gray-50 p-1 rounded-lg w-10 h-10">
+            {/* Audience Card */}
+            <div className="bg-gradient-to-br from-white to-gray-50/50 shadow-xl mb-8 p-6 border border-gray-100 rounded-2xl">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-sm rounded-xl" />
+                  <div className="relative flex justify-center items-center bg-white shadow-sm p-2 rounded-xl w-16 h-16">
                     <Image
-                      src="https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
-                      alt="Audience icon"
-                      width={32}
-                      height={32}
-                      className="object-contain"
+                      src={
+                        audienceFingerprint.imageUrl ||
+                        "https://cdn-icons-png.flaticon.com/512/1053/1053244.png"
+                      }
+                      alt="Audience avatar"
+                      width={48}
+                      height={48}
+                      className="rounded-lg object-cover"
                     />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 text-base sm:text-lg truncate">
-                      {audienceFingerprint.name}
-                    </h3>
-                    <p className="text-gray-500 text-sm truncate">
-                      {audienceFingerprint.entities.length} entities analyzed
-                    </p>
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="mb-1 font-bold text-gray-900 text-2xl">
+                    {audienceFingerprint.name}
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Users className="w-4 h-4" />
+                    <span className="text-sm">
+                      {audienceFingerprint.entities.length +
+                        audienceFingerprint.recommendedEntities.length}{" "}
+                      interest points analyzed
+                    </span>
                   </div>
                 </div>
 
-                <div className="gap-3 grid grid-cols-2">
-                  <div className="bg-gray-50 p-3 rounded-lg text-center">
-                    <div className="font-semibold text-gray-900 text-base sm:text-lg">
-                      {Object.keys(audienceFingerprint.ageTotals).length}
+                <div className="flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-full">
+                  <Star className="w-4 h-4 text-amber-500" />
+                  <span className="font-medium text-amber-700 text-sm">
+                    Premium
+                  </span>
+                </div>
+              </div>
+
+              {/* Quick Insights */}
+              <div
+                className={`space-y-4 transition-all duration-500 delay-300 ${
+                  showInsights
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
+                }`}
+              >
+                <div className="gap-4 grid grid-cols-3">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 p-4 rounded-xl text-center">
+                    <div className="flex justify-center mb-2">
+                      <Target className="w-5 h-5 text-blue-600" />
                     </div>
-                    <div className="text-gray-600 text-xs">Age Groups</div>
+                    <div className="font-bold text-blue-900 text-lg">
+                      {getTopAgeGroup()}
+                    </div>
+                    <div className="text-blue-700 text-xs">Primary Age</div>
                   </div>
-                  <div className="bg-gray-50 p-3 rounded-lg text-center">
-                    <div className="font-semibold text-gray-900 text-base sm:text-lg">
-                      {audienceFingerprint.demographics.length +
-                        audienceFingerprint.entities.length +
-                        audienceFingerprint.recommendedEntities.length}
+
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 p-4 rounded-xl text-center">
+                    <div className="flex justify-center mb-2">
+                      <TrendingUp className="w-5 h-5 text-purple-600" />
                     </div>
-                    <div className="text-gray-600 text-xs">Data Points</div>
+                    <div className="font-bold text-purple-900 text-lg">
+                      {getDominantGender()}
+                    </div>
+                    <div className="text-purple-700 text-xs">Gender Split</div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-4 rounded-xl text-center">
+                    <div className="flex justify-center mb-2">
+                      <Eye className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <div className="font-bold text-emerald-900 text-lg">
+                      {audienceFingerprint.recommendedEntities.length}
+                    </div>
+                    <div className="text-emerald-700 text-xs">
+                      AI Recommendations
+                    </div>
                   </div>
                 </div>
+
+                {/* Top Interests Preview */}
+                {getTopInterests().length > 0 && (
+                  <div className="bg-gray-50/50 p-4 rounded-xl">
+                    <h4 className="flex items-center gap-2 mb-3 font-semibold text-gray-800 text-sm">
+                      <Zap className="w-4 h-4 text-yellow-500" />
+                      Top Interests Discovered
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {getTopInterests().map((interest) => (
+                        <span
+                          key={interest.id}
+                          className="bg-white shadow-sm px-3 py-1 border border-gray-200 rounded-full text-gray-700 text-sm"
+                        >
+                          {interest.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex sm:flex-row flex-col gap-3 w-full max-w-md">
+            {/* Action Buttons */}
+            <div className="gap-4 grid grid-cols-1 sm:grid-cols-2">
               <Button
                 variant="primary"
-                className="flex-1 gap-2 h-12 text-sm sm:text-base"
+                className="group relative flex justify-center items-center gap-3 bg-gradient-to-r from-blue-600 hover:from-blue-700 to-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl px-6 py-4 rounded-xl overflow-hidden font-semibold text-white text-base transition-all duration-200"
                 onClick={() => {
                   router.push(`/audience/${audienceFingerprint.id}`);
                 }}
               >
-                <BarChart3 className="w-4 h-4" />
-                Analyze Audience
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                <BarChart3 className="relative w-5 h-5" />
+                <span className="relative">Analyze Audience</span>
+                <ArrowRight className="relative w-4 h-4 transition-transform group-hover:translate-x-1 duration-200" />
               </Button>
+
               <Button
                 variant="outline"
-                className="flex-1 gap-2 h-12 text-sm sm:text-base"
+                className="group flex justify-center items-center gap-3 bg-white hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 shadow-lg hover:shadow-xl px-6 py-4 border-2 border-gray-200 hover:border-purple-300 rounded-xl font-semibold text-gray-700 hover:text-purple-700 text-base transition-all duration-200"
                 onClick={() => {
                   router.push(`/generate-content`);
                 }}
               >
-                <Sparkles className="w-4 h-4" />
-                Generate Content
+                <Sparkles className="w-5 h-5 group-hover:text-purple-600 transition-colors duration-200" />
+                <span>Generate Content</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 duration-200" />
               </Button>
+            </div>
+
+            {/* Footer Hint */}
+            <div className="flex justify-center items-center gap-2 mt-6 text-center">
+              <div className="bg-gradient-to-r from-blue-400 to-purple-400 rounded-full w-2 h-2 animate-pulse" />
+              <p className="text-gray-500 text-sm">
+                Ready to create content that resonates with your audience
+              </p>
             </div>
           </div>
         )}

@@ -30,7 +30,7 @@ export const StatCards = ({
       />
       <StatCard
         title="Usage"
-        value="N/A"
+        value="Unlimited"
         icon={<BarChart2 className="w-5 h-5" />}
         loading={false}
       />
