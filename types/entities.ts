@@ -8,7 +8,7 @@ export interface Entity {
   id: string;
   name: string;
   type: EntityType;
-  imageUrl?: string;
+  imageUrl?: string | null;
   subText?: string;
   popularity?: number;
   gender?: Record<Gender, number>;
