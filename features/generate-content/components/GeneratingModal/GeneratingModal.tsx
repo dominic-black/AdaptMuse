@@ -5,20 +5,13 @@ import Modal from "@/components/shared/Modal/Modal";
 import { Button } from "@/components/ui/Button";
 import { CheckCircle, Copy } from "lucide-react";
 import { GeneratingContentAnimation } from "@/components/animations/editing/GeneratingContentAnimation";
+import { Job } from "@/types/job";
 
-interface JobResponse {
-  id: string;
-  title: string;
-  audience: {
-    id: string;
-    name: string;
-    imageUrl?: string | null;
-  };
-  contentType: string;
-  originalContent?: string;
-  generatedContent: string;
-  context?: string;
-  createdAt: unknown; // Flexible timestamp handling for both server and client timestamps
+export interface GeneratingModalProps {
+  showModal: boolean;
+  job: Job | null;
+  onClose: () => void;
+  onMakeChanges: (content: string) => void;
 }
 
 export const GeneratingModal = ({
@@ -26,12 +19,7 @@ export const GeneratingModal = ({
   job,
   onClose,
   onMakeChanges,
-}: {
-  showModal: boolean;
-  job: JobResponse | null;
-  onClose: () => void;
-  onMakeChanges: (content: string) => void;
-}) => {
+}: GeneratingModalProps) => {
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [copyButtonText, setCopyButtonText] = useState("Copy");
 

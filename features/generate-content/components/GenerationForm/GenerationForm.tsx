@@ -4,6 +4,19 @@ import { ActionButton } from "./ActionButton";
 
 type Action = "generate" | "alter";
 
+export interface GenerationFormProps {
+  action: Action;
+  setAction: (action: Action) => void;
+  contentType: string;
+  setContentType: (value: string) => void;
+  existingContent: string;
+  setExistingContent: (value: string) => void;
+  additionalContext: string;
+  setAdditionalContext: (value: string) => void;
+  generationJobTitle: string;
+  setGenerationJobTitle: (value: string) => void;
+}
+
 export const GenerationForm = ({
   action,
   setAction,
@@ -15,18 +28,7 @@ export const GenerationForm = ({
   setAdditionalContext,
   generationJobTitle,
   setGenerationJobTitle,
-}: {
-  action: string;
-  setAction: (action: Action) => void;
-  contentType: string;
-  setContentType: (value: string) => void;
-  existingContent: string;
-  setExistingContent: (value: string) => void;
-  additionalContext: string;
-  setAdditionalContext: (value: string) => void;
-  generationJobTitle: string;
-  setGenerationJobTitle: (value: string) => void;
-}) => {
+}: GenerationFormProps) => {
   return (
     <div className="flex-1 pr-2 overflow-y-auto">
       <div className="space-y-6">

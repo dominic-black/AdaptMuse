@@ -23,17 +23,19 @@ const AudienceCardsSkeleton = () => (
   </div>
 );
 
+export interface AudienceSelectorProps {
+  audiences: Audience[];
+  selectedAudience: Audience | null;
+  setSelectedAudience: (audience: Audience | null) => void;
+  loading?: boolean;
+}
+
 export const AudienceSelector = ({
   audiences,
   selectedAudience,
   setSelectedAudience,
   loading = false,
-}: {
-  audiences: Audience[];
-  selectedAudience: Audience | null;
-  setSelectedAudience: (audience: Audience) => void;
-  loading?: boolean;
-}) => {
+}: AudienceSelectorProps) => {
   return (
     <div className="flex flex-col lg:col-span-1 bg-white shadow-sm p-6 rounded-lg h-full">
       {/* Static heading - always visible */}

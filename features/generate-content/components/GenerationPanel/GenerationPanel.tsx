@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/Button";
-import { GenerationForm } from "@/features/generate-content/GenerationForm/GenerationForm";
+import {
+  GenerationForm,
+  GenerationFormProps,
+} from "@/features/generate-content/components/GenerationForm/GenerationForm";
 import { Audience } from "@/types/audience";
 
-type GenerationFormProps = React.ComponentProps<typeof GenerationForm>;
-
-interface GenerationPanelProps extends GenerationFormProps {
+export interface GenerationPanelProps extends GenerationFormProps {
   selectedAudience: Audience | null;
   isLoading: boolean;
   onSubmit: () => void;
