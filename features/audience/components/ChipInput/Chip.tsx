@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { AlertTriangle, MapPin, X } from "lucide-react";
-import { Entity } from "@/types/entity";
+import { Entity } from "@/types/entities";
 import { Spinner } from "@/components/ui/Spinner";
 import { useState } from "react";
 
