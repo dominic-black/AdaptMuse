@@ -91,7 +91,7 @@ export default function GenerateContentPage() {
    */
   if (pageState.jobError) {
     return (
-      <Screen heading="AI Content Generator">
+      <Screen heading="Content Generator">
         <div className="flex justify-center items-center h-64">
           <div className="text-center">
             <p className="mb-2 text-red-600">Error loading job</p>
@@ -103,7 +103,7 @@ export default function GenerateContentPage() {
   }
 
   return (
-    <Screen heading="AI Content Generator">
+    <Screen heading="Content Generator">
       <ContentGenerator loading={!isDataReady} job={pageState.job} />
     </Screen>
   );

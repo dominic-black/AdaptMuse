@@ -70,4 +70,8 @@ node_modules/
 
 .next/
 
-.tsbuildinfo
+.DS_Store
+
+.vscode/
+
+tsconfig.tsbuildinfo
