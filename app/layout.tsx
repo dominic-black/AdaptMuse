@@ -29,7 +29,7 @@ export default function RootLayout({
           <UserProvider>
             <AudienceProvider>
               <JobsProvider>
-                <div className="gap-16 bg-background min-h-screen font-[family-name:var(--font-inter)]">
+                <div className="gap-16 min-h-screen font-[family-name:var(--font-inter)]">
                   <div>
                     <NavBar />
                     {children}

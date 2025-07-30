@@ -86,32 +86,39 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { entities, audiences, gender, ageGroup } = audienceData;
+  const { entities, audiences, gender, ageGroup, genres } = audienceData;
   console.log("audienceData", audienceData);
+  let inputEntities: Entity[] = [];
 
-  const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: Entity) => e.id).join(",")}`, {
-    headers: {
-      "x-api-key": qlooApiKey,
-      "accept": "application/json",
-    },
-  });
-  const inputEntitiesData = await inputEntitiesRes.json();
-  const inputEntities: Entity[] = inputEntitiesData.results.map((inputEntity: QlooApiEntity) => {
-    return {
-      id: inputEntity.entity_id,
-      name: inputEntity.name,
-      popularity: inputEntity.popularity ?? 0,
-      type: inputEntity.types[0].split(":").pop()?.toUpperCase() || 'UNKNOWN',
-      imageUrl: inputEntity.properties?.image?.url || null,
-    }   
-  })
+  if(entities.length > 0) {
+    const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: Entity) => e.id).join(",")}`, {
+      headers: {
+        "x-api-key": qlooApiKey,
+        "accept": "application/json",
+      },
+    });
+    const inputEntitiesData = await inputEntitiesRes.json();
+    console.log("inputEntitiesData", inputEntitiesData);
+    if(inputEntitiesData && inputEntitiesData.results.length > 0) {
+      inputEntities = inputEntitiesData.results.map((inputEntity: QlooApiEntity) => {
+        return {
+          id: inputEntity.entity_id,
+          name: inputEntity.name,
+          popularity: inputEntity.popularity ?? 0,
+          type: inputEntity.types[0].split(":").pop()?.toUpperCase() || 'UNKNOWN',
+          imageUrl: inputEntity.properties?.image?.url || null,
+        }   
+      })
+    }
+  }
 
   
   const recommendedEntities = await Promise.all(
     Object.keys(EntityTypes).map(async (key) => {
       const entityIds = inputEntities.map((e: Entity) => e.id).join(",");
       const audienceIds = audiences.map((e: AudienceOption) => e.value).join(",");
-      let url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.interests.entities=${entityIds}&signal.demographics.audiences=${audienceIds}&signal.demographics.age=${ageGroup}`
+      let url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.audiences=${audienceIds}&signal.demographics.age=${ageGroup}&filter.tags=${genres.map((e: AudienceOption) => e.value).join(",")}`
+      if(entityIds) url += `&signal.interests.entities=${entityIds}`
       if(gender === "male" || gender === "female") url += `&signal.demographics.gender=${gender}`
       const entityData = await fetch(url, {
         headers: {
@@ -177,12 +184,12 @@ export async function POST(request: NextRequest) {
       "45_to_54": 0,
       "55_and_older": 0,
     }
-    const genderTotals: Record<Gender, number> = {
+    const genderTotals: Record<"male" | "female", number> = {
       "male": 0,
       "female": 0,
     }
 
-    for (const entity of entitiesWithDemo) {
+    for (const entity of [...entitiesWithDemo, ...recommendedEntitiesWithDemo]) {
       if (entity.age) {
         for (const [ageKey, value] of Object.entries(entity.age)) {
           if (ageKey in ageTotals) {
@@ -193,7 +200,7 @@ export async function POST(request: NextRequest) {
       if (entity.gender) {
         for (const [genderKey, value] of Object.entries(entity.gender)) {
           if (genderKey in genderTotals) {
-            genderTotals[genderKey as Gender] += Number(value);
+            genderTotals[genderKey as "male" | "female"] += Number(value);
           }
         }
       }

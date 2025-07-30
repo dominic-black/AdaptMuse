@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAudiences } from "@/hooks/useAudiences";
 import { Audience } from "@/types/audience";
+import { Job } from "@/types/job";
 import { AudienceSelector } from "@/features/generate-content/AudienceSelector/AudienceSelector";
 import { GenerationPanel } from "@/features/generate-content/GenerationPanel/GenerationPanel";
 import { GeneratingModal } from "@/features/generate-content/GeneratingModal/GeneratingModal";
@@ -24,8 +25,10 @@ interface JobResponse {
 
 export const ContentGenerator = ({
   loading = false,
+  job = null,
 }: {
   loading?: boolean;
+  job?: Job | null;
 }) => {
   const { audiences } = useAudiences();
   const [selectedAudience, setSelectedAudience] = useState<Audience | null>(
@@ -36,6 +39,17 @@ export const ContentGenerator = ({
   const [existingContent, setExistingContent] = useState("");
   const [additionalContext, setAdditionalContext] = useState("");
   const [generationJobTitle, setGenerationJobTitle] = useState("");
+
+  useEffect(() => {
+    if (job) {
+      setSelectedAudience(job.audience as Audience);
+      setAction("alter");
+      setContentType(job.contentType || "");
+      setExistingContent(job.generatedContent || "");
+      setAdditionalContext(job.context || "");
+      setGenerationJobTitle(`New - ${job.title}`);
+    }
+  }, [job]);
 
   const [showGeneratingModal, setShowGeneratingModal] = useState(false);
   const [generatedJob, setGeneratedJob] = useState<JobResponse | null>(null);

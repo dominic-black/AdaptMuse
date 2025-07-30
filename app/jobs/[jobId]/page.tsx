@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Screen } from "@/components/shared/Screen/Screen";
 import { db } from "@/firebase/firebase-config";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,13 +11,15 @@ import { Job } from "@/types/job";
 import { format } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@/components/ui/Button";
+import { Pencil } from "lucide-react";
 
 export default function JobPage() {
   const { jobId } = useParams();
   const { user } = useAuth();
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   useEffect(() => {
     if (user && jobId) {
       const getJob = async () => {
@@ -153,6 +155,18 @@ export default function JobPage() {
                     {job.generatedContent}
                   </pre>
                 </div>
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  onClick={() => {
+                    router.push(`/generate-content?job=${jobId}`);
+                  }}
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  <Pencil className="mr-2 w-4 h-4" />
+                  <p>Make Changes</p>
+                </Button>
               </div>
             </div>
           </Cell>

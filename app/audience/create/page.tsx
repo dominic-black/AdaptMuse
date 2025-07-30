@@ -17,13 +17,14 @@ import {
   Podcast,
   Search,
 } from "lucide-react";
-import { AgeGroup, Entity, Gender } from "@/types/entity";
+import { AgeGroup, Entity, Gender } from "@/types/entities";
 import MultiCheckbox from "@/components/ui/MultiCheckbox/MultiCheckbox";
 import RadioCheckbox from "@/components/ui/RadioCheckbox/RadioCheckbox";
 import { AUDIENCE_OPTIONS, AudienceOption } from "@/constants/audiences";
 import { ChipInput } from "@/features/audience/ChipInput/ChipInput";
 import { AudienceCreatedModal } from "@/features/audience/AudienceCreatedModal/AudienceCreatedModal";
 import { Audience } from "@/types/audience";
+import { genres } from "@/constants/tags";
 
 export default function CreateAudiencePage() {
   const [audienceName, setAudienceName] = useState("");
@@ -31,18 +32,20 @@ export default function CreateAudiencePage() {
   const [selectedAudienceOptions, setSelectedAudienceOptions] = useState<
     Record<string, AudienceOption[]>
   >({});
+  const [selectedGenres, setSelectedGenres] = useState<Array<AudienceOption>>(
+    []
+  );
+
   const [searchTerm, setSearchTerm] = useState("");
 
   const [showAudienceModal, setShowAudienceModal] = useState(false);
-  const [audienceFingerprint, setAudienceFingerprint] = useState<Audience | null>(
-    null
-  );
+  const [audienceFingerprint, setAudienceFingerprint] =
+    useState<Audience | null>(null);
 
-  // Filter AUDIENCE_OPTIONS based on search term
   const filteredAudienceOptions = Object.entries(AUDIENCE_OPTIONS).reduce(
     (acc, [category, options]) => {
       const filteredOptions = options.filter((option) =>
-        option.label.toLowerCase().includes(searchTerm.toLowerCase())
+        option.label.toLowerCase().startsWith(searchTerm.toLowerCase())
       );
       if (filteredOptions.length > 0) {
         acc[category] = filteredOptions;
@@ -55,14 +58,13 @@ export default function CreateAudiencePage() {
     >
   );
 
-  useEffect(() => {
-    console.log("filteredAudienceOptions", selectedAudienceOptions);
-  }, [selectedAudienceOptions]);
+  const filteredGenres = genres.filter((genre) =>
+    genre.label.toLowerCase().startsWith(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
-    console.log("Selected Interests:", selectedInterests);
-    console.log("Selected Audience Options:", selectedAudienceOptions);
-  }, [selectedInterests, selectedAudienceOptions]);
+    console.log("selectedGenres", selectedGenres);
+  }, [selectedGenres]);
 
   const [selectedAgeGroups, setSelectedAgeGroups] = useState<Array<AgeGroup>>(
     []
@@ -153,6 +155,7 @@ export default function CreateAudiencePage() {
             audiences: Object.values(selectedAudienceOptions).flat(),
             ageGroup: selectedAgeGroups,
             gender,
+            genres: selectedGenres,
           },
         }),
       });
@@ -242,6 +245,27 @@ export default function CreateAudiencePage() {
                           className="py-2 pr-4 pl-10 border border-gray-300 focus:border-transparent rounded-lg outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
                       </div>
+                    </div>
+                    <div>
+                      <p className="mb-2 text-gray-500 text-sm capitalize">
+                        Genres
+                      </p>
+                      <MultiCheckbox
+                        options={filteredGenres}
+                        selectedOptions={selectedGenres.map(
+                          (genre) => genre.value
+                        )}
+                        onChange={(selected) =>
+                          setSelectedGenres(
+                            selected.map((genre) => ({
+                              value: genre,
+                              label:
+                                genres.find((g) => g.value === genre)?.label ||
+                                "Unknown",
+                            }))
+                          )
+                        }
+                      />
                     </div>
                     {Object.entries(filteredAudienceOptions).map(
                       ([category, options]) => (

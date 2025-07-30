@@ -5,9 +5,10 @@ import { useJobs } from "@/providers/JobsProvider";
 import { useAuth } from "@/hooks/useAuth";
 import { JobList } from "@/features/jobs/JobList/JobList";
 import { InfoCell } from "@/features/jobs/InfoCell/InfoCell";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { FileText, Sparkles } from "lucide-react";
+import { SearchBar } from "@/components/ui/SearchBar/SearchBar";
 
 const JobListSkeleton = () => (
   <div className="flex flex-col gap-4 animate-pulse">
@@ -30,6 +31,14 @@ const JobListSkeleton = () => (
 export default function JobsPage() {
   const { jobs, loading: jobsLoading } = useJobs();
   const { user, loading: authLoading } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredJobs = useMemo(() => {
+    if (!jobs) return [];
+    return jobs.filter((job) =>
+      job.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [jobs, searchTerm]);
 
   const isDataReady = useMemo(() => {
     if (authLoading || user === undefined) return false;
@@ -63,7 +72,21 @@ export default function JobsPage() {
               </div>
             </div>
           ) : (
-            <JobList jobs={jobs} />
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex-1 max-w-sm">
+                  <SearchBar
+                    placeholder="Search by job title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <Button href="/generate-content" variant="outline">
+                  Create New
+                </Button>
+              </div>
+              <JobList jobs={filteredJobs} />
+            </div>
           )}
         </div>
         <InfoCell />
