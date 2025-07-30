@@ -4,6 +4,9 @@ Built for the Qloo Global Hackathon 🌎✨
 
 📍 **[Live Demo](https://adaptmuse.com)** | 🎬 **\[Submission Video (coming soon)]** | 🚀 **\[Devpost Link (coming soon)]**
 
+<img width="1470" height="725" alt="Screenshot 2025-07-31 at 2 10 35 am" src="https://github.com/user-attachments/assets/ec1ee6f8-837f-4310-aba0-f100f56e29f7" />
+
+
 ---
 
 ## 🎯 Why AdaptMuse?
