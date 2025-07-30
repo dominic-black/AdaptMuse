@@ -781,8 +781,11 @@ export default function AudiencePage() {
               </div>
 
               <div className="gap-4 grid grid-cols-3">
-                {audience.entities.map((entity: Entity) => (
-                  <EntityCard key={entity.id} entity={entity} />
+                {audience.entities.map((entity: Entity, index: number) => (
+                  <EntityCard
+                    key={`input-${entity.id}-${index}`}
+                    entity={entity}
+                  />
                 ))}
               </div>
             </div>
@@ -811,9 +814,14 @@ export default function AudiencePage() {
               </div>
 
               <div className="gap-4 grid grid-cols-3">
-                {audience.recommendedEntities.map((entity: Entity) => (
-                  <EntityCard key={entity.id} entity={entity} />
-                ))}
+                {audience.recommendedEntities.map(
+                  (entity: Entity, index: number) => (
+                    <EntityCard
+                      key={`recommended-${entity.id}-${index}`}
+                      entity={entity}
+                    />
+                  )
+                )}
               </div>
             </div>
           </Cell>
