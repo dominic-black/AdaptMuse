@@ -20,11 +20,13 @@ import {
 } from "lucide-react";
 import { Cell } from "@/components/ui/Cell/Cell";
 import { Button } from "@/components/ui/Button";
+import { useUser } from "@/providers/UserProvider";
 
 export default function Home() {
   const { audiences, loading: audiencesLoading } = useAudiences();
   const { jobs, loading: jobsLoading } = useJobs();
   const { user, loading: authLoading } = useAuth();
+  const { userProfile } = useUser();
 
   // Comprehensive data ready check
   const isDataReady = useMemo(() => {
@@ -80,8 +82,7 @@ export default function Home() {
                 </div>
                 <div>
                   <h1 className="font-bold text-gray-900 text-2xl">
-                    Welcome back,{" "}
-                    {user?.displayName || user?.email?.split("@")[0] || "User"}!
+                    Welcome back, {userProfile?.firstName}!
                   </h1>
                   <p className="text-gray-600">
                     Ready to create your next audience and generate amazing

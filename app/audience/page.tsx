@@ -5,7 +5,7 @@ import { Screen } from "@/components/shared/Screen/Screen";
 import { AudienceList } from "@/features/audience/components/AudienceList/AudienceList";
 import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { useAuth } from "@/hooks/useAuth";
-import { Users } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { InfoCell } from "@/features/audience/components/InfoCell/InfoCell";
 import { SearchBar } from "@/components/ui/SearchBar/SearchBar";
 import { useMemo, useState } from "react";
@@ -66,6 +66,7 @@ export default function AudiencePage() {
                   Your Audiences
                 </h2>
                 <Button href="/audience/create" variant="outline">
+                  <Plus className="w-4 h-4" />
                   Create New
                 </Button>
               </div>
@@ -95,6 +96,7 @@ export default function AudiencePage() {
                   Your Audiences
                 </h2>
                 <Button href="/audience/create" variant="outline">
+                  <Plus className="w-4 h-4" />
                   Create New
                 </Button>
               </div>

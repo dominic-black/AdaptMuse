@@ -280,7 +280,7 @@ export const AudienceCreatedModal = ({
             </div>
 
             {/* Footer Hint */}
-            <div className="flex justify-center items-center gap-2 mt-6 text-center">
+            <div className="flex justify-center items-center gap-2 py-6 text-center">
               <div className="bg-gradient-to-r from-blue-400 to-purple-400 rounded-full w-2 h-2 animate-pulse" />
               <p className="text-gray-500 text-sm">
                 Ready to create content that resonates with your audience

@@ -3,7 +3,14 @@
 import { useState, useEffect } from "react";
 import Modal from "@/components/shared/Modal/Modal";
 import { Button } from "@/components/ui/Button";
-import { CheckCircle, Copy } from "lucide-react";
+import {
+  CheckCircle,
+  Copy,
+  Check,
+  Sparkles,
+  FileText,
+  Edit3,
+} from "lucide-react";
 import { GeneratingContentAnimation } from "@/components/animations/editing/GeneratingContentAnimation";
 import { Job } from "@/types/job";
 
@@ -21,13 +28,13 @@ export const GeneratingModal = ({
   onMakeChanges,
 }: GeneratingModalProps) => {
   const [isContentVisible, setIsContentVisible] = useState(false);
-  const [copyButtonText, setCopyButtonText] = useState("Copy");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (job?.generatedContent) {
       const timer = setTimeout(() => {
         setIsContentVisible(true);
-      }, 400);
+      }, 500);
       return () => clearTimeout(timer);
     } else {
       setIsContentVisible(false);
@@ -35,19 +42,19 @@ export const GeneratingModal = ({
   }, [job?.generatedContent]);
 
   useEffect(() => {
-    if (copyButtonText === "Copied!") {
+    if (copied) {
       const timer = setTimeout(() => {
-        setCopyButtonText("Copy");
+        setCopied(false);
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [copyButtonText]);
+  }, [copied]);
 
   const handleCopy = async () => {
     if (job?.generatedContent) {
       try {
         await navigator.clipboard.writeText(job.generatedContent);
-        setCopyButtonText("Copied!");
+        setCopied(true);
       } catch (error) {
         console.error("Failed to copy content:", error);
         // Fallback for older browsers or when clipboard API is not available
@@ -57,7 +64,7 @@ export const GeneratingModal = ({
         textArea.select();
         document.execCommand("copy");
         document.body.removeChild(textArea);
-        setCopyButtonText("Copied!");
+        setCopied(true);
       }
     }
   };
@@ -75,72 +82,167 @@ export const GeneratingModal = ({
       label="Content Generation"
       showCloseButton={true}
     >
-      <div className="flex flex-col w-full h-full">
+      <div className="flex flex-col w-full h-full min-h-[500px]">
         {!job?.generatedContent ? (
-          <div className="flex flex-col flex-grow justify-center items-center p-4 sm:p-6 md:p-8 text-center">
-            <div className="w-[200px] h-[200px]">
-              <GeneratingContentAnimation width={200} height={200} />
+          // Loading State
+          <div className="flex flex-col flex-grow justify-center items-center p-8 text-center">
+            <div className="mb-8">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 opacity-10 rounded-full w-[220px] h-[220px] animate-pulse"></div>
+                <GeneratingContentAnimation width={200} height={200} />
+              </div>
             </div>
-            <h2 className="mt-6 font-semibold text-gray-900 text-xl sm:text-2xl">
-              Generating Content
-            </h2>
-            <p className="mt-2 max-w-sm text-gray-600 text-sm sm:text-base">
-              Our AI is crafting content for your audience, please wait a
-              moment.
-            </p>
+
+            <div className="space-y-4 max-w-md">
+              <div className="flex justify-center items-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-blue-600 animate-pulse" />
+                <h2 className="font-semibold text-gray-900 text-2xl">
+                  Generating Content
+                </h2>
+                <Sparkles className="w-5 h-5 text-purple-600 animate-pulse" />
+              </div>
+
+              <p className="text-gray-600 text-base leading-relaxed">
+                Our AI is analyzing your audience and crafting personalized
+                content. This usually takes just a few seconds.
+              </p>
+
+              <div className="flex justify-center items-center gap-2 pt-4">
+                <div className="bg-blue-400 rounded-full w-2 h-2 animate-bounce"></div>
+                <div
+                  className="bg-purple-400 rounded-full w-2 h-2 animate-bounce"
+                  style={{ animationDelay: "0.1s" }}
+                ></div>
+                <div
+                  className="bg-indigo-400 rounded-full w-2 h-2 animate-bounce"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
+              </div>
+            </div>
           </div>
         ) : (
+          // Success State
           <div
-            className={`flex flex-col w-full h-full transition-all duration-500 ease-in-out ${
+            className={`flex flex-col w-full h-full transition-all duration-700 ease-out ${
               isContentVisible
                 ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
+                : "opacity-0 translate-y-6"
             }`}
           >
-            <div className="flex-grow p-4 sm:p-6 md:p-8 overflow-y-auto text-center">
-              <div className="flex flex-col items-center mx-auto max-w-2xl">
-                <div className="flex justify-center items-center bg-green-100 rounded-full w-14 sm:w-16 h-14 sm:h-16">
-                  <CheckCircle className="w-8 sm:w-10 h-8 sm:h-10 text-green-600" />
+            {/* Header */}
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 border-green-100 border-b text-center">
+              <div className="flex justify-center items-center mb-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-green-400 opacity-20 rounded-full w-16 h-16 animate-ping"></div>
+                  <div className="relative flex justify-center items-center bg-gradient-to-r from-green-500 to-emerald-600 rounded-full w-16 h-16">
+                    <CheckCircle className="w-8 h-8 text-white" />
+                  </div>
                 </div>
-                <h2 className="mt-4 font-bold text-gray-900 text-2xl sm:text-3xl">
-                  Content Generated!
-                </h2>
-                <p className="mt-2 mb-6 text-gray-600 text-sm sm:text-base">
-                  Review the generated content below.
-                </p>
-                <div className="relative bg-gray-50 mb-6 p-4 border border-gray-200 rounded-lg w-full max-h-72 overflow-y-auto text-left">
-                  <pre className="text-gray-800 text-sm break-words whitespace-pre-wrap">
-                    {job?.generatedContent}
-                  </pre>
+              </div>
+
+              <h2 className="mb-2 font-bold text-gray-900 text-2xl">
+                Content Generated Successfully!
+              </h2>
+              <p className="font-medium text-green-700 text-sm">
+                Your personalized content is ready for review
+              </p>
+            </div>
+
+            {/* Content Display */}
+            <div className="flex-grow p-6 overflow-hidden">
+              <div className="flex flex-col h-full">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-gray-500" />
+                    <h3 className="font-semibold text-gray-900 text-lg">
+                      Generated Content
+                    </h3>
+                  </div>
                   <button
                     onClick={handleCopy}
-                    className="top-2 right-2 absolute flex items-center gap-1 bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md font-semibold text-gray-700 text-xs transition-colors duration-200"
+                    className={`
+                      flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200
+                      ${
+                        copied
+                          ? "bg-green-100 text-green-700 border border-green-200"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200 hover:border-gray-300"
+                      }
+                    `}
                     aria-label="Copy generated content to clipboard"
-                    title="Copy to clipboard"
                   >
-                    <Copy size={12} />
-                    {copyButtonText}
+                    {copied ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        Copy
+                      </>
+                    )}
                   </button>
+                </div>
+
+                <div className="relative flex-grow">
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 border border-gray-200 rounded-xl h-full overflow-hidden">
+                    <div className="scrollbar-thumb-rounded h-full overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300">
+                      <pre className="font-sans text-gray-800 text-sm break-words leading-relaxed whitespace-pre-wrap">
+                        {job?.generatedContent}
+                      </pre>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="flex-shrink-0 bg-white p-4 border-gray-200 border-t">
-              <div className="flex sm:flex-row flex-col justify-center gap-3 mx-auto w-full max-w-lg">
+
+            {/* Actions */}
+            <div className="bg-gray-50 p-4 sm:p-6 border-gray-100 border-t">
+              <div className="flex sm:flex-row flex-col justify-center gap-3 mx-auto max-w-sm sm:max-w-md">
                 <Button
                   onClick={handleMakeChanges}
                   variant="outline"
-                  className="w-full sm:w-auto"
+                  size="md"
+                  className="sm:flex-1 w-full sm:w-auto"
                 >
+                  <Edit3 className="mr-2 w-4 h-4" />
                   Make Changes
                 </Button>
-                <Button variant="primary" className="w-full sm:w-auto">
-                  View Comparison
+                <Button
+                  href={`/jobs/${job?.id}`}
+                  variant="primary"
+                  size="md"
+                  className="sm:flex-1 w-full sm:w-auto"
+                >
+                  <CheckCircle className="mr-2 w-4 h-4" />
+                  Complete
                 </Button>
               </div>
+
+              <p className="mt-3 sm:mt-4 px-4 text-gray-500 text-xs text-center">
+                You can always make changes to your content later
+              </p>
             </div>
           </div>
         )}
       </div>
+
+      <style jsx>{`
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+        }
+        .scrollbar-track-gray-100::-webkit-scrollbar-track {
+          background: #f3f4f6;
+          border-radius: 3px;
+        }
+        .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 3px;
+        }
+        .scrollbar-thumb-rounded::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
+        }
+      `}</style>
     </Modal>
   );
 };

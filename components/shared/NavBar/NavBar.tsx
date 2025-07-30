@@ -39,6 +39,18 @@ export const NavBar = () => {
           />
         </Link>
         <Link
+          href="/audience"
+          className={`p-2 rounded-lg transition-colors duration-200 ${
+            pathname === "/audience" ? "bg-white/20" : "hover:bg-white/10"
+          }`}
+        >
+          <Users
+            size={24}
+            color="white"
+            fill={pathname === "/audience" ? "white" : "none"}
+          />
+        </Link>
+        <Link
           href="/generate-content"
           className={`p-2 rounded-lg transition-colors duration-200 ${
             pathname === "/generate-content"
@@ -50,18 +62,6 @@ export const NavBar = () => {
             size={24}
             color="white"
             fill={pathname === "/generate-content" ? "white" : "none"}
-          />
-        </Link>
-        <Link
-          href="/audience"
-          className={`p-2 rounded-lg transition-colors duration-200 ${
-            pathname === "/audience" ? "bg-white/20" : "hover:bg-white/10"
-          }`}
-        >
-          <Users
-            size={24}
-            color="white"
-            fill={pathname === "/audience" ? "white" : "none"}
           />
         </Link>
         <Link

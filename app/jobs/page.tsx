@@ -7,7 +7,7 @@ import { JobList } from "@/features/jobs/JobList/JobList";
 import { InfoCell } from "@/features/jobs/InfoCell/InfoCell";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { FileText, Sparkles } from "lucide-react";
+import { FileText, Plus, Sparkles } from "lucide-react";
 import { SearchBar } from "@/components/ui/SearchBar/SearchBar";
 
 const JobListSkeleton = () => (
@@ -82,6 +82,7 @@ export default function JobsPage() {
                   />
                 </div>
                 <Button href="/generate-content" variant="outline">
+                  <Plus className="mr-2 w-4 h-4" />
                   Create New
                 </Button>
               </div>

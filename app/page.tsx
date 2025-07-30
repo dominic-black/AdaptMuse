@@ -76,7 +76,7 @@ export default function Home() {
               size="lg"
               className="shadow-lg w-full sm:w-auto text-sm sm:text-base"
             >
-              Try AdaptMuse Now
+              Get Started
             </Button>
             <Button
               href="#features"
@@ -125,7 +125,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.7, delay: idx * 0.12 }}
-                className="flex flex-col items-center bg-white shadow-lg p-5 sm:p-6 lg:p-7 border border-[var(--color-background-secondary-cell)] rounded-xl sm:rounded-2xl text-center lg:hover:scale-[1.03] hover:scale-[1.02] transition-transform duration-300"
+                className="flex flex-col items-center bg-white shadow-lg p-5 sm:p-6 lg:p-7 border border-[var(--color-background-secondary-cell)] rounded-xl sm:rounded-2xl text-center lg:hover:scale-[1.03] transition-transform duration-300"
               >
                 <span className="flex justify-center items-center bg-gradient-to-tr from-purple-400 to-indigo-400 mb-3 sm:mb-4 rounded-lg w-10 sm:w-12 h-10 sm:h-12">
                   {feature.icon}
