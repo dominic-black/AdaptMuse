@@ -1,5 +1,9 @@
-# AdaptMuse
 
+<h1>
+  <img src="https://github.com/user-attachments/assets/39c13380-474b-469a-a5f9-70a644c660a2" alt="AdaptMuse Logo" width="26" height="26" style="vertical-align:middle;margin-right:10px;">
+  AdaptMuse
+</h1
+  
 Built for the Qloo Global Hackathon 🌎✨
 
 📍 **[Live Demo](https://adaptmuse.com)** | 🎬 **\[Submission Video (coming soon)]** | 🚀 **\[Devpost Link (coming soon)]**
