@@ -3,15 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground/AnimatedBackground";
 import { motion } from "framer-motion";
 import { ArrowRight, Users, Bot, BarChart } from "lucide-react";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground/AnimatedBackground";
 
 export default function Home() {
   return (
     <div className="relative flex flex-col min-h-screen">
       <AnimatedBackground />
-
       {/* Header */}
       <header className="top-0 z-20 absolute flex justify-between items-center px-4 sm:px-6 lg:px-12 py-3 sm:py-4 w-full">
         <Link href="/" className="flex items-center gap-2 sm:gap-3">
