@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, X } from "lucide-react";
+import { AlertTriangle, MapPin, X } from "lucide-react";
 import { Entity } from "@/types/entity";
 import { Spinner } from "@/components/ui/Spinner";
 import { useState } from "react";
@@ -9,6 +9,7 @@ import { useState } from "react";
 type LoadingEntity = {
   name: string;
   id?: string;
+  error?: string;
 };
 
 export const Chip = ({
@@ -30,6 +31,37 @@ export const Chip = ({
   const handleImageLoad = (index: number) => {
     setLoadedImages((prev) => new Set(prev).add(index));
   };
+
+  if ("error" in chip && chip.error) {
+    return (
+      <div
+        className="relative flex flex-row gap-2"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {isHovered && (
+          <button
+            className="group -top-2 -right-2 z-10 absolute flex justify-center items-center bg-gray-100 hover:bg-red-50 shadow-sm hover:shadow-md border border-gray-200 hover:border-red-200 rounded-full w-6 h-6 transition-all duration-200 ease-in-out cursor-pointer"
+            onClick={onRemove}
+            aria-label="Remove item"
+          >
+            <X className="w-3.5 h-3.5 text-gray-500 group-hover:text-red-500 transition-colors duration-200" />
+          </button>
+        )}
+        <div className="bg-cell-background px-4 py-2.5 border border-red-300 rounded-md w-full">
+          <div className="flex flex-row gap-2">
+            <div className="flex justify-center items-center bg-red-100 rounded-md w-[50px] h-[50px] overflow-hidden">
+              <AlertTriangle className="w-6 h-6 text-red-500" />
+            </div>
+            <div className="flex flex-col justify-center items-start">
+              <p>{chip.name}</p>
+              <p className="text-red-500 text-sm">{chip.error}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

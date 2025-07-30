@@ -63,8 +63,8 @@ export default function CreateAudiencePage() {
   );
 
   useEffect(() => {
-    console.log("selectedGenres", selectedGenres);
-  }, [selectedGenres]);
+    console.log("selectedInterests", selectedInterests);
+  }, [selectedInterests]);
 
   const [selectedAgeGroups, setSelectedAgeGroups] = useState<Array<AgeGroup>>(
     []

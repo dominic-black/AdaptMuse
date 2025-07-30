@@ -103,7 +103,9 @@ export const AudienceCreatedModal = ({
                   </div>
                   <div className="bg-gray-50 p-3 rounded-lg text-center">
                     <div className="font-semibold text-gray-900 text-base sm:text-lg">
-                      {audienceFingerprint.demographics.length}
+                      {audienceFingerprint.demographics.length +
+                        audienceFingerprint.entities.length +
+                        audienceFingerprint.recommendedEntities.length}
                     </div>
                     <div className="text-gray-600 text-xs">Data Points</div>
                   </div>

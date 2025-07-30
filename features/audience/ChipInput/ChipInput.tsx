@@ -7,6 +7,7 @@ import { Chip } from "./Chip";
 type LoadingEntity = {
   name: string;
   id?: string;
+  error?: string;
 };
 
 export const ChipInput = ({
@@ -56,14 +57,16 @@ export const ChipInput = ({
       onAddChip();
       console.log("calling getEntityContent with", chipName);
       const newEntity = await getEntityContent(chipName, type);
+      console.log("newEntity", newEntity);
 
       if (newEntity) {
         // Replace the loading chip with the actual entity
         setChips((prev) => {
           const updatedChips = [...prev];
-          const lastLoadingChipIndex = updatedChips.findIndex(
-            (chip) => chip.name === chipName && !("id" in chip)
-          );
+          const lastLoadingChipIndex = updatedChips.findIndex((chip) => {
+            if ("id" in chip) return false;
+            return chip.name === chipName && !chip.error;
+          });
           if (lastLoadingChipIndex !== -1) {
             updatedChips[lastLoadingChipIndex] = newEntity;
           } else {
@@ -73,6 +76,23 @@ export const ChipInput = ({
         });
         // Set the chip ID for parent component
         setChipIds(newEntity);
+      } else {
+        // show error message on the chip
+        setChips((prev) => {
+          const updatedChips = [...prev];
+          const lastLoadingChipIndex = updatedChips.findIndex((chip) => {
+            if ("id" in chip) return false;
+            return chip.name === chipName && !chip.error;
+          });
+          if (lastLoadingChipIndex !== -1) {
+            const loadingChip = updatedChips[lastLoadingChipIndex];
+            updatedChips[lastLoadingChipIndex] = {
+              ...loadingChip,
+              error: "Entity not found",
+            };
+          }
+          return updatedChips;
+        });
       }
     }
   };
@@ -126,15 +146,18 @@ export const ChipInput = ({
               </div>
             </div>
             <div className="flex flex-col flex-wrap gap-2 mt-2 px-2 pt-2 pb-1 w-full">
-              {chips.slice().reverse().map((chip, idx) => (
-                <div key={idx}>
-                  <Chip
-                    chip={chip}
-                    onRemove={() => handleRemoveChip(chip)}
-                    idx={idx}
-                  />
-                </div>
-              ))}
+              {chips
+                .slice()
+                .reverse()
+                .map((chip, idx) => (
+                  <div key={idx}>
+                    <Chip
+                      chip={chip}
+                      onRemove={() => handleRemoveChip(chip)}
+                      idx={idx}
+                    />
+                  </div>
+                ))}
             </div>
           </div>
         </div>
