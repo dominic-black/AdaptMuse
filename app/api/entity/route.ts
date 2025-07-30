@@ -1,12 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Entity } from '@/types/entity';
-import { withAuth } from '@/lib/authMiddleware';
-import { AuthenticatedUser } from '@/types';
+import { Entity, EntityType } from '@/types/entities';
+import { requireAuth } from '@/lib/authMiddleware';
 import { EntityTypes } from '@/constants/entity';
 
 const ALLOWED_ENTITY_TYPES = Object.values(EntityTypes);
 
-export const GET = withAuth(async (request: NextRequest, user: AuthenticatedUser) => {
+const mapQlooTypeToEntityType = (qlooType: string): EntityType => {
+  switch (qlooType) {
+    case "urn:entity:movie": return "MOVIE";
+    case "urn:entity:person": return "PERSON";
+    case "urn:entity:artist": return "ARTIST";
+    case "urn:entity:book": return "BOOK";
+    case "urn:entity:brand": return "BRAND";
+    case "urn:entity:place": return "PLACE";
+    case "urn:entity:tv_show": return "TV_SHOW";
+    case "urn:entity:videogame": return "VIDEO_GAME";
+    case "urn:entity:podcast": return "PODCAST";
+    default: return "PERSON";
+  }
+};
+
+export async function GET(request: NextRequest) {
+  try {
+    await requireAuth(request);
+  } catch (error) {
+    if (error instanceof NextResponse) {
+      return error;
+    }
+    return NextResponse.json({ error: 'Authentication failed' }, { status: 500 });
+  }
+
   const query = request.nextUrl.searchParams.get('query');
   const type = request.nextUrl.searchParams.get('type');
   const qlooApiKey = process.env.QLOO_API_KEY;
@@ -62,7 +85,7 @@ export const GET = withAuth(async (request: NextRequest, user: AuthenticatedUser
       name: entity.name,
       subText,
       popularity: entity.popularity,
-      type,
+      type: mapQlooTypeToEntityType(type),
       imageUrl: entity.properties?.image?.url || "location-img",
     };
 
@@ -71,4 +94,4 @@ export const GET = withAuth(async (request: NextRequest, user: AuthenticatedUser
     console.error("Error calling Qloo API", error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-});
+}
