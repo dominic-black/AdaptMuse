@@ -1,16 +1,16 @@
 import Image from "next/image";
 import { EntityTag } from "./EntityTag";
-import { QlooEntity } from "@/types/audience";
+import { Entity } from "@/types/entities";
 
-export const EntityCard = ({ entity }: { entity: QlooEntity }) => {
+export const EntityCard = ({ entity }: { entity: Entity }) => {
   return (
     <div className="bg-white shadow-sm hover:shadow-md p-4 border border-gray-200 rounded-lg transition-shadow duration-200">
       {/* Entity Type Badge */}
       <div className="flex justify-between items-center mb-3">
-        {entity.image && (
+        {entity.imageUrl && (
           <div className="flex items-center gap-2 rounded-sm w-[30px] h-[30px] overflow-hidden">
             <Image
-              src={entity.image || ""}
+              src={entity.imageUrl || ""}
               alt={entity.name}
               width={40}
               height={40}
@@ -31,20 +31,22 @@ export const EntityCard = ({ entity }: { entity: QlooEntity }) => {
       </h4>
 
       {/* Popularity Score */}
-      <div className="mb-3">
-        <div className="flex justify-between items-center mb-1 text-gray-600 text-sm">
-          <span>Popularity</span>
-          <span className="font-medium">
-            {(entity.popularity * 100).toFixed(1)}%
-          </span>
+      {entity.popularity !== undefined && (
+        <div className="mb-3">
+          <div className="flex justify-between items-center mb-1 text-gray-600 text-sm">
+            <span>Popularity</span>
+            <span className="font-medium">
+              {(entity.popularity * 100).toFixed(1)}%
+            </span>
+          </div>
+          <div className="bg-gray-200 rounded-full w-full h-2">
+            <div
+              className="bg-indigo-600 rounded-full h-2"
+              style={{ width: `${entity.popularity * 100}%` }}
+            />
+          </div>
         </div>
-        <div className="bg-gray-200 rounded-full w-full h-2">
-          <div
-            className="bg-indigo-600 rounded-full h-2"
-            style={{ width: `${entity.popularity * 100}%` }}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Gender Preference */}
       {entity.gender && (

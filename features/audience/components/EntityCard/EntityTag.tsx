@@ -1,4 +1,4 @@
-import { EntityType } from "@/types/audience";
+import { EntityType } from "@/types/entities";
 import {
   Clapperboard,
   PersonStanding,
@@ -41,6 +41,10 @@ const ENTITY_CONFIG: Record<EntityType, EntityConfig> = {
   PLACE: {
     icon: House,
     colorClass: "bg-orange-100 text-orange-800",
+  },
+  PODCAST: {
+    icon: Podcast,
+    colorClass: "bg-indigo-100 text-indigo-800",
   },
   TV_SHOW: {
     icon: Tv,

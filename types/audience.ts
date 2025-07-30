@@ -1,4 +1,10 @@
-import { Entity, AgeGroup, Gender } from './entities';
+import { Entity, AgeGroup, Gender, EntityType } from './entities';
+
+// Re-export EntityType for convenience
+export type { EntityType };
+
+// Alias Entity as QlooEntity for backward compatibility
+export type QlooEntity = Entity;
 
 export interface AudienceCategory {
   label: string;
