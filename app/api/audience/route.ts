@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { EntityTypes } from '@/constants/entity';
-import { auth, db } from '@/lib/firebaseAdmin';
+import { db } from '@/lib/firebaseAdmin';
+import { requireAuth } from '@/lib/authMiddleware';
 import OpenAI from 'openai';
 import { QlooApiEntity, DemographicData, Entity, AgeGroup, AudienceOption, AudienceApiData } from '@/types';
 import { generateAndUploadAvatar } from './utils';
@@ -11,87 +12,76 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: NextRequest) {
-
-  const sessionCookie = request.cookies.get('session')?.value;
-
-  if (!sessionCookie) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  let decodedClaims;
   try {
-    decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
-  } catch (error) {
-    console.error("Error verifying session cookie:", error);
-    return NextResponse.json({ error: "Invalid or expired session" }, { status: 401 });
-  }
+    const user = await requireAuth(request);
+    const uid = user.uid;
 
-  const uid = decodedClaims.uid;
+    const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceApiData } = await request.json();
 
-  const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceApiData } = await request.json();
-  const qlooApiKey = process.env.QLOO_API_KEY;
-  if (!qlooApiKey || !audienceName || !audienceData) {
-    return NextResponse.json(
-      { error: "Missing audience name or data" },
-      { status: 400 }
-    );
-  }
-
-  const { entities, audiences, gender, ageGroup, genres } = audienceData;
-  console.log("audienceData", audienceData);
-  let inputEntities: Entity[] = [];
-
-  if(entities.length > 0) {
-    const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: Entity) => e.id).join(",")}`, {
-      headers: {
-        "x-api-key": qlooApiKey,
-        "accept": "application/json",
-      },
-    });
-    const inputEntitiesData = await inputEntitiesRes.json();
-    console.log("inputEntitiesData", inputEntitiesData);
-    if(inputEntitiesData && inputEntitiesData.results.length > 0) {
-      inputEntities = inputEntitiesData.results.map((inputEntity: QlooApiEntity) => {
-        return {
-          id: inputEntity.entity_id,
-          name: inputEntity.name,
-          popularity: inputEntity.popularity ?? 0,
-          type: inputEntity.types[0].split(":").pop()?.toUpperCase() || 'UNKNOWN',
-          imageUrl: inputEntity.properties?.image?.url || null,
-        }   
-      })
+    const qlooApiKey = process.env.QLOO_API_KEY;
+    
+    if (!qlooApiKey || !audienceName || !audienceData) {
+      return NextResponse.json(
+        { error: "Missing audience name or data" },
+        { status: 400 }
+      );
     }
-  }
 
-  
-  const recommendedEntities = await Promise.all(
-    Object.keys(EntityTypes).map(async (key) => {
-      const entityIds = inputEntities.map((e: Entity) => e.id).join(",");
-      const audienceIds = audiences.map((e: AudienceOption) => e.value).join(",");
-      let url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.audiences=${audienceIds}&signal.demographics.age=${ageGroup}&filter.tags=${genres.map((e: AudienceOption) => e.value).join(",")}`
-      if(entityIds) url += `&signal.interests.entities=${entityIds}`
-      if(gender === "male" || gender === "female") url += `&signal.demographics.gender=${gender}`
-      const entityData = await fetch(url, {
+    const { entities, audiences, gender, ageGroup, genres } = audienceData;
+    console.log("audienceData", audienceData);
+    let inputEntities: Entity[] = [];
+
+    if(entities.length > 0) {
+      const inputEntitiesRes = await fetch(`https://hackathon.api.qloo.com/entities?entity_ids=${entities.map((e: Entity) => e.id).join(",")}`, {
         headers: {
           "x-api-key": qlooApiKey,
           "accept": "application/json",
         },
       });
-      console.log("entityData", entityData);
-      if(entityData.status !== 200) return null;
-      const data = await entityData.json();
-      if(data.results.entities.length < 1) return null;
+      const inputEntitiesData = await inputEntitiesRes.json();
+      console.log("inputEntitiesData", inputEntitiesData);
+      if(inputEntitiesData && inputEntitiesData.results.length > 0) {
+        inputEntities = inputEntitiesData.results.map((inputEntity: QlooApiEntity) => {
+          return {
+            id: inputEntity.entity_id,
+            name: inputEntity.name,
+            popularity: inputEntity.popularity ?? 0,
+            type: inputEntity.types[0].split(":").pop()?.toUpperCase() || 'UNKNOWN',
+            imageUrl: inputEntity.properties?.image?.url || null,
+          }   
+        })
+      }
+    }
 
-      const entity = data.results.entities[0];
-      return {
-        id: entity.entity_id,
-        name: entity.name,
-        popularity: entity.popularity ?? 0, // Provide default value for undefined popularity
-        type: key,
-        imageUrl: entity.properties?.image?.url || null,
-      };
-    })
-  );
+    
+    const recommendedEntities = await Promise.all(
+      Object.keys(EntityTypes).map(async (key) => {
+        const entityIds = inputEntities.map((e: Entity) => e.id).join(",");
+        const audienceIds = audiences.map((e: AudienceOption) => e.value).join(",");
+        let url = `https://hackathon.api.qloo.com/v2/insights?filter.type=${EntityTypes[key as keyof typeof EntityTypes]}&signal.demographics.audiences=${audienceIds}&signal.demographics.age=${ageGroup}&filter.tags=${genres.map((e: AudienceOption) => e.value).join(",")}`
+        if(entityIds) url += `&signal.interests.entities=${entityIds}`
+        if(gender === "male" || gender === "female") url += `&signal.demographics.gender=${gender}`
+        const entityData = await fetch(url, {
+          headers: {
+            "x-api-key": qlooApiKey,
+            "accept": "application/json",
+          },
+        });
+        console.log("entityData", entityData);
+        if(entityData.status !== 200) return null;
+        const data = await entityData.json();
+        if(data.results.entities.length < 1) return null;
+
+        const entity = data.results.entities[0];
+        return {
+          id: entity.entity_id,
+          name: entity.name,
+          popularity: entity.popularity ?? 0, // Provide default value for undefined popularity
+          type: key,
+          imageUrl: entity.properties?.image?.url || null,
+        };
+      })
+    );
 
     const audienceEntities = [...recommendedEntities, ...inputEntities];
 
@@ -180,4 +170,13 @@ export async function POST(request: NextRequest) {
     await docRef.set(newAudience);
 
     return NextResponse.json({...newAudience, id: docRef.id});
+  } catch (error) {
+    // Handle authentication errors (these will be NextResponse objects)
+    if (error instanceof NextResponse) {
+      return error;
+    }
+    
+    console.error("Error creating audience:", error);
+    return NextResponse.json({ error: "Failed to create audience" }, { status: 500 });
+  }
 }

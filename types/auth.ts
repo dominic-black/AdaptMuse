@@ -16,3 +16,23 @@ export type AuthResponse = {
   error?: string;
   idToken?: string;
 };
+
+// Server-side authentication types
+export type AuthenticatedUser = {
+  uid: string;
+  email?: string;
+  emailVerified?: boolean;
+};
+
+export type AuthenticationResult = {
+  success: true;
+  user: AuthenticatedUser;
+} | {
+  success: false;
+  error: string;
+  statusCode: 401 | 403 | 500;
+};
+
+export type AuthenticationOptions = {
+  requireEmailVerification?: boolean;
+};
