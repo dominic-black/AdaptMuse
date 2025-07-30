@@ -1,8 +1,6 @@
-import { AgeGroup, Gender, Entity, AudienceOption, AudienceApiData, QlooApiEntity, DemographicData } from '@/types';
+import { AgeGroup, Entity, AudienceOption, AudienceApiData, QlooApiEntity, DemographicData } from '@/types';
 import { EntityType } from '@/types/entities';
 import { EntityTypes } from '@/constants/entity';
-import { storage } from '@/lib/firebaseAdmin';
-import OpenAI from 'openai';
 
 // Constants
 export const QLOO_API_BASE_URL = 'https://hackathon.api.qloo.com';

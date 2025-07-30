@@ -7,7 +7,8 @@ import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { useAuth } from "@/hooks/useAuth";
 import { Users } from "lucide-react";
 import { InfoCell } from "@/features/audience/components/InfoCell/InfoCell";
-import { useMemo } from "react";
+import { SearchBar } from "@/components/ui/SearchBar/SearchBar";
+import { useMemo, useState } from "react";
 
 const AudienceListSkeleton = () => (
   <div className="space-y-4 animate-pulse">
@@ -32,21 +33,26 @@ const AudienceListSkeleton = () => (
 export default function AudiencePage() {
   const { audiences, loading: audiencesLoading } = useAudiences();
   const { user, loading: authLoading } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Professional data-ready check - same logic as home page
   const isDataReady = useMemo(() => {
-    // Must have auth completed
     if (authLoading || user === undefined) return false;
-
-    // If no user, we're ready (shows login state)
     if (!user) return true;
-
-    // For authenticated users, wait for audiences data to be ready
     if (audiencesLoading) return false;
-
-    // Ensure audiences array is defined (even if empty)
     return Array.isArray(audiences);
   }, [authLoading, user, audiencesLoading, audiences]);
+
+  // Filter audiences based on search term
+  const filteredAudiences = useMemo(() => {
+    if (!audiences || !Array.isArray(audiences)) return [];
+
+    if (!searchTerm.trim()) return audiences;
+
+    return audiences.filter((audience) =>
+      audience.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [audiences, searchTerm]);
 
   return (
     <Screen heading="Audiences">
@@ -92,7 +98,33 @@ export default function AudiencePage() {
                   Create New
                 </Button>
               </div>
-              <AudienceList audiences={audiences} />
+
+              {/* Search Bar */}
+              <div className="mb-6">
+                <SearchBar
+                  placeholder="Search audiences by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              {/* Results count */}
+              {searchTerm.trim() && (
+                <div className="mb-4 text-gray-600 text-sm">
+                  {filteredAudiences.length === 0 ? (
+                    <span>
+                      No audiences found matching &quot;{searchTerm}&quot;
+                    </span>
+                  ) : (
+                    <span>
+                      {filteredAudiences.length} of {audiences.length} audience
+                      {audiences.length !== 1 ? "s" : ""} found
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <AudienceList audiences={filteredAudiences} />
             </div>
           )}
         </div>

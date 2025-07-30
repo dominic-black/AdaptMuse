@@ -97,7 +97,7 @@ export default function JobPage() {
                 </h3>
                 <div className="bg-gray-100 p-3 sm:p-4 rounded-lg">
                   <Link
-                    href={`/audiences/${job.audience.id}`}
+                    href={`/audience/${job.audience.id}`}
                     className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity"
                   >
                     {job.audience.imageUrl && (
