@@ -1,5 +1,6 @@
 "use client";
 
+import { AudiencePageSkeleton } from "@/components/shared/LoadingSkeleton/AudiencePageSkeleton";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useParams } from "next/navigation";
@@ -175,23 +176,7 @@ export default function AudiencePage() {
   }, [user, audienceId]);
 
   if (loading) {
-    return (
-      <Screen heading="Loading...">
-        <div className="space-y-8">
-          <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 p-6 border border-blue-200/50 rounded-xl animate-pulse">
-              <div className="bg-blue-200 rounded w-full h-20"></div>
-            </div>
-            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-6 border border-emerald-200/50 rounded-xl animate-pulse">
-              <div className="bg-emerald-200 rounded w-full h-20"></div>
-            </div>
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 p-6 border border-purple-200/50 rounded-xl animate-pulse">
-              <div className="bg-purple-200 rounded w-full h-20"></div>
-            </div>
-          </div>
-        </div>
-      </Screen>
-    );
+    return <AudiencePageSkeleton />;
   }
 
   if (!audience) {

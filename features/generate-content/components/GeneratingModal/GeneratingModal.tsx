@@ -87,10 +87,7 @@ export const GeneratingModal = ({
           // Loading State
           <div className="flex flex-col flex-grow justify-center items-center p-8 text-center">
             <div className="mb-8">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 opacity-10 rounded-full w-[220px] h-[220px] animate-pulse"></div>
-                <GeneratingContentAnimation width={200} height={200} />
-              </div>
+              <GeneratingContentAnimation width={200} height={200} />
             </div>
 
             <div className="space-y-4 max-w-md">
