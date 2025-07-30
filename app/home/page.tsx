@@ -1,7 +1,7 @@
 "use client";
 
 import { Screen } from "@/components/shared/Screen/Screen";
-import { useAudiences } from "@/hooks/useAudiences";
+import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { useJobs } from "@/providers/JobsProvider";
 import { useAuth } from "@/hooks/useAuth";
 import VerifyEmailBanner from "@/features/auth/banners/VerifyEmail/VerifyEmailBanner";

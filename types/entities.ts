@@ -1,4 +1,4 @@
-export type EntityType = 'MOVIE' | 'PERSON' | 'ARTIST' | 'TV_SHOW' | 'BOOK' | 'GAME';
+export type EntityType = 'MOVIE' | 'PERSON' | 'ARTIST' | 'TV_SHOW' | 'BOOK' | 'VIDEO_GAME' | 'BRAND' | 'PLACE' | 'PODCAST';
 
 export type AgeGroup = '24_and_younger' | '25_to_29' | '30_to_34' | '35_to_44' | '45_to_54' | '55_and_older';
 

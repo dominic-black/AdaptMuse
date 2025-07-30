@@ -16,8 +16,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Cell } from "@/components/ui/Cell/Cell";
-import { Audience, QlooEntity } from "@/types/audience";
-import { EntityCard } from "@/features/audience/EntityCard/EntityCard";
+import { Audience } from "@/types/audience";
+import { EntityCard } from "@/features/audience/components/EntityCard/EntityCard";
+import { Entity } from "@/types/entities";
 
 export default function AudiencePage() {
   const { audienceId } = useParams();
@@ -228,16 +229,18 @@ export default function AudiencePage() {
                     {audience.demographics &&
                     audience.demographics.length > 0 ? (
                       <div className="flex flex-row flex-wrap justify-start items-start gap-4 h-28 overflow-y-scroll">
-                        {audience.demographics.map((demographic: { value: string, label: string }) => (
-                          <div
-                            key={demographic.value}
-                            className="flex items-center gap-2"
-                          >
-                            <div className="bg-gray-100 px-2 py-1 rounded-md text-gray-500 text-sm">
-                              {demographic.label}
+                        {audience.demographics.map(
+                          (demographic: { value: string; label: string }) => (
+                            <div
+                              key={demographic.value}
+                              className="flex items-center gap-2"
+                            >
+                              <div className="bg-gray-100 px-2 py-1 rounded-md text-gray-500 text-sm">
+                                {demographic.label}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          )
+                        )}
                       </div>
                     ) : (
                       <div className="flex justify-center items-center h-full">
@@ -257,7 +260,7 @@ export default function AudiencePage() {
                 Input Entities
               </h3>
               <div className="gap-4 grid md:grid-cols-2 lg:grid-cols-3">
-                {audience.entities.map((entity: QlooEntity) => (
+                {audience.entities.map((entity: Entity) => (
                   <EntityCard key={entity.id} entity={entity} />
                 ))}
               </div>
@@ -269,7 +272,7 @@ export default function AudiencePage() {
                 Expanded Entities
               </h3>
               <div className="gap-4 grid md:grid-cols-2 lg:grid-cols-3">
-                {audience.recommendedEntities.map((entity: QlooEntity) => (
+                {audience.recommendedEntities.map((entity: Entity) => (
                   <EntityCard key={entity.id} entity={entity} />
                 ))}
               </div>

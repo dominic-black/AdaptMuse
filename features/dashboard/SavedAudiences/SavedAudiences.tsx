@@ -1,12 +1,11 @@
 import { ArrowRight, Users } from "lucide-react";
-import { AudienceList } from "@/features/audience/AudienceList/AudienceList";
+import { AudienceList } from "@/features/audience/components/AudienceList/AudienceList";
 import { Audience } from "@/types/audience";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
 const AudienceListSkeleton = () => (
   <ul className="space-y-4 animate-pulse">
-    {/* Match exact AudienceList structure: ul with space-y-4, li with p-4 border-2 items */}
     {[1, 2, 3, 4, 5].map((index) => (
       <li key={index}>
         <div className="flex justify-between items-center p-4 border-2 border-gray-200 rounded-lg">

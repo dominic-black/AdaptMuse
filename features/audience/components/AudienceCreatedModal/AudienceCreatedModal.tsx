@@ -12,9 +12,11 @@ import { Audience } from "@/types/audience";
 export const AudienceCreatedModal = ({
   showAudienceModal,
   audienceFingerprint,
+  onClose,
 }: {
   showAudienceModal: boolean;
   audienceFingerprint: Audience | null;
+  onClose?: () => void;
 }) => {
   const [isContentVisible, setIsContentVisible] = useState(false);
   const router = useRouter();
@@ -33,9 +35,9 @@ export const AudienceCreatedModal = ({
   return (
     <Modal
       isOpen={showAudienceModal}
-      onClose={() => {}}
+      onClose={onClose || (() => {})}
       label="Audience Creation"
-      showCloseButton={false}
+      showCloseButton={!!onClose}
     >
       <div className="flex flex-col w-full h-full">
         {!audienceFingerprint ? (

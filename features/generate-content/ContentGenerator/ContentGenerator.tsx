@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAudiences } from "@/hooks/useAudiences";
+import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { Audience } from "@/types/audience";
 import { Job } from "@/types/job";
 import { AudienceSelector } from "@/features/generate-content/AudienceSelector/AudienceSelector";

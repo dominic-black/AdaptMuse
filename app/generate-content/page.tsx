@@ -2,7 +2,7 @@
 
 import { Screen } from "@/components/shared/Screen/Screen";
 import { ContentGenerator } from "@/features/generate-content/ContentGenerator/ContentGenerator";
-import { useAudiences } from "@/hooks/useAudiences";
+import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { useAuth } from "@/hooks/useAuth";
 import { useMemo, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";

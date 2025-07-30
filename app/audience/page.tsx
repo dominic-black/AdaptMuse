@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/shared/Screen/Screen";
-import { AudienceList } from "@/features/audience/AudienceList/AudienceList";
-import { useAudiences } from "@/hooks/useAudiences";
+import { AudienceList } from "@/features/audience/components/AudienceList/AudienceList";
+import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { useAuth } from "@/hooks/useAuth";
 import { Users } from "lucide-react";
-import { InfoCell } from "@/features/audience/InfoCell/InfoCell";
+import { InfoCell } from "@/features/audience/components/InfoCell/InfoCell";
 import { useMemo } from "react";
 
 const AudienceListSkeleton = () => (
