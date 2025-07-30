@@ -13,6 +13,8 @@ import {
   QlooBiasTrends,
   QlooSortBy
 } from '@/types/qloo-insights-types';
+import OpenAI from 'openai';
+import { storage } from '@/lib/firebaseAdmin';
 
 // Constants
 export const QLOO_API_BASE_URL = 'https://hackathon.api.qloo.com';
@@ -1010,5 +1012,87 @@ function calculateDiversityIndex(scores: number[]): number {
   
   // Normalize to 0-1 range
   return Math.min(standardDeviation / mean, 1);
+}
+
+/**
+ * Generates and uploads an avatar image for the audience using OpenAI DALL-E
+ * Falls back to default avatar if generation fails
+ */
+export async function generateAndUploadAvatar(
+  audienceName: string, 
+  ageGroup: AgeGroup[], 
+  gender: string, 
+  entities: Entity[], 
+  audiences: AudienceOption[],
+  openai: OpenAI
+): Promise<string> {
+  try {
+    const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender !== "all" ? gender : ""} individual aged: ${ageGroup.join(" and ")}.
+    
+    The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(", ")} and is interested in ${entities.map((e: Entity) => e.name).join(", ")}.
+    
+    The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
+    
+    console.log('🎨 Generating avatar image for audience:', audienceName);
+    
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+    });
+    
+    console.log("🎨 OpenAI image generation response received");
+
+    const imageUrl = response.data?.[0]?.url;
+    if (!imageUrl) {
+      throw new Error('Failed to generate image - no URL returned');
+    }
+
+    // Fetch the generated image
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      throw new Error('Failed to fetch the generated image');
+    }
+    const imageBuffer = await imageResponse.arrayBuffer();
+
+    // Upload to Firebase Storage
+    const bucketName = process.env.FIREBASE_PROJECT_ID + '.firebasestorage.app';
+    const bucket = storage.bucket(bucketName);
+    const fileName = `audience_avatars/${audienceName.replace(/\s+/g, '_')}_${Date.now()}.png`;
+    const file = bucket.file(fileName);
+    
+    const stream = file.createWriteStream({
+      metadata: {
+        contentType: 'image/png',
+      },
+    });
+
+    return new Promise((resolve, reject) => {
+      stream.on('error', (err) => {
+        console.error('🚨 Error uploading avatar image:', err);
+        reject(err);
+      });
+      
+      stream.on('finish', async () => {
+        try {
+          await file.makePublic();
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+          console.log('✅ Avatar image uploaded successfully:', publicUrl);
+          resolve(publicUrl);
+        } catch (error) {
+          console.error('🚨 Error making file public:', error);
+          reject(error);
+        }
+      });
+      
+      stream.end(Buffer.from(imageBuffer));
+    });
+
+  } catch (error) {
+    console.error('🚨 Error generating avatar image:', error);
+    console.log('⚠️ Falling back to default avatar URL');
+    return DEFAULT_AVATAR_URL;
+  }
 }
 

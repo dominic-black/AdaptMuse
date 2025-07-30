@@ -21,7 +21,7 @@ export default function Home() {
             height={32}
             className="sm:w-10 sm:h-10"
           />
-          <span className="font-extrabold text-[var(--color-text)] text-lg sm:text-xl tracking-tight">
+          <span className="bg-clip-text bg-gradient-to-br from-blue-400 via-cyan-400 to-green-400 font-extrabold text-transparent text-lg sm:text-xl tracking-tight filter">
             AdaptMuse
           </span>
         </Link>

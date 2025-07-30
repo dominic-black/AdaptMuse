@@ -148,7 +148,7 @@ export const GeneratingModal = ({
             {/* Content Display */}
             <div className="flex-grow p-6 overflow-hidden">
               <div className="flex flex-col h-full">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-shrink-0 justify-between items-center mb-4">
                   <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5 text-gray-500" />
                     <h3 className="font-semibold text-gray-900 text-lg">
@@ -181,7 +181,7 @@ export const GeneratingModal = ({
                   </button>
                 </div>
 
-                <div className="relative flex-grow">
+                <div className="relative flex-grow min-h-0">
                   <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-4 border border-gray-200 rounded-xl h-full overflow-hidden">
                     <div className="scrollbar-thumb-rounded h-full overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300">
                       <pre className="font-sans text-gray-800 text-sm break-words leading-relaxed whitespace-pre-wrap">
@@ -226,17 +226,24 @@ export const GeneratingModal = ({
 
       <style jsx>{`
         .scrollbar-thin::-webkit-scrollbar {
-          width: 6px;
+          width: 8px;
         }
         .scrollbar-track-gray-100::-webkit-scrollbar-track {
           background: #f3f4f6;
-          border-radius: 3px;
+          border-radius: 4px;
         }
         .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
           background: #d1d5db;
-          border-radius: 3px;
+          border-radius: 4px;
         }
         .scrollbar-thumb-rounded::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 4px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
           background: #9ca3af;
         }
       `}</style>

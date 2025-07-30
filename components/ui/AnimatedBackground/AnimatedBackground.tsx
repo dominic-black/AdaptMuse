@@ -9,7 +9,7 @@ export function AnimatedBackground() {
       id="background-lololol"
     >
       <motion.div
-        className="-top-32 -left-32 absolute opacity-90 blur-xl rounded-full w-[520px] h-[520px]"
+        className="-top-32 -right-32 absolute opacity-90 blur-xl rounded-full w-[520px] h-[520px]"
         style={{
           background:
             "radial-gradient(circle at 60% 40%, #e1bee7 0%, #ce93d8 50%, #ba68c8 70%, transparent 100%)",
@@ -18,7 +18,7 @@ export function AnimatedBackground() {
         transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
       />
       <motion.div
-        className="right-0 bottom-0 absolute opacity-80 blur-lg rounded-full w-[380px] h-[380px]"
+        className="bottom-0 left-0 absolute opacity-80 blur-lg rounded-full w-[380px] h-[380px]"
         style={{
           background:
             "radial-gradient(circle at 40% 60%, #f8bbd0 0%, #f48fb1 40%, #e91e63 70%, transparent 100%)",

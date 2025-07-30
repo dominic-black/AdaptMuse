@@ -15,11 +15,12 @@ import {
   fetchTrendingEntities,
   performDemographicAnalysis,
   generateTasteProfile,
+  generateAndUploadAvatar,
   createQlooHeaders,
   QLOO_API_BASE_URL,
   ERRORS,
-  DEFAULT_AVATAR_URL,
 } from './utils';
+import OpenAI from 'openai';
 
 
 // ===============================
@@ -76,6 +77,11 @@ interface DemographicsMap {
 // ===============================
 // MAIN API HANDLER
 // ===============================
+
+// Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -190,6 +196,22 @@ export async function POST(request: NextRequest) {
     const recommendedEntitiesWithDemo = addDemographicsToEntities(recommendedEntities, demographicsMap);
     const { ageTotals, genderTotals } = calculateDemographicTotals([...entitiesWithDemo, ...recommendedEntitiesWithDemo]);
 
+    // Phase 6.5: Generate avatar image
+    console.log('🎨 Phase 6.5: Avatar generation...');
+    const avatarStart = Date.now();
+    
+    const imageUrl = await generateAndUploadAvatar(
+      audienceName,
+      ageGroup,
+      gender,
+      inputEntities,
+      allAudienceOptions,
+      openai
+    );
+    
+    const avatarTime = Date.now() - avatarStart;
+    console.log(`✅ Avatar generation completed in ${avatarTime}ms: ${imageUrl}`);
+
     // Phase 7: Generate comprehensive intelligence report
     const totalProcessingTime = Date.now() - startTime;
     
@@ -256,17 +278,19 @@ export async function POST(request: NextRequest) {
       
       // Audience metadata
       name: audienceName,
-      imageUrl: DEFAULT_AVATAR_URL,
+      imageUrl: imageUrl,
       createdAt: new Date().toISOString()
     };
 
     console.log('🎯 Cultural intelligence report generated successfully');
     console.log('📈 Performance Summary:', {
       totalTime: totalProcessingTime + 'ms',
+      avatarTime: avatarTime + 'ms',
       entitiesAnalyzed: allEntities.length,
       featuresUsed: culturalIntelligenceReport.qlooIntelligence.analysisMetrics.qlooFeaturesUsed.length,
       dataQuality: culturalIntelligenceReport.qlooIntelligence.analysisMetrics.dataQualityScore,
-      culturalCoverage: culturalIntelligenceReport.qlooIntelligence.analysisMetrics.culturalCoverageScore
+      culturalCoverage: culturalIntelligenceReport.qlooIntelligence.analysisMetrics.culturalCoverageScore,
+      hasCustomAvatar: imageUrl !== 'https://cdn-icons-png.flaticon.com/512/1053/1053244.png'
     });
 
     // Save to database with proper error handling
