@@ -24,12 +24,12 @@ const Modal: React.FC<ModalProps> = ({
   useEffect(() => {
     setIsBrowser(true);
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
@@ -43,6 +43,7 @@ const Modal: React.FC<ModalProps> = ({
 
   const overlayClasses = `
     fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8
+    bg-black/20 backdrop-blur-sm
     ${isClosing ? "animate-fadeOut" : "animate-fadeIn"}
   `;
 
@@ -53,16 +54,18 @@ const Modal: React.FC<ModalProps> = ({
   `;
 
   const modalContent = isOpen ? (
-    <div
-      className={overlayClasses}
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-      onClick={handleClose}
-    >
+    <div className={overlayClasses} onClick={handleClose}>
       <div className={modalClasses} onClick={(e) => e.stopPropagation()}>
-        <div className="flex-shrink-0 flex justify-between items-center p-4 sm:p-5 border-b border-gray-200">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">{label}</h2>
+        <div className="flex flex-shrink-0 justify-between items-center p-4 sm:p-5 border-gray-200 border-b">
+          <h2 className="font-semibold text-gray-800 text-lg sm:text-xl">
+            {label}
+          </h2>
           {showCloseButton && (
-            <Button onClick={handleClose} variant="ghost" size="icon" className="rounded-full">
+            <Button
+              onClick={handleClose}
+              variant="ghost"
+              className="p-2 rounded-full"
+            >
               <X className="w-5 h-5" />
             </Button>
           )}

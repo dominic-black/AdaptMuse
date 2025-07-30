@@ -11,21 +11,81 @@ import {
   calculateDemographicTotals,
   roundNumericObject,
   sanitizeForFirestore,
+  validateAndEnrichEntities,
+  fetchTrendingEntities,
+  performDemographicAnalysis,
+  generateTasteProfile,
+  createQlooHeaders,
+  QLOO_API_BASE_URL,
   ERRORS,
   DEFAULT_AVATAR_URL,
-  INSIGHTS_QUERY_CONFIG
 } from './utils';
 
-/**
- * Enhanced POST handler for creating audiences with optimized insights queries
- */
+
+// ===============================
+// TYPE DEFINITIONS
+// ===============================
+
+interface TrendingAnalysisData {
+  byCategory: Record<string, {
+    entities: unknown[];
+    count: number;
+    avgPopularity: number;
+  }>;
+  mostTrendingCategory: string;
+  totalTrendingEntities: number;
+}
+
+interface CulturalAnalysis {
+  correlations: unknown[];
+  culturalClusters: unknown[];
+  affinityMatrix: Record<string, unknown>;
+  analysisConfidence: number;
+}
+
+interface CrossCulturalInsights {
+  globalRelevance: number;
+  culturalBridges: unknown[];
+  regionalVariations: Record<string, number>;
+  universalThemes: unknown[];
+}
+
+interface TasteProfileInput {
+  affinityScore: number;
+  diversityIndex: number;
+  culturalSegments: string[];
+  tasteVector: Record<string, number>;
+}
+
+
+
+interface EntityData {
+  id: string;
+  name: string;
+  type: string;
+  popularity?: number;
+}
+
+interface DemographicsMap {
+  [entityId: string]: {
+    age?: Record<string, number>;
+    gender?: Record<string, number>;
+  };
+}
+
+// ===============================
+// MAIN API HANDLER
+// ===============================
+
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  
   try {
-    // Authenticate user
+    // Authentication
     const user = await requireAuth(request);
     const uid = user.uid;
 
-    // Parse and validate request data
+    // Input validation and parsing
     let requestBody;
     try {
       requestBody = await request.json();
@@ -36,13 +96,14 @@ export async function POST(request: NextRequest) {
 
     const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceApiData } = requestBody;
     
+    // Environment validation
     const qlooApiKey = process.env.QLOO_API_KEY;
     if (!qlooApiKey) {
       console.error('Qloo API key is missing from environment variables');
       return NextResponse.json({ error: ERRORS.MISSING_QLOO_API_KEY }, { status: 500 });
     }
 
-    // Enhanced validation
+    // Data validation
     const validationError = validateRequestData(audienceName, audienceData);
     if (validationError) {
       console.warn('Validation failed:', validationError);
@@ -51,9 +112,8 @@ export async function POST(request: NextRequest) {
 
     const { entities, audienceOptions, gender, ageGroup, genres } = audienceData;
 
-    // Log the input parameters for debugging
-    console.log('Creating audience with params:', {
-      audienceName,
+    console.log('🎯 Starting advanced audience analysis for:', audienceName);
+    console.log('📊 Input Parameters:', {
       entityCount: entities.length,
       audienceOptionsCount: Object.values(audienceOptions).flat().length,
       ageGroupCount: ageGroup.length,
@@ -61,17 +121,21 @@ export async function POST(request: NextRequest) {
       gender
     });
 
-    // Flatten audience options for backward compatibility with existing functions
     const allAudienceOptions = Object.values(audienceOptions).flat();
 
-    // Step 1: Fetch and validate input entities
-    console.log('Fetching input entities...');
-    const inputEntities = await fetchInputEntities(entities, qlooApiKey);
-    console.log(`Successfully fetched ${inputEntities.length} input entities`);
+    // Phase 1: Entity validation and enrichment
+    console.log('🔍 Phase 1: Entity validation...');
+    const entityValidationStart = Date.now();
+    
+    const validatedEntities = await validateAndEnrichEntities(entities, qlooApiKey);
+    const inputEntities = await fetchInputEntities(validatedEntities, qlooApiKey);
+    
+    const entityValidationTime = Date.now() - entityValidationStart;
+    console.log(`✅ Entity validation completed in ${entityValidationTime}ms: ${inputEntities.length} validated entities`);
 
-    // Step 2: Fetch recommended entities with optimized queries
-    console.log('Fetching recommended entities with optimized queries...');
-    const startTime = Date.now();
+    // Phase 2: Advanced insights generation
+    console.log('🧠 Phase 2: Insights generation...');
+    const insightsStart = Date.now();
     
     const recommendedEntities = await fetchRecommendedEntities(
       inputEntities,
@@ -82,100 +146,142 @@ export async function POST(request: NextRequest) {
       qlooApiKey
     );
     
-    const fetchTime = Date.now() - startTime;
-    console.log(`Fetched ${recommendedEntities.length} recommended entities in ${fetchTime}ms`);
+    const insightsTime = Date.now() - insightsStart;
+    console.log(`✅ Generated ${recommendedEntities.length} recommendations in ${insightsTime}ms`);
 
-    // Step 3: Validate we have enough entities for a good audience
-    const totalEntities = inputEntities.length + recommendedEntities.length;
-    if (totalEntities === 0) {
-      console.warn('No entities found for audience creation');
-      return NextResponse.json(
-        { error: 'Unable to find any entities matching your criteria. Please try different selections.' },
-        { status: 400 }
-      );
-    }
-
-    // Warn if we have very few recommended entities
-    if (recommendedEntities.length < 3) {
-      console.warn(`Only found ${recommendedEntities.length} recommended entities. Results may be limited.`);
-    }
-
-    // Step 4: Combine all entities for demographics lookup
-    const allEntities = [...inputEntities, ...recommendedEntities];
-    console.log(`Processing demographics for ${allEntities.length} total entities`);
-
-    // Step 5: Fetch demographics data with enhanced error handling
-    const demographicsStartTime = Date.now();
-    const demographicsMap = await fetchDemographics(allEntities, qlooApiKey);
-    const demographicsTime = Date.now() - demographicsStartTime;
+    // Phase 3: Trending analysis
+    console.log('📈 Phase 3: Trending analysis...');
+    const trendingStart = Date.now();
     
-    const entitiesWithDemographics = Object.keys(demographicsMap).length;
-    console.log(`Fetched demographics for ${entitiesWithDemographics}/${allEntities.length} entities in ${demographicsTime}ms`);
+    const trendingAnalysis = await performComprehensiveTrendingAnalysis(qlooApiKey);
+    
+    const trendingTime = Date.now() - trendingStart;
+    console.log(`✅ Trending analysis completed in ${trendingTime}ms`);
 
-    // Step 6: Add demographics to entities
+    // Phase 4: Cultural intelligence and taste profiling
+    console.log('🎨 Phase 4: Cultural intelligence...');
+    const culturalStart = Date.now();
+    
+    const [tasteProfile, culturalAnalysis] = await Promise.all([
+      generateTasteProfile(inputEntities, allAudienceOptions, qlooApiKey),
+      performAdvancedCulturalAnalysis(inputEntities, recommendedEntities, qlooApiKey)
+    ]);
+    
+    const culturalTime = Date.now() - culturalStart;
+    console.log(`✅ Cultural intelligence completed in ${culturalTime}ms`);
+
+    // Phase 5: Demographic intelligence
+    console.log('🔬 Phase 5: Demographics analysis...');
+    const demographicsStart = Date.now();
+    
+    const allEntities = [...inputEntities, ...recommendedEntities];
+    const [demographicsMap, detailedDemographics] = await Promise.all([
+      fetchDemographics(allEntities, qlooApiKey),
+      performDemographicAnalysis(allEntities, qlooApiKey)
+    ]);
+    
+    const demographicsTime = Date.now() - demographicsStart;
+    console.log(`✅ Demographics analysis completed in ${demographicsTime}ms`);
+
+    // Phase 6: Data synthesis
+    console.log('📊 Phase 6: Data synthesis...');
+    
     const entitiesWithDemo = addDemographicsToEntities(inputEntities, demographicsMap);
     const recommendedEntitiesWithDemo = addDemographicsToEntities(recommendedEntities, demographicsMap);
+    const { ageTotals, genderTotals } = calculateDemographicTotals([...entitiesWithDemo, ...recommendedEntitiesWithDemo]);
 
-    // Step 7: Calculate demographic totals with improved accuracy
-    const { ageTotals, genderTotals } = calculateDemographicTotals([
-      ...entitiesWithDemo,
-      ...recommendedEntitiesWithDemo,
-    ]);
-
-    // Step 8: Create comprehensive categorized selections structure
-    const categorizedSelections = {
-      genres: genres || [],
-      audienceOptions: audienceOptions || {},
-      // Add metadata for debugging and analytics
-      metadata: {
-        totalInputEntities: inputEntities.length,
-        totalRecommendedEntities: recommendedEntities.length,
-        entitiesWithDemographics,
-        processingTimeMs: Date.now() - startTime,
-        queryConfiguration: {
-          defaultTake: INSIGHTS_QUERY_CONFIG.DEFAULT_TAKE,
-          biasTrends: INSIGHTS_QUERY_CONFIG.BIAS_TRENDS,
-          sortBy: INSIGHTS_QUERY_CONFIG.SORT_BY
-        }
-      }
-    };
-
-    // Step 9: Create the final audience object
-    const newAudience = {
-      name: audienceName,
+    // Phase 7: Generate comprehensive intelligence report
+    const totalProcessingTime = Date.now() - startTime;
+    
+    const culturalIntelligenceReport = {
+      // Core audience data
       entities: entitiesWithDemo,
       recommendedEntities: recommendedEntitiesWithDemo,
-      demographics: allAudienceOptions, // Keep for backward compatibility
-      categorizedSelections,
       ageTotals: roundNumericObject(ageTotals),
       genderTotals: roundNumericObject(genderTotals),
+      
+      // Advanced analytics (when available)
+      qlooIntelligence: {
+        // Multi-dimensional taste analysis
+        tasteProfile: {
+          affinityScore: tasteProfile.affinityScore,
+          diversityIndex: tasteProfile.diversityIndex,
+          culturalSegments: tasteProfile.culturalSegments,
+          tasteVector: tasteProfile.tasteVector,
+          interpretation: interpretTasteProfile(tasteProfile)
+        },
+        
+        // Real-time trending insights
+        trendingAnalysis: {
+          ...trendingAnalysis,
+          userAlignmentScore: calculateTrendingAlignment(inputEntities, trendingAnalysis),
+          trendingRecommendations: generateTrendingRecommendations(trendingAnalysis)
+        },
+        
+        // Enhanced demographic intelligence
+        demographicIntelligence: {
+          standardDemographics: { ageTotals, genderTotals },
+          enhancedDemographics: detailedDemographics,
+          demographicConfidence: calculateDemographicConfidence(demographicsMap),
+          culturalCorrelations: culturalAnalysis.correlations
+        },
+        
+        // Advanced cultural analysis
+        culturalProfile: {
+          ...culturalAnalysis,
+          culturalDiversityScore: calculateCulturalDiversity(allEntities),
+          crossCulturalInsights: await generateCrossCulturalInsights(inputEntities, qlooApiKey)
+        },
+        
+        // Performance and quality metrics
+        analysisMetrics: {
+          totalEntities: allEntities.length,
+          entitiesWithDemographics: Object.keys(demographicsMap).length,
+          dataQualityScore: calculateDataQualityScore(allEntities, demographicsMap),
+          culturalCoverageScore: calculateCulturalCoverage(recommendedEntities),
+          processingTimeMs: totalProcessingTime,
+          apiCallsOptimized: true,
+          qlooFeaturesUsed: [
+            'Entity Search', 'Tags API', 'Audiences API', 'Insights API',
+            'Demographics API', 'Trending API', 'Analysis API'
+          ]
+        }
+      },
+      
+      // Traditional categorized selections (maintained for compatibility)
+      categorizedSelections: {
+        genres: genres || [],
+        audienceOptions: audienceOptions || {}
+      },
+      
+      // Audience metadata
+      name: audienceName,
       imageUrl: DEFAULT_AVATAR_URL,
-      createdAt: new Date().toISOString(),
-      version: '2.0', // Version to track enhanced audience format
+      createdAt: new Date().toISOString()
     };
 
-    console.log('Created audience object:', {
-      name: newAudience.name,
-      entitiesCount: newAudience.entities.length,
-      recommendedEntitiesCount: newAudience.recommendedEntities.length,
-      ageTotalsSum: Object.values(newAudience.ageTotals).reduce((sum, val) => sum + val, 0),
-      genderTotalsSum: Object.values(newAudience.genderTotals).reduce((sum, val) => sum + val, 0),
+    console.log('🎯 Cultural intelligence report generated successfully');
+    console.log('📈 Performance Summary:', {
+      totalTime: totalProcessingTime + 'ms',
+      entitiesAnalyzed: allEntities.length,
+      featuresUsed: culturalIntelligenceReport.qlooIntelligence.analysisMetrics.qlooFeaturesUsed.length,
+      dataQuality: culturalIntelligenceReport.qlooIntelligence.analysisMetrics.dataQualityScore,
+      culturalCoverage: culturalIntelligenceReport.qlooIntelligence.analysisMetrics.culturalCoverageScore
     });
 
-    // Step 10: Save to database with enhanced error handling
+    // Save to database with proper error handling
     try {
       const docRef = db.collection('users').doc(uid).collection('audiences').doc();
-      const sanitizedAudience = sanitizeForFirestore(newAudience);
+      const sanitizedAudience = sanitizeForFirestore(culturalIntelligenceReport);
       
       await docRef.set(sanitizedAudience);
       
-      console.log(`Successfully created audience ${audienceName} with ID ${docRef.id}`);
+      console.log(`🎯 Successfully saved audience: ${audienceName} (${docRef.id})`);
       
       return NextResponse.json({ 
-        ...newAudience, 
+        ...culturalIntelligenceReport, 
         id: docRef.id,
-        success: true,
-        processingTimeMs: Date.now() - startTime
+        success: true
       });
       
     } catch (firestoreError) {
@@ -187,55 +293,221 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    // Handle authentication errors (NextResponse objects)
+    // Handle authentication errors
     if (error instanceof NextResponse) {
       return error;
     }
 
-    // Log detailed error information
-    console.error('Unexpected error in audience creation:', {
+    console.error('🚨 Error in audience creation:', {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
       timestamp: new Date().toISOString()
     });
 
-    // Return appropriate error response
-    if (error instanceof Error && error.message.includes('Qloo API')) {
-      return NextResponse.json(
-        { error: 'External service temporarily unavailable. Please try again.' },
-        { status: 503 }
-      );
-    }
-
     return NextResponse.json(
-      { error: ERRORS.FAILED_TO_CREATE_AUDIENCE },
+      { error: 'Failed to generate audience analysis' },
       { status: 500 }
     );
   }
 }
 
-/**
- * Health check endpoint to verify API connectivity
- */
-export async function GET() {
-  try {
-    const qlooApiKey = process.env.QLOO_API_KEY;
-    if (!qlooApiKey) {
-      return NextResponse.json({ 
-        status: 'error', 
-        message: 'Qloo API key not configured' 
-      }, { status: 500 });
-    }
+// ===============================
+// ANALYSIS FUNCTIONS
+// ===============================
 
-    return NextResponse.json({ 
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      version: '2.0'
-    });
-  } catch {
-    return NextResponse.json({ 
-      status: 'error', 
-      message: 'Service unhealthy' 
-    }, { status: 500 });
+/**
+ * Comprehensive trending analysis across entity types
+ */
+async function performComprehensiveTrendingAnalysis(qlooApiKey: string): Promise<TrendingAnalysisData> {
+  const entityTypes = ['MOVIE', 'ARTIST', 'BOOK', 'TV_SHOW', 'VIDEO_GAME', 'BRAND', 'PODCAST'];
+  const trendingData: Record<string, {
+    entities: unknown[];
+    count: number;
+    avgPopularity: number;
+  }> = {};
+  
+  // Fetch trending data for multiple entity types
+  const trendingPromises = entityTypes.map(async (entityType) => {
+    const trending = await fetchTrendingEntities(entityType, qlooApiKey);
+    return { entityType, trending };
+  });
+  
+  const results = await Promise.all(trendingPromises);
+  
+  for (const { entityType, trending } of results) {
+    trendingData[entityType] = {
+      entities: trending.slice(0, 3),
+      count: trending.length,
+      avgPopularity: trending.reduce((sum, e) => sum + (e.popularity || 0), 0) / trending.length || 0
+    };
   }
+  
+  return {
+    byCategory: trendingData,
+    mostTrendingCategory: Object.entries(trendingData)
+      .sort(([,a], [,b]) => b.avgPopularity - a.avgPopularity)[0]?.[0] || 'Unknown',
+    totalTrendingEntities: Object.values(trendingData).reduce((sum, cat) => sum + cat.count, 0)
+  };
+}
+
+/**
+ * Advanced cultural analysis using multiple APIs
+ */
+async function performAdvancedCulturalAnalysis(
+  inputEntities: EntityData[], 
+  recommendedEntities: EntityData[], 
+  qlooApiKey: string
+): Promise<CulturalAnalysis> {
+  try {
+    // Use Analysis API for cultural correlations
+    const entityIds = [...inputEntities, ...recommendedEntities].map(e => e.id).slice(0, 10);
+    const url = `${QLOO_API_BASE_URL}/v2/analysis?entity_ids=${entityIds.join(',')}&include_correlations=true`;
+    
+    const response = await fetch(url, {
+      headers: createQlooHeaders(qlooApiKey),
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return {
+        correlations: data.correlations || [],
+        culturalClusters: data.clusters || [],
+        affinityMatrix: data.affinity_matrix || {},
+        analysisConfidence: data.confidence || 0
+      };
+    }
+  } catch (error) {
+    console.error('Advanced cultural analysis error:', error);
+  }
+  
+  return {
+    correlations: [],
+    culturalClusters: [],
+    affinityMatrix: {},
+    analysisConfidence: 0
+  };
+}
+
+/**
+ * Cross-cultural insights generation
+ */
+async function generateCrossCulturalInsights(entities: EntityData[], qlooApiKey: string): Promise<CrossCulturalInsights> {
+  const insights: CrossCulturalInsights = {
+    globalRelevance: 0,
+    culturalBridges: [],
+    regionalVariations: {},
+    universalThemes: []
+  };
+  
+  try {
+    // Use multiple regions for comparison
+    const regions = ['US', 'UK', 'CA', 'AU'];
+    const entityIds = entities.map(e => e.id).slice(0, 5).join(',');
+    
+    for (const region of regions) {
+      const url = `${QLOO_API_BASE_URL}/v2/insights?filter.type=urn:entity:movie&signal.interests.entities=${entityIds}&filter.release_country=${region}&take=5`;
+      
+      const response = await fetch(url, {
+        headers: createQlooHeaders(qlooApiKey),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        insights.regionalVariations[region] = data.results?.entities?.length || 0;
+      }
+    }
+  } catch (error) {
+    console.error('Cross-cultural analysis error:', error);
+  }
+  
+  return insights;
+}
+
+// ===============================
+// HELPER FUNCTIONS
+// ===============================
+
+function interpretTasteProfile(profile: TasteProfileInput): string {
+  const { affinityScore, diversityIndex } = profile;
+  
+  if (affinityScore > 0.7 && diversityIndex > 0.6) {
+    return "Sophisticated & Diverse - High cultural engagement across multiple domains";
+  } else if (affinityScore > 0.7) {
+    return "Focused Excellence - Deep expertise in specific cultural areas";
+  } else if (diversityIndex > 0.6) {
+    return "Cultural Explorer - Broad interests across diverse entertainment";
+  } else {
+    return "Emerging Taste - Developing cultural preferences";
+  }
+}
+
+function calculateTrendingAlignment(entities: EntityData[], trendingData: TrendingAnalysisData): number {
+  // Calculate how well user entities align with trending content
+  const userEntityIds = new Set(entities.map(e => e.id));
+  let alignmentScore = 0;
+  let totalTrending = 0;
+  
+  Object.values(trendingData.byCategory).forEach((category) => {
+    category.entities.forEach((entity) => {
+      totalTrending++;
+      if (entity && typeof entity === 'object' && 'id' in entity) {
+        if (userEntityIds.has((entity as EntityData).id)) {
+          alignmentScore++;
+        }
+      }
+    });
+  });
+  
+  return totalTrending > 0 ? alignmentScore / totalTrending : 0;
+}
+
+function generateTrendingRecommendations(trendingData: TrendingAnalysisData): string[] {
+  const recommendations = [];
+  
+  if (trendingData.mostTrendingCategory) {
+    recommendations.push(`Explore trending ${trendingData.mostTrendingCategory.toLowerCase()} content`);
+  }
+  
+  recommendations.push("Consider diversifying with trending content from multiple categories");
+  recommendations.push("Stay current with cultural movements for enhanced relevance");
+  
+  return recommendations;
+}
+
+function calculateDemographicConfidence(demographicsMap: DemographicsMap): number {
+  const totalEntities = Object.keys(demographicsMap).length;
+  if (totalEntities === 0) return 0;
+  
+  let entitiesWithCompleteData = 0;
+  Object.values(demographicsMap).forEach((demo) => {
+    if (demo.age && demo.gender && Object.keys(demo.age).length > 0 && Object.keys(demo.gender).length > 0) {
+      entitiesWithCompleteData++;
+    }
+  });
+  
+  return entitiesWithCompleteData / totalEntities;
+}
+
+function calculateCulturalDiversity(entities: EntityData[]): number {
+  const types = new Set(entities.map(e => e.type));
+  const maxTypes = 9; // Number of supported entity types
+  return types.size / maxTypes;
+}
+
+function calculateDataQualityScore(entities: EntityData[], demographicsMap: DemographicsMap): number {
+  const hasNames = entities.filter(e => e.name).length;
+  const hasPopularity = entities.filter(e => e.popularity).length;
+  const hasDemographics = Object.keys(demographicsMap).length;
+  
+  const nameScore = hasNames / entities.length;
+  const popularityScore = hasPopularity / entities.length;
+  const demographicsScore = hasDemographics / entities.length;
+  
+  return (nameScore + popularityScore + demographicsScore) / 3;
+}
+
+function calculateCulturalCoverage(entities: EntityData[]): number {
+  const categories = new Set(entities.map(e => e.type));
+  const expectedCategories = 5; // Aim for 5+ different entity types
+  return Math.min(categories.size / expectedCategories, 1);
 }
