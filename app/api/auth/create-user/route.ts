@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth, db } from '@/lib/firebaseAdmin'
-import { validateSignupForm } from '@/utils/validation'
-
-type User = {
-  email: string;
-  firstName: string;
-  lastName: string;
-};
+import { validateCreateUser } from '@/utils/validation'
+import { CreateUserFormData } from '@/types/auth';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, firstName, lastName } = body as User;
+    const { email, firstName, lastName } = body as CreateUserFormData;
     
     // Get the ID token from the Authorization header
     const authHeader = request.headers.get('Authorization');
@@ -32,8 +27,8 @@ export async function POST(request: NextRequest) {
     
     const uid = decodedToken.uid;
     
-    // Validate the form data (using a dummy password for validation)
-    const validationResult = validateSignupForm({ email, password: "ValidPassword123!", firstName, lastName });
+    // Validate the form data
+    const validationResult = validateCreateUser({ email, firstName, lastName });
     if (validationResult) {
       return NextResponse.json({ error: validationResult }, { status: 400 });
     }

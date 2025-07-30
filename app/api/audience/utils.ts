@@ -219,38 +219,44 @@ export async function fetchRecommendedEntities(
  * Fetches demographics data for entities
  */
 export async function fetchDemographics(entities: Entity[], qlooApiKey: string): Promise<Record<string, { age: Record<string, number>, gender: Record<string, number> }>> {
-  const entityIds = entities.map(e => e.id).filter(Boolean).join(',');
+  const CHUNK_SIZE = 50; // Define a chunk size to avoid overly long URLs
+  const entityIds = entities.map(e => e.id).filter(Boolean);
   
-  if (!entityIds) {
+  if (entityIds.length === 0) {
     return {};
   }
 
+  const demographicsMap: Record<string, { age: Record<string, number>, gender: Record<string, number> }> = {};
+
   try {
-    const url = `${QLOO_INSIGHTS_URL}?filter.type=urn:demographics&signal.interests.entities=${entityIds}`;
-    const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
-    });
+    for (let i = 0; i < entityIds.length; i += CHUNK_SIZE) {
+      const chunk = entityIds.slice(i, i + CHUNK_SIZE);
+      const url = `${QLOO_INSIGHTS_URL}?filter.type=urn:demographics&signal.interests.entities=${chunk.join(',')}`;
+      
+      const response = await fetch(url, {
+        headers: createQlooHeaders(qlooApiKey),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Demographics API responded with status ${response.status}`);
-    }
+      if (!response.ok) {
+        console.warn(`Demographics API responded with status ${response.status} for a chunk.`);
+        continue; // Continue to the next chunk on error
+      }
 
-    const data = await response.json();
-    const demographicsList: DemographicData[] = data.results?.demographics || [];
+      const data = await response.json();
+      const demographicsList: DemographicData[] = data.results?.demographics || [];
 
-    const demographicsMap: Record<string, { age: Record<string, number>, gender: Record<string, number> }> = {};
-    
-    for (const demographic of demographicsList) {
-      demographicsMap[demographic.entity_id] = {
-        age: demographic.query.age,
-        gender: demographic.query.gender,
-      };
+      for (const demographic of demographicsList) {
+        demographicsMap[demographic.entity_id] = {
+          age: demographic.query.age,
+          gender: demographic.query.gender,
+        };
+      }
     }
 
     return demographicsMap;
   } catch (error) {
     console.error('Error fetching demographics:', error);
-    return {};
+    return {}; // Return what has been fetched so far or an empty object
   }
 }
 
@@ -353,54 +359,3 @@ export function sanitizeForFirestore<T>(obj: T): T {
   return obj;
 }
 
-export async function generateAndUploadAvatar(openai: OpenAI, audienceName: string, ageGroup: AgeGroup[], gender: Gender, entities: Entity[], audiences: AudienceOption[]): Promise<string | null> {
-    return null;
-    const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender !== "all" ? gender : ""} individual aged: ${ageGroup.join(" and ")}.
-    
-    The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(", ")} and is interested in ${entities.map((e: Entity) => e.name).join(", ")}.
-    
-    The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
-    
-    
-    const response = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: prompt,
-      n: 1,
-      size: "1024x1024",
-    });
-    console.log("open ai response", response);
-  
-    const imageUrl = response.data?.[0]?.url;
-    if (!imageUrl) {
-      throw new Error('Failed to generate image.');
-    }
-  
-    const imageResponse = await fetch(imageUrl as string);
-    if (!imageResponse.ok) {
-      throw new Error('Failed to fetch the generated image.');
-    }
-    const imageBuffer = await imageResponse.arrayBuffer();
-  
-    const bucketName = `${process.env.FIREBASE_STORAGE_BUCKET}`;
-    const bucket = storage.bucket(bucketName);
-    const fileName = `audience_avatars/${audienceName.replace(/\s+/g, '_')}_${Date.now()}.png`;
-    const file = bucket.file(fileName);
-    
-    const stream = file.createWriteStream({
-      metadata: {
-        contentType: 'image/png',
-      },
-    });
-  
-    return new Promise((resolve, reject) => {
-      stream.on('error', (err) => {
-        reject(err);
-      });
-      stream.on('finish', async () => {
-        await file.makePublic();
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
-        resolve(publicUrl);
-      });
-      stream.end(Buffer.from(imageBuffer));
-    });
-}

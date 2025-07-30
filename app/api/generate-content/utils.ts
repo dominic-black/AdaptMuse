@@ -68,10 +68,11 @@ export function validateRequestBody(body: unknown): GenerateContentRequest | nul
  * Sanitizes input strings to prevent injection attacks
  */
 export function sanitizeInput(input: string): string {
+  // Allow alphanumeric characters, spaces, and a few common punctuation marks.
+  // This is a restrictive approach to prevent prompt injection.
   return input
     .trim()
-    .replace(/[<>]/g, '') // Remove potential HTML/XML tags
-    .replace(/[^\w\s\-.,!?()'"]/g, ''); // Keep only safe characters
+    .replace(/[^a-zA-Z0-9\s\-.,!?()'"]/g, '');
 }
 
 /**
@@ -145,13 +146,18 @@ export async function getAudienceData(uid: string, audienceId: string): Promise<
 export function createContentPrompt(contentType: string, audienceData: AudienceData, context: string): string {
   const audienceDescription = `The audience is named ${audienceData.name}. Their interests include ${audienceData.entities.map((e: Entity) => e.name).join(', ')}. Age distribution: ${JSON.stringify(audienceData.ageTotals)}. Gender distribution: ${JSON.stringify(audienceData.genderTotals)}.`;
 
-  return `You are an AI assistant specialized in tailoring ${contentType} content for specific target audiences. ${audienceDescription}.
+  const promptTemplate = `You are an AI assistant specialized in tailoring {contentType} content for a specific target audience. {audienceDescription}.
     
-    !!IMPORTANT: Additional Context: ${context}
+    !!IMPORTANT: Additional Context: {context}
     
     Based on the audience description and additional context, please provide the refined content. Focus on tone, vocabulary, and style to resonate with the target audience.
     
     !!IMPORTANT: your response should **ONLY** be the refined content.`;
+
+  return promptTemplate
+    .replace('{contentType}', contentType)
+    .replace('{audienceDescription}', audienceDescription)
+    .replace('{context}', context);
 }
 
 /**
@@ -160,12 +166,16 @@ export function createContentPrompt(contentType: string, audienceData: AudienceD
 export function createIconPrompt(contentType: string): string {
   const availableIcons = Object.keys(jobIconNames).join(', ');
   
-  return `You are an AI assistant specialized in selecting the most appropriate icon for a given job. The job is ${contentType}
+  const promptTemplate = `You are an AI assistant specialized in selecting the most appropriate icon for a given job. The job is {contentType}
     
-    The icon options are: ${availableIcons}
+    The icon options are: {availableIcons}
     
     !!IMPORTANT: your response should **ONLY** be the icon name and NOTHING ELSE.
     !!IMPORTANT: Make sure the first letter of the icon name is capitalized.`;
+
+  return promptTemplate
+    .replace('{contentType}', contentType)
+    .replace('{availableIcons}', availableIcons);
 }
 
 /**
@@ -234,7 +244,7 @@ export async function createJob(
         name: audienceData.name,
         imageUrl: audienceData.imageUrl || undefined,
       },
-      icon: (selectedIcon in jobIcons ? selectedIcon : 'Default') as keyof typeof jobIcons,
+      icon: (jobIcons.hasOwnProperty(selectedIcon) ? selectedIcon : 'Default') as keyof typeof jobIcons,
       contentType: sanitizeInput(request.contentType),
       generatedContent: generatedContent,
       originalContent: request.content ? sanitizeInput(request.content) : '',

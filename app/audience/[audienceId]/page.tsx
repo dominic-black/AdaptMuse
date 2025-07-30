@@ -116,29 +116,202 @@ export default function AudiencePage() {
   if (loading) {
     return (
       <Screen heading="Loading...">
-        <div className="space-y-6">
-          {/* Loading skeleton */}
-          <div className="gap-6 grid grid-cols-1 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-white shadow-sm p-6 border border-gray-200 rounded-xl animate-pulse"
-              >
-                <div className="bg-gray-200 mb-4 rounded w-1/3 h-4"></div>
-                <div className="bg-gray-200 rounded w-1/2 h-8"></div>
+        <div className="space-y-8">
+          {/* Metrics Overview Skeleton */}
+          <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
+            {/* Primary Metrics Card */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 p-6 border border-blue-200/50 rounded-xl animate-pulse">
+              <div className="flex justify-between items-center mb-3">
+                <div className="bg-blue-300 p-2 rounded-lg w-9 h-9"></div>
+                <div className="bg-blue-200 rounded-full w-16 h-5"></div>
               </div>
-            ))}
+              <div className="bg-blue-200 mb-1 rounded w-32 h-4"></div>
+              <div className="bg-blue-300 mb-2 rounded w-20 h-8"></div>
+              <div className="bg-blue-200 rounded w-28 h-4"></div>
+            </div>
+
+            {/* Diversity Score Card */}
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 p-6 border border-emerald-200/50 rounded-xl animate-pulse">
+              <div className="flex justify-between items-center mb-3">
+                <div className="bg-emerald-300 p-2 rounded-lg w-9 h-9"></div>
+                <div className="bg-emerald-200 rounded-full w-16 h-5"></div>
+              </div>
+              <div className="bg-emerald-200 mb-1 rounded w-28 h-4"></div>
+              <div className="bg-emerald-300 mb-2 rounded w-16 h-8"></div>
+              <div className="bg-emerald-200 rounded w-32 h-4"></div>
+            </div>
+
+            {/* Total Insights Card */}
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100/50 p-6 border border-purple-200/50 rounded-xl animate-pulse">
+              <div className="flex justify-between items-center mb-3">
+                <div className="bg-purple-300 p-2 rounded-lg w-9 h-9"></div>
+                <div className="bg-purple-200 rounded-full w-20 h-5"></div>
+              </div>
+              <div className="bg-purple-200 mb-1 rounded w-24 h-4"></div>
+              <div className="bg-purple-300 mb-2 rounded w-12 h-8"></div>
+              <div className="bg-purple-200 rounded w-36 h-4"></div>
+            </div>
           </div>
-          <div className="gap-6 grid grid-cols-1 lg:grid-cols-2">
-            {[...Array(2)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-white shadow-sm p-6 border border-gray-200 rounded-xl animate-pulse"
-              >
-                <div className="bg-gray-200 mb-4 rounded w-1/4 h-6"></div>
-                <div className="bg-gray-200 rounded w-full h-64"></div>
+
+          {/* Charts Section Skeleton */}
+          <div className="gap-8 grid grid-cols-1 lg:grid-cols-2">
+            {/* Age Distribution Chart */}
+            <Cell>
+              <div className="space-y-6 animate-pulse">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-200 p-2 rounded-lg w-9 h-9"></div>
+                    <div>
+                      <div className="bg-gray-200 mb-2 rounded w-32 h-5"></div>
+                      <div className="bg-gray-200 rounded w-48 h-4"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-100 rounded-lg w-full h-80"></div>
               </div>
-            ))}
+            </Cell>
+
+            {/* Gender Distribution Chart */}
+            <Cell>
+              <div className="space-y-6 animate-pulse">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-pink-200 p-2 rounded-lg w-9 h-9"></div>
+                    <div>
+                      <div className="bg-gray-200 mb-2 rounded w-36 h-5"></div>
+                      <div className="bg-gray-200 rounded w-44 h-4"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-100 rounded-lg w-full h-80"></div>
+              </div>
+            </Cell>
+          </div>
+
+          {/* Audience Selections Skeleton */}
+          <Cell>
+            <div className="space-y-6 animate-pulse">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="bg-emerald-200 p-2 rounded-lg w-9 h-9"></div>
+                  <div>
+                    <div className="bg-gray-200 mb-2 rounded w-36 h-5"></div>
+                    <div className="bg-gray-200 rounded w-52 h-4"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="pr-2 max-h-96 overflow-y-auto">
+                <div className="space-y-6">
+                  {/* Category Section 1 */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 pb-2 border-gray-100 border-b">
+                      <div className="bg-purple-200 p-2 rounded-lg w-7 h-7"></div>
+                      <div className="bg-gray-200 rounded w-16 h-4"></div>
+                      <div className="bg-purple-200 rounded-full w-6 h-5"></div>
+                    </div>
+                    <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+                      {[...Array(8)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="bg-purple-100 p-3 border border-purple-200 rounded-lg"
+                        >
+                          <div className="bg-purple-200 rounded w-full h-4"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Category Section 2 */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 pb-2 border-gray-100 border-b">
+                      <div className="bg-blue-200 p-2 rounded-lg w-7 h-7"></div>
+                      <div className="bg-gray-200 rounded w-20 h-4"></div>
+                      <div className="bg-blue-200 rounded-full w-6 h-5"></div>
+                    </div>
+                    <div className="gap-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+                      {[...Array(6)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="bg-blue-100 p-3 border border-blue-200 rounded-lg"
+                        >
+                          <div className="bg-blue-200 rounded w-full h-4"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Cell>
+
+          {/* Entities Sections Skeleton */}
+          <div className="gap-8 grid grid-cols-1 lg:grid-cols-2">
+            {/* Input Entities */}
+            <Cell>
+              <div className="space-y-6 animate-pulse">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-200 p-2 rounded-lg w-9 h-9"></div>
+                    <div>
+                      <div className="bg-gray-200 mb-2 rounded w-28 h-5"></div>
+                      <div className="bg-gray-200 rounded w-48 h-4"></div>
+                    </div>
+                  </div>
+                  <div className="bg-green-200 px-3 py-1 rounded-full w-8 h-6"></div>
+                </div>
+                <div className="gap-4 grid grid-cols-1">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-white shadow-sm p-4 border border-gray-200 rounded-lg"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="bg-gray-200 rounded w-32 h-5"></div>
+                        <div className="bg-gray-200 rounded w-16 h-4"></div>
+                      </div>
+                      <div className="bg-gray-200 mb-3 rounded w-full h-4"></div>
+                      <div className="flex gap-2">
+                        <div className="bg-gray-200 rounded-full w-12 h-5"></div>
+                        <div className="bg-gray-200 rounded-full w-16 h-5"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Cell>
+
+            {/* AI Recommendations */}
+            <Cell>
+              <div className="space-y-6 animate-pulse">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-amber-200 p-2 rounded-lg w-9 h-9"></div>
+                    <div>
+                      <div className="bg-gray-200 mb-2 rounded w-36 h-5"></div>
+                      <div className="bg-gray-200 rounded w-44 h-4"></div>
+                    </div>
+                  </div>
+                  <div className="bg-amber-200 px-3 py-1 rounded-full w-8 h-6"></div>
+                </div>
+                <div className="gap-4 grid grid-cols-1">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-white shadow-sm p-4 border border-gray-200 rounded-lg"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="bg-gray-200 rounded w-28 h-5"></div>
+                        <div className="bg-gray-200 rounded w-12 h-4"></div>
+                      </div>
+                      <div className="bg-gray-200 mb-3 rounded w-full h-4"></div>
+                      <div className="flex gap-2">
+                        <div className="bg-gray-200 rounded-full w-16 h-5"></div>
+                        <div className="bg-gray-200 rounded-full w-20 h-5"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Cell>
           </div>
         </div>
       </Screen>
@@ -584,7 +757,7 @@ export default function AudiencePage() {
         </Cell>
 
         {/* Entities Sections */}
-        <div className="gap-8 grid grid-cols-1 lg:grid-cols-2">
+        <div className="space-y-8">
           {/* Input Entities */}
           <Cell>
             <div className="space-y-6">
@@ -607,7 +780,7 @@ export default function AudiencePage() {
                 </span>
               </div>
 
-              <div className="gap-4 grid grid-cols-1">
+              <div className="gap-4 grid grid-cols-3">
                 {audience.entities.map((entity: Entity) => (
                   <EntityCard key={entity.id} entity={entity} />
                 ))}
@@ -637,7 +810,7 @@ export default function AudiencePage() {
                 </span>
               </div>
 
-              <div className="gap-4 grid grid-cols-1">
+              <div className="gap-4 grid grid-cols-3">
                 {audience.recommendedEntities.map((entity: Entity) => (
                   <EntityCard key={entity.id} entity={entity} />
                 ))}

@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Entity } from '@/types/entity';
+import { withAuth } from '@/lib/authMiddleware';
+import { AuthenticatedUser } from '@/types';
+import { EntityTypes } from '@/constants/entity';
 
-export async function GET(request: NextRequest) {
+const ALLOWED_ENTITY_TYPES = Object.values(EntityTypes);
+
+export const GET = withAuth(async (request: NextRequest, user: AuthenticatedUser) => {
   const query = request.nextUrl.searchParams.get('query');
   const type = request.nextUrl.searchParams.get('type');
   const qlooApiKey = process.env.QLOO_API_KEY;
 
-  if (!qlooApiKey || !query || !type) {
-    return NextResponse.json({ error: 'Missing query or type' }, { status: 400 });
+  if (!qlooApiKey || !query || typeof query !== 'string' || !type || !ALLOWED_ENTITY_TYPES.includes(type)) {
+    return NextResponse.json({ error: 'Missing or invalid query or type' }, { status: 400 });
   }
 
   try {
@@ -66,4 +71,4 @@ export async function GET(request: NextRequest) {
     console.error("Error calling Qloo API", error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+});

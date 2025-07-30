@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebaseAdmin';
 import { requireAuth } from '@/lib/authMiddleware';
-import OpenAI from 'openai';
 import { AudienceApiData } from '@/types';
 import { 
-  generateAndUploadAvatar,
   validateRequestData,
   fetchInputEntities,
   fetchRecommendedEntities,
@@ -16,10 +14,6 @@ import {
   ERRORS,
   DEFAULT_AVATAR_URL
 } from './utils';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 /**
  * Main POST handler for creating audiences
@@ -77,16 +71,6 @@ export async function POST(request: NextRequest) {
       ...recommendedEntitiesWithDemo,
     ]);
 
-    // Generate avatar
-    const imageUrl = await generateAndUploadAvatar(
-      openai,
-      audienceName,
-      ageGroup,
-      gender,
-      entities,
-      allAudienceOptions
-    );
-
     // Create categorized selections structure
     const categorizedSelections = {
       genres: genres || [],
@@ -102,7 +86,7 @@ export async function POST(request: NextRequest) {
       categorizedSelections,
       ageTotals: roundNumericObject(ageTotals),
       genderTotals: roundNumericObject(genderTotals),
-      imageUrl: imageUrl || DEFAULT_AVATAR_URL,
+      imageUrl: DEFAULT_AVATAR_URL,
     };
 
     console.log("newAudience", newAudience);

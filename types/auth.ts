@@ -10,6 +10,12 @@ export type LoginFormData = {
   password: string;
 };
 
+export type CreateUserFormData = {
+  email: string;
+  firstName: string;
+  lastName: string;
+};
+
 export type AuthResponse = {
   success: boolean;
   uid?: string;
