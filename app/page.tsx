@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground/AnimatedBackground";
 import { motion } from "framer-motion";
 import { ArrowRight, Users, Bot, BarChart } from "lucide-react";
 

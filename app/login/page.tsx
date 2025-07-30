@@ -1,11 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "@/features/auth/LoginForm/LoginForm";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground/AnimatedBackground";
+import { motion } from "framer-motion";
 
 export default function Login() {
   return (
-    <div className="flex justify-center items-center bg-gray-100 px-4 sm:px-6 lg:px-8 py-12 min-h-screen">
-      <div className="space-y-8 bg-white shadow-lg p-10 border border-gray-200 rounded-xl w-full max-w-md">
+    <div className="relative flex justify-center items-center px-4 sm:px-6 lg:px-8 py-12 min-h-screen">
+      <AnimatedBackground />
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="z-10 relative space-y-8 bg-white/60 shadow-xl backdrop-blur-lg p-8 sm:p-10 border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-md"
+      >
         <div>
           <Image
             className="mx-auto w-auto h-12"
@@ -14,21 +24,21 @@ export default function Login() {
             width={48}
             height={48}
           />
-          <h2 className="mt-6 font-extrabold text-gray-900 text-3xl text-center">
+          <h2 className="bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 mt-6 font-extrabold text-transparent text-2xl sm:text-3xl text-center tracking-tight">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-gray-600 text-sm text-center">
+          <p className="opacity-80 mt-2 text-[var(--color-text)] text-sm text-center">
             Or
             <Link
               href="/signup"
-              className="ml-1 font-medium text-primary hover:text-primary/80"
+              className="ml-1 font-medium text-[var(--color-primary)] hover:text-[var(--color-primary)]/80 transition-colors"
             >
               create a new account
             </Link>
           </p>
         </div>
         <LoginForm />
-      </div>
+      </motion.div>
     </div>
   );
 }

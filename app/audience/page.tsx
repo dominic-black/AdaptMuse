@@ -7,8 +7,7 @@ import { useAudiences } from "@/hooks/useAudiences";
 import { useAuth } from "@/hooks/useAuth";
 import { Users } from "lucide-react";
 import { InfoCell } from "@/features/audience/InfoCell/InfoCell";
-import { useMemo, useState } from "react";
-import { SearchBar } from "@/components/ui/SearchBar/SearchBar";
+import { useMemo } from "react";
 
 const AudienceListSkeleton = () => (
   <div className="space-y-4 animate-pulse">
@@ -33,14 +32,6 @@ const AudienceListSkeleton = () => (
 export default function AudiencePage() {
   const { audiences, loading: audiencesLoading } = useAudiences();
   const { user, loading: authLoading } = useAuth();
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredAudiences = useMemo(() => {
-    if (!audiences) return [];
-    return audiences.filter((audience) =>
-      audience.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [audiences, searchTerm]);
 
   // Professional data-ready check - same logic as home page
   const isDataReady = useMemo(() => {
@@ -94,18 +85,14 @@ export default function AudiencePage() {
           ) : (
             <div>
               <div className="flex justify-between items-center mb-6">
-                <div className="flex-1 max-w-sm">
-                  <SearchBar
-                    placeholder="Search by audience name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+                <h2 className="font-semibold text-gray-800 text-xl">
+                  Your Audiences
+                </h2>
                 <Button href="/audience/create" variant="outline">
                   Create New
                 </Button>
               </div>
-              <AudienceList audiences={filteredAudiences} />
+              <AudienceList audiences={audiences} />
             </div>
           )}
         </div>
