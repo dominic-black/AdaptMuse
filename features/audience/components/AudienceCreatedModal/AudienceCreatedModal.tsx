@@ -15,10 +15,10 @@ import {
   TrendingUp,
   Eye,
   ArrowRight,
-  Star,
   Zap,
 } from "lucide-react";
 import { Audience } from "@/types/audience";
+import { formatAgeGroupLabel } from "@/utils/audience";
 
 export const AudienceCreatedModal = ({
   showAudienceModal,
@@ -31,16 +31,25 @@ export const AudienceCreatedModal = ({
 }) => {
   const [isContentVisible, setIsContentVisible] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
+  const [showSuccessContent, setShowSuccessContent] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (audienceFingerprint) {
-      const timer = setTimeout(() => {
-        setIsContentVisible(true);
-        setTimeout(() => setShowInsights(true), 300);
-      }, 500);
-      return () => clearTimeout(timer);
+      // Small delay to let loading animation finish gracefully
+      const showContentTimer = setTimeout(() => {
+        setShowSuccessContent(true);
+        // Then fade in the content
+        setTimeout(() => {
+          setIsContentVisible(true);
+          // Finally show insights
+          setTimeout(() => setShowInsights(true), 400);
+        }, 100);
+      }, 800);
+
+      return () => clearTimeout(showContentTimer);
     } else {
+      setShowSuccessContent(false);
       setIsContentVisible(false);
       setShowInsights(false);
     }
@@ -52,7 +61,7 @@ export const AudienceCreatedModal = ({
     const topAge = Object.entries(audienceFingerprint.ageTotals).sort(
       ([, a], [, b]) => b - a
     )[0];
-    return topAge ? topAge[0].replace("_", "-").replace("and", "+") : "Mixed";
+    return topAge ? formatAgeGroupLabel(topAge[0]) : "Mixed";
   };
 
   const getDominantGender = () => {
@@ -77,7 +86,7 @@ export const AudienceCreatedModal = ({
       showCloseButton={!!onClose}
     >
       <div className="flex flex-col w-full h-full">
-        {!audienceFingerprint ? (
+        {!audienceFingerprint || !showSuccessContent ? (
           // Loading State
           <div className="flex flex-col flex-grow justify-center items-center p-8 text-center">
             <div className="relative">
@@ -89,11 +98,14 @@ export const AudienceCreatedModal = ({
 
             <div className="space-y-4 mt-8">
               <h2 className="bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 font-bold text-gray-900 text-transparent text-3xl">
-                Crafting Your Audience
+                {audienceFingerprint
+                  ? "Finalizing Your Audience"
+                  : "Crafting Your Audience"}
               </h2>
               <p className="max-w-md text-gray-600 text-lg leading-relaxed">
-                Our AI is analyzing thousands of data points to create your
-                perfect audience fingerprint
+                {audienceFingerprint
+                  ? "Preparing your personalized audience insights and recommendations..."
+                  : "Our AI is analyzing thousands of data points to create your perfect audience fingerprint"}
               </p>
 
               <div className="flex justify-center items-center gap-2 mt-6">
@@ -107,7 +119,9 @@ export const AudienceCreatedModal = ({
                   ))}
                 </div>
                 <span className="ml-2 text-gray-500 text-sm">
-                  Processing insights...
+                  {audienceFingerprint
+                    ? "Finalizing insights..."
+                    : "Processing insights..."}
                 </span>
               </div>
             </div>
@@ -171,13 +185,6 @@ export const AudienceCreatedModal = ({
                     </span>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-full">
-                  <Star className="w-4 h-4 text-amber-500" />
-                  <span className="font-medium text-amber-700 text-sm">
-                    Premium
-                  </span>
-                </div>
               </div>
 
               {/* Quick Insights */}
@@ -217,7 +224,7 @@ export const AudienceCreatedModal = ({
                       {audienceFingerprint.recommendedEntities.length}
                     </div>
                     <div className="text-emerald-700 text-xs">
-                      AI Recommendations
+                      Additional Cultural Correlates
                     </div>
                   </div>
                 </div>

@@ -19,6 +19,7 @@ import { Cell } from "@/components/ui/Cell/Cell";
 import { Audience } from "@/types/audience";
 import { EntityCard } from "@/features/audience/components/EntityCard/EntityCard";
 import { Entity } from "@/types/entities";
+import { formatAgeGroupLabel } from "@/utils/audience";
 
 export default function AudiencePage() {
   const { audienceId } = useParams();
@@ -86,7 +87,7 @@ export default function AudiencePage() {
                           return getStartingAge(a) - getStartingAge(b);
                         })
                         .map(([key, value]) => ({
-                          name: key.replace("_", " ").replace(" and ", "+ "),
+                          name: formatAgeGroupLabel(key),
                           value,
                           percentage: (
                             (value /
