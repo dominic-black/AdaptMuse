@@ -1,102 +1,99 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import { db } from "@/lib/firebaseAdmin";
 import { requireAuth } from "@/lib/authMiddleware";
-import { Entity } from "@/types";
-import { Timestamp } from "firebase-admin/firestore";
-import { Job } from "@/types/job";
-import { jobIconNames } from "@/constants/jobIcons";
+import {
+  validateRequestBody,
+  validateInputs,
+  getAudienceData,
+  createContentPrompt,
+  createIconPrompt,
+  generateContentAndIcon,
+  createJob,
+  ERRORS,
+} from "./utils";
 
+// Initialize OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function POST(request: NextRequest) {
-    // Authenticate the user using the shared middleware
-    try {
-        const user = await requireAuth(request);
-        const uid = user.uid;
-  
-        const { audienceId, generationJobTitle, contentType, content, context }: { audienceId: string, generationJobTitle: string, contentType: string, content: string | undefined, context: string | undefined } = await request.json();
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  try {
+    // Authenticate user
+    const user = await requireAuth(request);
+    const uid = user.uid;
 
-        if (!audienceId || !generationJobTitle || !contentType || !context) {
-            return NextResponse.json({ error: "audienceId, generationJobTitle, contentType, and context are required" }, { status: 400 });
-        }
-        if(content && content.length > 5000) {
-            return NextResponse.json({ error: "Content must be less than 5000 characters" }, { status: 400 });
-        }
-        if(context && context.length > 2000) {
-            return NextResponse.json({ error: "Context must be less than 2000 characters" }, { status: 400 });
-        }
-
-        const audienceRef = await db.collection("users").doc(uid).collection("audiences").doc(audienceId).get();
-        const audienceData = audienceRef.data();
-
-        if (!audienceData) {
-            return NextResponse.json({ error: "Audience not found" }, { status: 404 });
-        }
-
-        const audienceDescription = `The audience is named ${audienceData.name}. Their interests include ${audienceData.entities.map((e: Entity) => e.name).join(', ')}. Age distribution: ${JSON.stringify(audienceData.ageTotals)}. Gender distribution: ${JSON.stringify(audienceData.genderTotals)}.`;
-
-        console.log("jobIcon keys : ", Object.keys(jobIconNames))
-        console.log("jobIcon names : ", jobIconNames)
-        const prompt = `You are an AI assistant specialized in tailoring ${contentType} content for specific target audiences. ${audienceDescription}.
-        
-        !!IMPORTANT: Additional Context: ${context}
-        
-        Based on the audience description and additional context, please provide the refined content. Focus on tone, vocabulary, and style to resonate with the target audience.
-        
-        !!IMPORTANT: your response should **ONLY** be the refined content.`;
-
-        const iconSelectionPrompt = `You are an AI assistant specialized in selecting the most appropriate icon for a given job. The job is ${contentType}
-        
-        The icon options are: ${Object.keys(jobIconNames).join(', ')}    
-
-        !!IMPORTANT: your response should **ONLY** be the icon name and NOTHING ELSE.
-        !!IMPORTANT: Make sure the first letter of the icon name is capitalized.
-        `;
-
-        console.log(iconSelectionPrompt)
-
-        const [chatCompletion, iconCompletion] = await Promise.all([
-            openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: [{ role: "user", content: prompt }],
-            }),
-            openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: [{ role: "user", content: iconSelectionPrompt }],
-            }),
-        ])
-
-        
-        const docRef = db.collection("users").doc(uid).collection("jobs").doc();
-        const newJob = {
-            id: docRef.id,
-            title: generationJobTitle,
-            audience: {
-                id: audienceId,
-                name: audienceData.name || '',
-                imageUrl: audienceData.imageUrl || null,
-            },
-            icon: iconCompletion.choices[0].message.content || 'Default',
-            contentType,
-            generatedContent: chatCompletion.choices[0].message.content || '',
-            originalContent: content || '',
-            context: context || '',
-            createdAt: Timestamp.fromDate(new Date()),
-        } as Job;
-        await docRef.set(newJob);
-        console.log("new job : ", newJob)
-
-        return NextResponse.json(newJob);
-    } catch (error) {
-        // Handle authentication errors (these will be NextResponse objects)
-        if (error instanceof NextResponse) {
-            return error;
-        }
-        
-        console.error("Error generating content:", error);
-        return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });
+    // Parse and validate request body
+    const body = await request.json();
+    const validatedRequest = validateRequestBody(body);
+    
+    if (!validatedRequest) {
+      return NextResponse.json(
+        { error: ERRORS.MISSING_REQUIRED_FIELDS },
+        { status: 400 }
+      );
     }
+
+    // Validate inputs
+    const validationError = validateInputs(validatedRequest);
+    if (validationError) {
+      return NextResponse.json(
+        { error: validationError },
+        { status: 400 }
+      );
+    }
+
+    // Fetch audience data
+    const audienceData = await getAudienceData(uid, validatedRequest.audienceId);
+    if (!audienceData) {
+      return NextResponse.json(
+        { error: ERRORS.AUDIENCE_NOT_FOUND },
+        { status: 404 }
+      );
+    }
+
+    // Create prompts
+    const contentPrompt = createContentPrompt(
+      validatedRequest.contentType,
+      audienceData,
+      validatedRequest.context
+    );
+    
+    const iconPrompt = createIconPrompt(validatedRequest.contentType);
+
+    // Generate content and icon
+    const { content: generatedContent, icon: selectedIcon } = await generateContentAndIcon(
+      openai,
+      contentPrompt,
+      iconPrompt
+    );
+
+    // Create and save job
+    const newJob = await createJob(
+      uid,
+      validatedRequest,
+      audienceData,
+      generatedContent,
+      selectedIcon
+    );
+
+    return NextResponse.json(newJob);
+  } catch (error) {
+    // Handle authentication errors
+    if (error instanceof NextResponse) {
+      return error;
+    }
+
+    console.error("Error in content generation:", error);
+    
+    // Return appropriate error message
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : "An unexpected error occurred while generating content";
+
+    return NextResponse.json(
+      { error: errorMessage },
+      { status: 500 }
+    );
+  }
 }
