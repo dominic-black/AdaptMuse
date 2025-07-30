@@ -29,11 +29,34 @@ export const formatAgeGroupLabel = (ageKey: string): string => {
     .trim();
 };
 
+/**
+ * Formats category names for consistent display across the application.
+ * Transforms database keys into user-friendly labels.
+ * 
+ * @param categoryKey - Raw category key (e.g., "SPENDING_HABITS", "lifestyle_preferences")
+ * @returns Formatted category label (e.g., "Spending Habits", "Lifestyle Preferences")
+ */
+export const formatCategoryLabel = (categoryKey: string): string => {
+  if (!categoryKey || typeof categoryKey !== 'string') {
+    return 'Other';
+  }
+
+  return categoryKey
+    // Replace underscores with spaces
+    .replace(/_/g, ' ')
+    // Convert to title case
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    // Clean up multiple spaces
+    .replace(/\s+/g, ' ')
+    // Trim whitespace
+    .trim();
+};
+
 export interface CreateAudienceRequest {
   audienceName: string;
   audienceData: {
     entities: Entity[];
-    audiences: AudienceOption[];
+    audienceOptions: Record<string, AudienceOption[]>; // Categorized audience options
     ageGroup: AgeGroup[];
     gender: Gender;
     genres: AudienceOption[];

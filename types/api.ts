@@ -3,7 +3,7 @@ import { AudienceOption } from './common';
 
 export interface AudienceApiData {
   entities: Entity[];
-  audiences: AudienceOption[];
+  audienceOptions: Record<string, AudienceOption[]>; // Categorized audience options
   genres: AudienceOption[];
   ageGroup: AgeGroup[];
   gender: Gender;

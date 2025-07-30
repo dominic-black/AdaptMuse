@@ -44,9 +44,9 @@ export function validateRequestData(audienceName: string, audienceData: Audience
     return ERRORS.MISSING_AUDIENCE_DATA;
   }
 
-  const { entities, audiences, genres } = audienceData;
+  const { entities, audienceOptions, genres } = audienceData;
 
-  if (!Array.isArray(entities) || !Array.isArray(audiences) || !Array.isArray(genres)) {
+  if (!Array.isArray(entities) || typeof audienceOptions !== 'object' || !Array.isArray(genres)) {
     return 'Invalid audience data structure';
   }
 

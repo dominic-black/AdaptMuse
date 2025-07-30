@@ -43,7 +43,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
-    const { entities, audiences, gender, ageGroup, genres } = audienceData;
+    const { entities, audienceOptions, gender, ageGroup, genres } = audienceData;
+
+    // Flatten audience options for backward compatibility with existing functions
+    const allAudienceOptions = Object.values(audienceOptions).flat();
 
     // Fetch input entities from Qloo API
     const inputEntities = await fetchInputEntities(entities, qlooApiKey);
@@ -51,7 +54,7 @@ export async function POST(request: NextRequest) {
     // Fetch recommended entities
     const recommendedEntities = await fetchRecommendedEntities(
       inputEntities,
-      audiences,
+      allAudienceOptions,
       ageGroup,
       genres,
       gender,
@@ -81,15 +84,22 @@ export async function POST(request: NextRequest) {
       ageGroup,
       gender,
       entities,
-      audiences
+      allAudienceOptions
     );
+
+    // Create categorized selections structure
+    const categorizedSelections = {
+      genres: genres || [],
+      audienceOptions: audienceOptions || {}
+    };
 
     // Create audience object
     const newAudience = {
       name: audienceName,
       entities: entitiesWithDemo,
       recommendedEntities: recommendedEntitiesWithDemo,
-      demographics: audiences,
+      demographics: allAudienceOptions, // Keep for backward compatibility
+      categorizedSelections,
       ageTotals: roundNumericObject(ageTotals),
       genderTotals: roundNumericObject(genderTotals),
       imageUrl: imageUrl || DEFAULT_AVATAR_URL,

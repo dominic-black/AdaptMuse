@@ -39,7 +39,7 @@ export default function CreateAudiencePage() {
       audienceName: formData.audienceName,
       audienceData: {
         entities: formData.selectedInterests,
-        audiences: Object.values(formData.selectedAudienceOptions).flat(),
+        audienceOptions: formData.selectedAudienceOptions, // Send categorized data
         ageGroup: formData.selectedAgeGroups,
         gender: formData.gender,
         genres: formData.selectedGenres,
