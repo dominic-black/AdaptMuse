@@ -15,15 +15,6 @@ interface GenderDistributionChartProps {
   genderTotals: Record<string, number>;
 }
 
-interface TooltipPayload {
-  value: number;
-  name: string;
-}
-
-interface TooltipProps {
-  payload: TooltipPayload;
-}
-
 export const GenderDistributionChart: React.FC<
   GenderDistributionChartProps
 > = ({ genderTotals }) => {
@@ -43,13 +34,9 @@ export const GenderDistributionChart: React.FC<
 
   const maxAbsValue = Math.max(...chartData.map((d) => Math.abs(d.value)), 1);
 
-  const formatTooltip = (
-    value: string | number,
-    _name: string,
-    props: TooltipProps
-  ) => {
-    const affinity = props.payload.value;
-    const gender = props.payload.name;
+  const formatTooltip = (value: string | number, name: string) => {
+    const affinity = typeof value === "number" ? value : 0;
+    const gender = name || "Unknown";
     const interpretation =
       affinity > 1
         ? "Strong Appeal"
