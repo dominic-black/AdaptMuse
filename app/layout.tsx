@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { NavBar } from "@/components/shared/NavBar/NavBar";
+import { MobileNavBar } from "@/components/shared/NavBar/MobileNavBar";
 import { AuthProvider } from "@/providers/AuthContext";
 import { UserProvider } from "@/providers/UserProvider";
 import { AudienceProvider } from "@/providers/AudienceProvider";
@@ -75,6 +76,7 @@ export default function RootLayout({
                 <div className="gap-16 min-h-screen font-[family-name:var(--font-inter)]">
                   <div>
                     <NavBar />
+                    <MobileNavBar />
                     {children}
                   </div>
                   <footer className="flex flex-wrap justify-center items-center gap-[24px] row-start-3"></footer>

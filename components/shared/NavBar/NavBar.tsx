@@ -12,7 +12,7 @@ export const NavBar = () => {
   if (publicRoutes.includes(pathname)) return null;
 
   return (
-    <div className="top-0 left-0 absolute flex flex-col bg-background-secondary p-6 border-r w-[100px] h-full">
+    <div className="hidden top-0 left-0 absolute lg:flex flex-col bg-background-secondary p-6 border-r w-[100px] h-full">
       <div className="flex justify-center mb-8 rounded-md overflow-hidden">
         <Link href="/home">
           <Image

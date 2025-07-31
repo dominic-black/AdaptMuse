@@ -8,7 +8,7 @@ export const ScreenHeader = ({ heading }: { heading: string }) => {
   return (
     <header className="flex justify-between items-center">
       <h1 className="font-bold text-color-text text-4xl">{heading}</h1>
-      <div className="flex items-center gap-3">
+      <div className="hidden md:flex items-center gap-3">
         {loading ? (
           <div className="bg-gray-300 rounded-full w-8 h-8 animate-pulse"></div>
         ) : userProfile ? (
