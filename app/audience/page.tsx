@@ -35,7 +35,6 @@ export default function AudiencePage() {
   const { user, loading: authLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Professional data-ready check - same logic as home page
   const isDataReady = useMemo(() => {
     if (authLoading || user === undefined) return false;
     if (!user) return true;
@@ -43,7 +42,6 @@ export default function AudiencePage() {
     return Array.isArray(audiences);
   }, [authLoading, user, audiencesLoading, audiences]);
 
-  // Filter audiences based on search term
   const filteredAudiences = useMemo(() => {
     if (!audiences || !Array.isArray(audiences)) return [];
 
@@ -60,7 +58,6 @@ export default function AudiencePage() {
         <div className="lg:col-span-2 bg-white shadow-sm p-6 rounded-lg">
           {!isDataReady ? (
             <>
-              {/* Show static header immediately */}
               <div className="flex justify-between items-center mb-6">
                 <h2 className="font-semibold text-gray-800 text-xl">
                   Your Audiences
@@ -70,7 +67,6 @@ export default function AudiencePage() {
                   Create New
                 </Button>
               </div>
-              {/* Only skeleton the dynamic list area */}
               <AudienceListSkeleton />
             </>
           ) : audiences.length === 0 ? (
@@ -101,7 +97,6 @@ export default function AudiencePage() {
                 </Button>
               </div>
 
-              {/* Search Bar */}
               <div className="mb-6">
                 <SearchBar
                   placeholder="Search audiences by name..."
@@ -110,7 +105,6 @@ export default function AudiencePage() {
                 />
               </div>
 
-              {/* Results count */}
               {searchTerm.trim() && (
                 <div className="mb-4 text-gray-600 text-sm">
                   {filteredAudiences.length === 0 ? (
@@ -130,7 +124,6 @@ export default function AudiencePage() {
             </div>
           )}
         </div>
-        {/* Info cell is static - show immediately */}
         <InfoCell />
       </div>
     </Screen>

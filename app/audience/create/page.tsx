@@ -21,6 +21,17 @@ import { useAudienceFilters } from "@/features/audience/hooks/useAudienceFilters
 import { useState, useEffect } from "react";
 import { GeneratingAudienceAnimation } from "@/components/animations/audience/GeneratingAudienceAnimation";
 
+// Helper function to check if an entity is valid for submission
+const isValidEntity = (entity: Entity): boolean => {
+  return !!(
+    entity?.id &&
+    typeof entity.id === "string" &&
+    entity.id.length > 0 &&
+    entity.name &&
+    !("error" in entity)
+  );
+};
+
 interface InsightPreview {
   predictedAffinity: number;
   estimatedDiversity: number;
@@ -29,8 +40,13 @@ interface InsightPreview {
 }
 
 export default function CreateAudiencePage() {
-  const { formData, updateFormField, resetForm, isFormValid } =
-    useAudienceForm();
+  const {
+    formData,
+    updateFormField,
+    resetForm,
+    isFormValid,
+    validationErrors,
+  } = useAudienceForm();
   const { searchTerm, setSearchTerm, filteredAudienceOptions, filteredGenres } =
     useAudienceFilters();
   const [insightPreview, setInsightPreview] = useState<InsightPreview | null>(
@@ -94,10 +110,13 @@ export default function CreateAudiencePage() {
   }, [formData]);
 
   const handleSubmit = async () => {
+    // Filter out invalid entities (those without IDs or with errors)
+    const validEntities = formData.selectedInterests.filter(isValidEntity);
+
     await createAudienceFingerprint({
       audienceName: formData.audienceName,
       audienceData: {
-        entities: formData.selectedInterests,
+        entities: validEntities,
         audienceOptions: formData.selectedAudienceOptions,
         ageGroup: formData.selectedAgeGroups,
         gender: formData.gender,
@@ -174,6 +193,11 @@ export default function CreateAudiencePage() {
                         Cultural Interests
                       </h3>
                     </div>
+                    <p className="text-gray-600 text-sm">
+                      Add movies, books, artists, brands, and more. Items that
+                      can&apos;t be found will be marked in red and excluded
+                      from your audience.
+                    </p>
                     <div className="space-y-3">
                       {interests.map((interest) => (
                         <ChipInput
@@ -417,6 +441,45 @@ export default function CreateAudiencePage() {
                         {insightPreview.culturalRelevance}
                       </p>
                     </div>
+
+                    {/* Entity Status Summary */}
+                    {formData.selectedInterests.length > 0 && (
+                      <div className="mt-3 pt-3 border-gray-200 border-t">
+                        <div className="space-y-2 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">
+                              Valid Interests:
+                            </span>
+                            <span className="font-medium text-green-600">
+                              {
+                                formData.selectedInterests.filter(isValidEntity)
+                                  .length
+                              }
+                            </span>
+                          </div>
+                          {formData.selectedInterests.length -
+                            formData.selectedInterests.filter(isValidEntity)
+                              .length >
+                            0 && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600">
+                                Failed to Load:
+                              </span>
+                              <span className="font-medium text-orange-600">
+                                {formData.selectedInterests.length -
+                                  formData.selectedInterests.filter(
+                                    isValidEntity
+                                  ).length}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <p className="mt-2 text-gray-500 text-xs">
+                          Only valid interests will be included in your
+                          audience.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Cell>
@@ -480,11 +543,34 @@ export default function CreateAudiencePage() {
       />
 
       {/* Error Display */}
-      {error && (
-        <div className="top-4 right-4 fixed bg-red-100 px-4 py-3 border border-red-400 rounded text-red-700">
-          <div className="flex items-center gap-2">
-            <div className="bg-red-500 rounded-full w-2 h-2"></div>
-            {error}
+      {(error || validationErrors.length > 0) && (
+        <div className="top-4 right-4 fixed bg-red-50 shadow-lg border-red-400 border-l-4 rounded-r-lg max-w-md">
+          <div className="p-4">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <div className="bg-red-500 mt-1 rounded-full w-2 h-2"></div>
+              </div>
+              <div className="ml-3">
+                <h3 className="font-medium text-red-800 text-sm">
+                  {error
+                    ? "Error Creating Audience"
+                    : "Please Fix the Following"}
+                </h3>
+                <div className="mt-2 text-red-700 text-sm">
+                  {error && <p className="mb-2">{error}</p>}
+                  {validationErrors.length > 0 && (
+                    <ul className="space-y-1">
+                      {validationErrors.map((validationError, index) => (
+                        <li key={index} className="flex items-start">
+                          <span className="mr-1">•</span>
+                          <span>{validationError}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

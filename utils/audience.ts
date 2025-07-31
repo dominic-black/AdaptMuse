@@ -69,6 +69,64 @@ export interface CreateAudienceResponse {
   error?: string;
 }
 
+/**
+ * Transforms raw API error messages into user-friendly messages
+ */
+const getUserFriendlyError = (errorMessage: string): string => {
+  // Remove the "Failed to create audience: 400" prefix and parse JSON if present
+  const cleanError = errorMessage.replace(/^Failed to create audience: \d+\s*/, '');
+  
+  try {
+    // Try to parse as JSON if it's a JSON error response
+    const errorObj = JSON.parse(cleanError);
+    const apiError = errorObj.error || errorObj.message || cleanError;
+    
+    // Transform specific API errors into user-friendly messages
+    if (apiError.includes('Audience name must be a non-empty string')) {
+      return 'Please enter a name for your audience.';
+    }
+    
+    if (apiError.includes('name') && apiError.includes('required')) {
+      return 'Audience name is required.';
+    }
+    
+    if (apiError.includes('entities') && apiError.includes('required')) {
+      return 'Please add at least one interest to your audience.';
+    }
+    
+    if (apiError.includes('authentication') || apiError.includes('unauthorized')) {
+      return 'Please sign in to create an audience.';
+    }
+    
+    if (apiError.includes('quota') || apiError.includes('limit')) {
+      return 'You have reached your audience creation limit. Please try again later.';
+    }
+    
+    if (apiError.includes('validation') || apiError.includes('invalid')) {
+      return 'Please check your audience configuration and try again.';
+    }
+    
+    // Return the cleaned API error if no specific mapping found
+    return apiError;
+  } catch {
+    // If not JSON, handle common patterns in plain text errors
+    if (cleanError.includes('name') && (cleanError.includes('empty') || cleanError.includes('required'))) {
+      return 'Please enter a name for your audience.';
+    }
+    
+    if (cleanError.includes('unauthorized') || cleanError.includes('authentication')) {
+      return 'Please sign in to create an audience.';
+    }
+    
+    if (cleanError.includes('network') || cleanError.includes('connection')) {
+      return 'Connection error. Please check your internet and try again.';
+    }
+    
+    // Fallback to a generic message for unrecognized errors
+    return 'Something went wrong while creating your audience. Please try again.';
+  }
+};
+
 export const createAudience = async (
   requestData: CreateAudienceRequest
 ): Promise<CreateAudienceResponse> => {
@@ -94,9 +152,10 @@ export const createAudience = async (
     };
   } catch (error) {
     console.error("Error creating audience:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error: getUserFriendlyError(errorMessage),
     };
   }
 }; 
