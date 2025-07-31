@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebaseAdmin';
 import { requireAuth } from '@/lib/authMiddleware';
 import { AudienceApiData } from '@/types';
+import { OpenAI } from 'openai';
 import { 
   validateRequestData,
   fetchInputEntities,
@@ -13,9 +14,13 @@ import {
   sanitizeForFirestore,
   generateSimpleTasteProfile,
   calculateAnalysisMetrics,
-  ERRORS,
-  DEFAULT_AVATAR_URL
+  generateAndUploadAvatar,
+  ERRORS
 } from './utils';
+
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 
 export async function POST(request: NextRequest) {
@@ -70,6 +75,16 @@ export async function POST(request: NextRequest) {
     };
 
     const tasteProfile = generateSimpleTasteProfile(entitiesWithDemo, allAudienceOptions);
+
+    const imageUrl = await generateAndUploadAvatar(
+        audienceName,
+        ageGroup,
+        gender,
+        entitiesWithDemo,
+        allAudienceOptions,
+        openai
+      );
+
     
     const processingTimeMs = Date.now() - startTime;
     const analysisMetrics = calculateAnalysisMetrics(
@@ -89,7 +104,7 @@ export async function POST(request: NextRequest) {
         categorizedSelections,
         ageTotals: roundNumericObject(ageTotals),
         genderTotals: roundNumericObject(genderTotals),
-        imageUrl: DEFAULT_AVATAR_URL,
+        imageUrl: imageUrl,
         qlooIntelligence: {
           tasteProfile,
           analysisMetrics
