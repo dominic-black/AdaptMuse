@@ -59,7 +59,7 @@ export default function Home() {
         </nav>
       </header>
 
-      <main className="flex flex-col flex-1 justify-center items-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12 lg:h-screen">
+      <main className="flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12 h-screen">
         <motion.div
           initial={isMobile ? {} : { opacity: 0, y: 40 }}
           animate={isMobile ? {} : { opacity: 1, y: 0 }}
