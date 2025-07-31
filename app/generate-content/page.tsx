@@ -3,7 +3,7 @@
 import { Screen } from "@/components/shared/Screen/Screen";
 import { ContentGenerator } from "@/features/generate-content/components/ContentGenerator/ContentGenerator";
 import { useAuth } from "@/hooks/useAuth";
-import { useMemo, useEffect, useState, useCallback } from "react";
+import { useMemo, useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebase-config";
@@ -15,7 +15,7 @@ interface PageState {
   jobError: string | null;
 }
 
-export default function GenerateContentPage() {
+function GenerateContentClient() {
   const { user, loading: authLoading } = useAuth();
   const searchParams = useSearchParams();
 
@@ -106,5 +106,23 @@ export default function GenerateContentPage() {
     <Screen heading="Content Generator">
       <ContentGenerator loading={!isDataReady} job={pageState.job} />
     </Screen>
+  );
+}
+
+export default function GenerateContentPage() {
+  return (
+    <Suspense
+      fallback={
+        <Screen heading="Content Generator">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          </div>
+        </Screen>
+      }
+    >
+      <GenerateContentClient />
+    </Suspense>
   );
 }
