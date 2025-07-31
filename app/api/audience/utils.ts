@@ -230,7 +230,7 @@ export async function fetchDemographics(entities: Entity[], qlooApiKey: string):
     for (let i = 0; i < entityIds.length; i += CHUNK_SIZE) {
       const chunk = entityIds.slice(i, i + CHUNK_SIZE);
       const url = `${QLOO_INSIGHTS_URL}?filter.type=urn:demographics&signal.interests.entities=${chunk.join(',')}`;
-      
+      console.log("url = ", url);
       const response = await fetch(url, {
         headers: createQlooHeaders(qlooApiKey),
       });
@@ -435,12 +435,8 @@ export function generateSimpleTasteProfile(
 
   const multiplier = 10 ** DECIMAL_PRECISION;
   
-  console.log("DEBUG: Before rounding - affinityScore:", affinityScore);
-  console.log("DEBUG: DECIMAL_PRECISION:", DECIMAL_PRECISION);
-  console.log("DEBUG: multiplier:", multiplier);
   
   const roundedAffinityScore = Math.round(affinityScore * multiplier) / multiplier;
-  console.log("DEBUG: After rounding - roundedAffinityScore:", roundedAffinityScore);
   
   return {
     affinityScore: roundedAffinityScore,

@@ -17,18 +17,14 @@ import {
   DEFAULT_AVATAR_URL
 } from './utils';
 
-/**
- * Main POST handler for creating audiences
- */
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    // Authenticate user
     const user = await requireAuth(request);
     const uid = user.uid;
 
-    // Parse and validate request data
     const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceApiData } = await request.json();
     
     const qlooApiKey = process.env.QLOO_API_KEY;
@@ -43,13 +39,10 @@ export async function POST(request: NextRequest) {
 
     const { entities, audienceOptions, gender, ageGroup, genres } = audienceData;
 
-    // Flatten audience options for backward compatibility with existing functions
     const allAudienceOptions = Object.values(audienceOptions).flat();
 
-    // Fetch input entities from Qloo API
     const inputEntities = await fetchInputEntities(entities, qlooApiKey);
 
-    // Fetch recommended entities
     const recommendedEntities = await fetchRecommendedEntities(
       inputEntities,
       allAudienceOptions,
@@ -59,31 +52,26 @@ export async function POST(request: NextRequest) {
       qlooApiKey
     );
 
-    // Combine all entities for demographics lookup
     const allEntities = [...inputEntities, ...recommendedEntities];
 
-    // Fetch demographics data
     const demographicsMap = await fetchDemographics(allEntities, qlooApiKey);
 
-    // Add demographics to entities
     const entitiesWithDemo = addDemographicsToEntities(inputEntities, demographicsMap);
     const recommendedEntitiesWithDemo = addDemographicsToEntities(recommendedEntities, demographicsMap);
 
-    // Calculate demographic totals
     const { ageTotals, genderTotals } = calculateDemographicTotals([
       ...entitiesWithDemo,
       ...recommendedEntitiesWithDemo,
     ]);
 
-    // Create categorized selections structure
     const categorizedSelections = {
       genres: genres || [],
       audienceOptions: audienceOptions || {}
     };
 
-    // Generate analytics data for AdvancedAnalyticsTab
-    const processingTimeMs = Date.now() - startTime;
     const tasteProfile = generateSimpleTasteProfile(entitiesWithDemo, allAudienceOptions);
+    
+    const processingTimeMs = Date.now() - startTime;
     const analysisMetrics = calculateAnalysisMetrics(
       entitiesWithDemo,
       recommendedEntitiesWithDemo,
@@ -91,7 +79,6 @@ export async function POST(request: NextRequest) {
       processingTimeMs
     );
 
-    // Save audience object
     const docRef = db.collection('users').doc(uid).collection('audiences').doc();
     const newAudience = {
         id: docRef.id,
