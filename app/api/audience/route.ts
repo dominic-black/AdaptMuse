@@ -19,6 +19,7 @@ import {
   createQlooHeaders,
   QLOO_API_BASE_URL,
   ERRORS,
+  DEFAULT_AVATAR_URL,
 } from './utils';
 import OpenAI from 'openai';
 
@@ -199,15 +200,21 @@ export async function POST(request: NextRequest) {
     // Phase 6.5: Generate avatar image
     console.log('🎨 Phase 6.5: Avatar generation...');
     const avatarStart = Date.now();
-    
-    const imageUrl = await generateAndUploadAvatar(
-      audienceName,
-      ageGroup,
-      gender,
-      inputEntities,
-      allAudienceOptions,
-      openai
-    );
+
+    let imageUrl = DEFAULT_AVATAR_URL;
+    const adminIds = process.env.ADMIN_UIDS?.split(',') || [];
+    if (adminIds.includes(uid)) {
+        imageUrl = await generateAndUploadAvatar(
+            audienceName,
+            ageGroup,
+            gender,
+            inputEntities,
+            allAudienceOptions,
+            openai
+        );
+    }else{
+        console.log("Not an admin, skipping avatar generation");
+    }
     
     const avatarTime = Date.now() - avatarStart;
     console.log(`✅ Avatar generation completed in ${avatarTime}ms: ${imageUrl}`);
