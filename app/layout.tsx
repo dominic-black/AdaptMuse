@@ -43,8 +43,8 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://adaptmuse.com"),
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
   keywords: [
     "AdaptMuse",
