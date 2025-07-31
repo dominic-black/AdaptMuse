@@ -9,6 +9,7 @@ export interface UseCreateAudienceReturn {
   audienceFingerprint: Audience | null;
   error: string | null;
   closeModal: () => void;
+  resetState: () => void;
 }
 
 export const useCreateAudience = (): UseCreateAudienceReturn => {
@@ -48,6 +49,13 @@ export const useCreateAudience = (): UseCreateAudienceReturn => {
     setError(null);
   };
 
+  const resetState = () => {
+    setShowModal(false);
+    setAudienceFingerprint(null);
+    setError(null);
+    setIsCreating(false);
+  };
+
   return {
     createAudienceFingerprint,
     isCreating,
@@ -55,5 +63,6 @@ export const useCreateAudience = (): UseCreateAudienceReturn => {
     audienceFingerprint,
     error,
     closeModal,
+    resetState,
   };
 };

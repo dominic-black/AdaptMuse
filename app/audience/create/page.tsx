@@ -111,6 +111,13 @@ export default function CreateAudiencePage() {
     }
   }, [formData]);
 
+  // Reset form submission state when audience is successfully created
+  useEffect(() => {
+    if (audienceFingerprint && !isCreating) {
+      setHasAttemptedSubmit(false);
+    }
+  }, [audienceFingerprint, isCreating]);
+
   const handleSubmit = async () => {
     setHasAttemptedSubmit(true);
 
@@ -352,7 +359,13 @@ export default function CreateAudiencePage() {
 
                 {/* Action Buttons */}
                 <div className="flex justify-between pt-4 border-t">
-                  <Button variant="outline" onClick={resetForm}>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      resetForm();
+                      setHasAttemptedSubmit(false);
+                    }}
+                  >
                     Reset Configuration
                   </Button>
                   <Button
