@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AgeGroup, Entity, Gender } from "@/types/entities";
 import { AudienceOption } from "@/constants/audiences";
 
@@ -46,6 +46,10 @@ export const useAudienceForm = (): UseAudienceFormReturn => {
       [field]: value,
     }));
   };
+
+  useEffect(() => {
+    console.log("formData", formData);
+  }, [formData]);
 
   const resetForm = () => {
     setFormData(initialFormData);

@@ -12,7 +12,9 @@ import {
   ageGroupOptions,
   genderOptions,
   interests,
+  AUDIENCE_OPTIONS,
 } from "@/constants/audiences";
+import { genres } from "@/constants/tags";
 import { ChipInput } from "@/features/audience/components/ChipInput/ChipInput";
 import { AudienceCreatedModal } from "@/features/audience/components/AudienceCreatedModal/AudienceCreatedModal";
 import { useCreateAudience } from "@/features/audience/hooks/useCreateAudience";
@@ -307,10 +309,10 @@ export default function CreateAudiencePage() {
                         onChange={(selected) =>
                           updateFormField(
                             "selectedGenres",
-                            selected.map((genre) => ({
-                              value: genre,
+                            selected.map((genreValue) => ({
+                              value: genreValue,
                               label:
-                                filteredGenres.find((g) => g.value === genre)
+                                genres.find((g) => g.value === genreValue)
                                   ?.label || "Unknown",
                             }))
                           )
@@ -337,11 +339,14 @@ export default function CreateAudiencePage() {
                                 ...formData.selectedAudienceOptions,
                                 [category]: newSelection.map(
                                   (selectedValue) => {
-                                    const selectedOption = options.find(
+                                    // Look in the original unfiltered list to preserve labels
+                                    const originalOption = AUDIENCE_OPTIONS[
+                                      category
+                                    ]?.find(
                                       (option) => option.value === selectedValue
                                     );
                                     return (
-                                      selectedOption || {
+                                      originalOption || {
                                         value: selectedValue,
                                         label: "unknown",
                                       }
