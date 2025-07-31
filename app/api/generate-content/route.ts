@@ -23,6 +23,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const user = await requireAuth(request);
     const uid = user.uid;
 
+
+    const adminIds = process.env.ADMIN_IDS?.split(',') || [];
+    if (!adminIds.includes(uid)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // Parse and validate request body
     const body = await request.json();
     const validatedRequest = validateRequestBody(body);
