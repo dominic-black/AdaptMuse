@@ -46,6 +46,8 @@ export default function CreateAudiencePage() {
     resetForm,
     isFormValid,
     validationErrors,
+    hasAttemptedSubmit,
+    setHasAttemptedSubmit,
   } = useAudienceForm();
   const { searchTerm, setSearchTerm, filteredAudienceOptions, filteredGenres } =
     useAudienceFilters();
@@ -110,8 +112,23 @@ export default function CreateAudiencePage() {
   }, [formData]);
 
   const handleSubmit = async () => {
+    setHasAttemptedSubmit(true);
+
+    if (!isFormValid) {
+      return;
+    }
+
     // Filter out invalid entities (those without IDs or with errors)
     const validEntities = formData.selectedInterests.filter(isValidEntity);
+
+    const invalidCount =
+      formData.selectedInterests.length - validEntities.length;
+    if (invalidCount > 0) {
+      console.log(
+        `Filtered out ${invalidCount} invalid entities from submission:`,
+        formData.selectedInterests.filter((entity) => !isValidEntity(entity))
+      );
+    }
 
     await createAudienceFingerprint({
       audienceName: formData.audienceName,
@@ -543,7 +560,7 @@ export default function CreateAudiencePage() {
       />
 
       {/* Error Display */}
-      {(error || validationErrors.length > 0) && (
+      {(error || (hasAttemptedSubmit && validationErrors.length > 0)) && (
         <div className="top-4 right-4 fixed bg-red-50 shadow-lg border-red-400 border-l-4 rounded-r-lg max-w-md">
           <div className="p-4">
             <div className="flex items-start">
@@ -558,7 +575,7 @@ export default function CreateAudiencePage() {
                 </h3>
                 <div className="mt-2 text-red-700 text-sm">
                   {error && <p className="mb-2">{error}</p>}
-                  {validationErrors.length > 0 && (
+                  {hasAttemptedSubmit && validationErrors.length > 0 && (
                     <ul className="space-y-1">
                       {validationErrors.map((validationError, index) => (
                         <li key={index} className="flex items-start">

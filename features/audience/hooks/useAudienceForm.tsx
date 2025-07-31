@@ -20,6 +20,8 @@ export interface UseAudienceFormReturn {
   resetForm: () => void;
   isFormValid: boolean;
   validationErrors: string[];
+  hasAttemptedSubmit: boolean;
+  setHasAttemptedSubmit: (attempted: boolean) => void;
 }
 
 const initialFormData: AudienceFormData = {
@@ -33,6 +35,7 @@ const initialFormData: AudienceFormData = {
 
 export const useAudienceForm = (): UseAudienceFormReturn => {
   const [formData, setFormData] = useState<AudienceFormData>(initialFormData);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   const updateFormField = <K extends keyof AudienceFormData>(
     field: K,
@@ -46,6 +49,7 @@ export const useAudienceForm = (): UseAudienceFormReturn => {
 
   const resetForm = () => {
     setFormData(initialFormData);
+    setHasAttemptedSubmit(false);
   };
 
   // Enhanced validation with specific error messages
@@ -84,5 +88,7 @@ export const useAudienceForm = (): UseAudienceFormReturn => {
     resetForm,
     isFormValid,
     validationErrors,
+    hasAttemptedSubmit,
+    setHasAttemptedSubmit,
   };
 };
