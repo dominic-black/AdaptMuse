@@ -947,7 +947,7 @@ export async function generateTasteProfile(
     const validAudienceIds = await fetchValidAudienceIds(audiences, qlooApiKey);
     
     // Perform taste analysis across multiple entity types
-    const entityTypes = ['MOVIE', 'ARTIST', 'BOOK', 'BRAND'];
+    const entityTypes = ENTITY_TYPE_PRIORITY.filter(type => type in EntityTypes);
     const tasteScores: Record<string, number> = {};
     
     for (const entityType of entityTypes) {
