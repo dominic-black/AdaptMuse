@@ -828,7 +828,6 @@ export async function validateAndEnrichEntities(entities: Entity[], qlooApiKey: 
   return enrichedEntities;
 }
 
-// Advanced Qloo API features for hackathon competitive edge
 
 /**
  * Fetches trending entities for enhanced recommendations

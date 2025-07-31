@@ -61,9 +61,6 @@ export default function LoginForm() {
       setIsLoading(false);
       return;
     }
-
-    console.log("result", result);
-    setIsLoading(false);
   };
 
   const handlePasswordReset = async () => {

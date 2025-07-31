@@ -5,22 +5,14 @@ import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { useJobs } from "@/providers/JobsProvider";
 import { useAuth } from "@/hooks/useAuth";
 import VerifyEmailBanner from "@/features/auth/banners/VerifyEmail/VerifyEmailBanner";
-import { RecentActivity } from "@/features/dashboard/RecentActivity/RecentActivity";
-import { SavedAudiences } from "@/features/dashboard/SavedAudiences/SavedAudiences";
+import { SavedAudiences } from "@/features/dashboard/components/SavedAudiences/SavedAudiences";
+import { RecentActivity } from "@/features/dashboard/components/RecentActivity/RecentActivity";
 import { useMemo } from "react";
-import {
-  Sparkles,
-  Target,
-  BarChart3,
-  Clock,
-  ArrowUpRight,
-  Users,
-  FileText,
-  Activity,
-} from "lucide-react";
+import { Sparkles, Target } from "lucide-react";
 import { Cell } from "@/components/ui/Cell/Cell";
 import { Button } from "@/components/ui/Button";
 import { useUser } from "@/providers/UserProvider";
+import { StatsOverview } from "@/features/dashboard/components/StatsOverview/StatsOverview";
 
 export default function Home() {
   const { audiences, loading: audiencesLoading } = useAudiences();
@@ -108,93 +100,7 @@ export default function Home() {
         </div>
 
         {/* Stats Overview */}
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="font-semibold text-gray-900 text-xl">Overview</h2>
-              <p className="text-gray-600 text-sm">Your platform activity</p>
-            </div>
-            <div className="flex items-center gap-2 text-gray-500 text-sm">
-              <Activity className="w-4 h-4" />
-              <span>Last 30 days</span>
-            </div>
-          </div>
-
-          <div className="gap-6 grid grid-cols-1 md:grid-cols-3">
-            {/* Content Generated */}
-            <Cell>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="bg-blue-100 p-3 rounded-xl">
-                    <FileText className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div className="flex items-center gap-1 font-medium text-green-600 text-sm">
-                    <ArrowUpRight className="w-4 h-4" />
-                    <span>+12%</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="font-bold text-gray-900 text-2xl">
-                    {metrics?.totalJobs || 0}
-                  </p>
-                  <p className="text-gray-600 text-sm">Content Generated</p>
-                  <div className="flex items-center gap-2 text-gray-500 text-xs">
-                    <Clock className="w-3 h-3" />
-                    <span>{metrics?.recentJobs || 0} this week</span>
-                  </div>
-                </div>
-              </div>
-            </Cell>
-
-            {/* Audiences Created */}
-            <Cell>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="bg-emerald-100 p-3 rounded-xl">
-                    <Users className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div className="flex items-center gap-1 font-medium text-green-600 text-sm">
-                    <ArrowUpRight className="w-4 h-4" />
-                    <span>+8%</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="font-bold text-gray-900 text-2xl">
-                    {metrics?.totalAudiences || 0}
-                  </p>
-                  <p className="text-gray-600 text-sm">Audiences Created</p>
-                  <div className="flex items-center gap-2 text-gray-500 text-xs">
-                    <Target className="w-3 h-3" />
-                    <span>Avg. {metrics?.avgAudienceSize || 0} entities</span>
-                  </div>
-                </div>
-              </div>
-            </Cell>
-
-            {/* Usage */}
-            <Cell>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <div className="bg-amber-100 p-3 rounded-xl">
-                    <BarChart3 className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div className="flex items-center gap-1 font-medium text-green-600 text-sm">
-                    <ArrowUpRight className="w-4 h-4" />
-                    <span>Unlimited</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="font-bold text-gray-900 text-2xl">∞</p>
-                  <p className="text-gray-600 text-sm">Usage Limit</p>
-                  <div className="flex items-center gap-2 text-gray-500 text-xs">
-                    <Sparkles className="w-3 h-3" />
-                    <span>Premium access</span>
-                  </div>
-                </div>
-              </div>
-            </Cell>
-          </div>
-        </div>
+        <StatsOverview metrics={metrics} />
 
         {/* Main Content Grid */}
         <div className="gap-8 grid grid-cols-1 lg:grid-cols-3">
