@@ -3,6 +3,7 @@ import { Brain } from "lucide-react";
 import { Cell as UICell } from "@/components/ui/Cell/Cell";
 import { TasteProfileRadarChart } from "../charts";
 import { QlooTasteProfile } from "../../types/audience-analytics.types";
+import { ExplainationToolTip } from "@/components/shared/ExplainationToolTip/ExplainationToolTip";
 
 interface TasteProfileAnalysisProps {
   tasteProfile: QlooTasteProfile;
@@ -24,9 +25,12 @@ export const TasteProfileAnalysis: React.FC<TasteProfileAnalysisProps> = ({
         <div className="gap-6 grid grid-cols-1 md:grid-cols-2">
           <div className="space-y-4">
             <div className="bg-purple-50 p-4 rounded-lg">
-              <h4 className="mb-2 font-semibold text-purple-900">
-                Cultural Affinity Score
-              </h4>
+              <div className="flex items-center gap-2 mb-2">
+                <h4 className="font-semibold text-purple-900">
+                  Cultural Affinity Score
+                </h4>
+                <ExplainationToolTip label="Cultural Affinity Score" />
+              </div>
               <div className="flex items-center gap-3">
                 <div className="bg-gray-200 rounded-full w-full h-3">
                   <div
@@ -43,9 +47,12 @@ export const TasteProfileAnalysis: React.FC<TasteProfileAnalysisProps> = ({
             </div>
 
             <div className="bg-green-50 p-4 rounded-lg">
-              <h4 className="mb-2 font-semibold text-green-900">
-                Diversity Index
-              </h4>
+              <div className="flex items-center gap-2 mb-2">
+                <h4 className="font-semibold text-green-900">
+                  Diversity Index
+                </h4>
+                <ExplainationToolTip label="Diversity Index" />
+              </div>
               <div className="flex items-center gap-3">
                 <div className="bg-gray-200 rounded-full w-full h-3">
                   <div
@@ -64,17 +71,23 @@ export const TasteProfileAnalysis: React.FC<TasteProfileAnalysisProps> = ({
 
           <div className="space-y-4">
             <div className="bg-blue-50 p-4 rounded-lg">
-              <h4 className="mb-2 font-semibold text-blue-900">
-                Profile Interpretation
-              </h4>
+              <div className="flex items-center gap-2 mb-2">
+                <h4 className="font-semibold text-blue-900">
+                  Profile Interpretation
+                </h4>
+                <ExplainationToolTip label="Interpretation" />
+              </div>
               <p className="text-blue-800">{tasteProfile.interpretation}</p>
             </div>
 
             {tasteProfile.culturalSegments?.length > 0 && (
               <div className="bg-yellow-50 p-4 rounded-lg">
-                <h4 className="mb-2 font-semibold text-yellow-900">
-                  Cultural Segments
-                </h4>
+                <div className="flex items-center gap-2 mb-2">
+                  <h4 className="font-semibold text-yellow-900">
+                    Cultural Segments
+                  </h4>
+                  <ExplainationToolTip label="Cultural Segments" />
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {tasteProfile.culturalSegments
                     .slice(0, 5)

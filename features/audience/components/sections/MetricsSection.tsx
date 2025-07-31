@@ -2,6 +2,7 @@ import React from "react";
 import { Target, Sparkles, Eye } from "lucide-react";
 import { AudienceMetrics } from "../../types/audience-metrics.types";
 import { QlooIntelligence } from "../../types/audience-analytics.types";
+import { ExplainationToolTip } from "@/components/shared/ExplainationToolTip/ExplainationToolTip";
 
 interface MetricsSectionProps {
   metrics: AudienceMetrics | null;
@@ -26,9 +27,12 @@ export const MetricsSection: React.FC<MetricsSectionProps> = ({
             PRIMARY
           </span>
         </div>
-        <h3 className="mb-1 font-medium text-blue-900 text-sm">
-          Target Demographics
-        </h3>
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-medium text-blue-900 text-sm">
+            Target Demographics
+          </h3>
+          <ExplainationToolTip label="Age Demographics" />
+        </div>
         <p className="font-bold text-blue-900 text-2xl">
           {metrics?.primaryAgeGroup}
         </p>
@@ -47,9 +51,14 @@ export const MetricsSection: React.FC<MetricsSectionProps> = ({
             {isEnhanced ? "AI INSIGHTS" : "INSIGHTS"}
           </span>
         </div>
-        <h3 className="mb-1 font-medium text-emerald-900 text-sm">
-          {isEnhanced ? "Cultural Affinity" : "Diversity Score"}
-        </h3>
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-medium text-emerald-900 text-sm">
+            {isEnhanced ? "Cultural Affinity" : "Diversity Score"}
+          </h3>
+          <ExplainationToolTip
+            label={isEnhanced ? "Cultural Affinity Score" : "Diversity Index"}
+          />
+        </div>
         <p className="font-bold text-emerald-900 text-2xl">
           {isEnhanced
             ? `${(
@@ -79,9 +88,12 @@ export const MetricsSection: React.FC<MetricsSectionProps> = ({
             INSIGHTS
           </span>
         </div>
-        <h3 className="mb-1 font-medium text-purple-900 text-sm">
-          Total Insights
-        </h3>
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-medium text-purple-900 text-sm">
+            Total Insights
+          </h3>
+          <ExplainationToolTip label="Recommended Entities" />
+        </div>
         <p className="font-bold text-purple-900 text-2xl">
           {(metrics?.totalEntities || 0) + (metrics?.totalRecommendations || 0)}
         </p>

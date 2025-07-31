@@ -356,3 +356,146 @@ export function sanitizeForFirestore<T>(obj: T): T {
   
   return obj;
 }
+
+/**
+ * Calculates diversity index for taste analysis
+ */
+function calculateDiversityIndex(scores: number[]): number {
+  if (scores.length <= 1) return 0;
+  
+  const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+  const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
+  const standardDeviation = Math.sqrt(variance);
+  
+  // Normalize to 0-1 range
+  return Math.min(standardDeviation / mean, 1);
+}
+
+/**
+ * Interprets taste profile data into human-readable insights
+ */
+function interpretTasteProfile(affinityScore: number, diversityIndex: number): string {
+  if (affinityScore > 0.7 && diversityIndex > 0.6) {
+    return "Sophisticated & Diverse - High cultural engagement across multiple domains";
+  } else if (affinityScore > 0.7) {
+    return "Focused Excellence - Deep expertise in specific cultural areas";
+  } else if (diversityIndex > 0.6) {
+    return "Cultural Explorer - Broad interests across diverse entertainment";
+  } else {
+    return "Emerging Taste - Developing cultural preferences";
+  }
+}
+
+/**
+ * Generates a simplified taste profile based on entities and demographics
+ */
+export function generateSimpleTasteProfile(
+  entities: Entity[],
+  audiences: AudienceOption[]
+): {
+  affinityScore: number;
+  diversityIndex: number;
+  culturalSegments: string[];
+  tasteVector: Record<string, number>;
+  interpretation: string;
+} {
+  console.log("DEBUG: Input entities:", entities);
+  console.log("DEBUG: Input audiences:", audiences);
+  
+  // Calculate affinity score based on entity popularity
+  const popularityScores = entities.filter(e => e.popularity).map(e => e.popularity!);
+  
+  console.log("DEBUG: popularityScores", popularityScores);
+  console.log("DEBUG: popularityScores.length", popularityScores.length);
+  
+  const affinityScore = popularityScores.length > 0 
+    ? popularityScores.reduce((sum, score) => sum + score, 0) / popularityScores.length
+    : 0.5;
+    
+  console.log("DEBUG: calculated affinityScore", affinityScore);
+
+  // Calculate diversity based on entity types
+  const entityTypes = entities.map(e => e.type);
+  const typeDistribution: Record<string, number> = {};
+
+  entityTypes.forEach(type => {
+    typeDistribution[type] = (typeDistribution[type] || 0) + 1;
+  });
+
+  // Normalize type distribution
+  const totalEntities = entities.length;
+  const normalizedDistribution: Record<string, number> = {};
+  Object.keys(typeDistribution).forEach(type => {
+    normalizedDistribution[type] = typeDistribution[type] / totalEntities;
+  });
+
+  const diversityIndex = calculateDiversityIndex(Object.values(normalizedDistribution));
+
+  const culturalSegments = audiences.slice(0, 5).map(audience => audience.label);
+
+  const multiplier = 10 ** DECIMAL_PRECISION;
+  
+  console.log("DEBUG: Before rounding - affinityScore:", affinityScore);
+  console.log("DEBUG: DECIMAL_PRECISION:", DECIMAL_PRECISION);
+  console.log("DEBUG: multiplier:", multiplier);
+  
+  const roundedAffinityScore = Math.round(affinityScore * multiplier) / multiplier;
+  console.log("DEBUG: After rounding - roundedAffinityScore:", roundedAffinityScore);
+  
+  return {
+    affinityScore: roundedAffinityScore,
+    diversityIndex: Math.round(diversityIndex * multiplier) / multiplier,
+    culturalSegments,
+    tasteVector: normalizedDistribution,
+    interpretation: interpretTasteProfile(affinityScore, diversityIndex)
+  };
+}
+
+/**
+ * Calculates analysis metrics for data quality and processing information
+ */
+export function calculateAnalysisMetrics(
+  entities: Entity[],
+  recommendedEntities: Entity[],
+  demographicsMap: Record<string, { age: Record<string, number>, gender: Record<string, number> }>,
+  processingTimeMs: number
+): {
+  dataQualityScore: number;
+  culturalCoverageScore: number;
+  processingTimeMs: number;
+  qlooFeaturesUsed: string[];
+} {
+  const allEntities = [...entities, ...recommendedEntities];
+  
+  // Calculate data quality score
+  const hasNames = allEntities.filter(e => e.name && e.name.trim().length > 0).length;
+  const hasPopularity = allEntities.filter(e => e.popularity !== undefined && e.popularity > 0).length;
+  const hasDemographics = Object.keys(demographicsMap).length;
+  
+  const nameScore = allEntities.length > 0 ? hasNames / allEntities.length : 0;
+  const popularityScore = allEntities.length > 0 ? hasPopularity / allEntities.length : 0;
+  const demographicsScore = allEntities.length > 0 ? hasDemographics / allEntities.length : 0;
+  
+  const dataQualityScore = (nameScore + popularityScore + demographicsScore) / 3;
+
+  // Calculate cultural coverage score
+  const entityTypes = new Set(allEntities.map(e => e.type));
+  const expectedTypes = 3;
+  const culturalCoverageScore = Math.min(entityTypes.size / expectedTypes, 1);
+
+  // List of Qloo features used in the simplified version
+  const qlooFeaturesUsed = [
+    'Entity Search',
+    'Insights API',
+    'Demographics API'
+  ];
+
+  const multiplier = 10 ** DECIMAL_PRECISION;
+  
+  return {
+    dataQualityScore: Math.round(dataQualityScore * multiplier) / multiplier,
+    culturalCoverageScore: Math.round(culturalCoverageScore * multiplier) / multiplier,
+    processingTimeMs,
+    qlooFeaturesUsed
+  };
+} 

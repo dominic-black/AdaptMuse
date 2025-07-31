@@ -11,6 +11,8 @@ import {
   calculateDemographicTotals,
   roundNumericObject,
   sanitizeForFirestore,
+  generateSimpleTasteProfile,
+  calculateAnalysisMetrics,
   ERRORS,
   DEFAULT_AVATAR_URL
 } from './utils';
@@ -19,6 +21,8 @@ import {
  * Main POST handler for creating audiences
  */
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  
   try {
     // Authenticate user
     const user = await requireAuth(request);
@@ -77,6 +81,16 @@ export async function POST(request: NextRequest) {
       audienceOptions: audienceOptions || {}
     };
 
+    // Generate analytics data for AdvancedAnalyticsTab
+    const processingTimeMs = Date.now() - startTime;
+    const tasteProfile = generateSimpleTasteProfile(entitiesWithDemo, allAudienceOptions);
+    const analysisMetrics = calculateAnalysisMetrics(
+      entitiesWithDemo,
+      recommendedEntitiesWithDemo,
+      demographicsMap,
+      processingTimeMs
+    );
+
     // Save audience object
     const docRef = db.collection('users').doc(uid).collection('audiences').doc();
     const newAudience = {
@@ -89,9 +103,15 @@ export async function POST(request: NextRequest) {
         ageTotals: roundNumericObject(ageTotals),
         genderTotals: roundNumericObject(genderTotals),
         imageUrl: DEFAULT_AVATAR_URL,
+        qlooIntelligence: {
+          tasteProfile,
+          analysisMetrics
+        },
       };
     const sanitizedAudience = sanitizeForFirestore(newAudience);
     await docRef.set(sanitizedAudience);
+
+    console.log("sanitizedAudience", sanitizedAudience);
 
     return NextResponse.json(sanitizedAudience);
   } catch (error) {

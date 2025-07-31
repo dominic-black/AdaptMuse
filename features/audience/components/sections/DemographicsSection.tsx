@@ -2,6 +2,7 @@ import React from "react";
 import { BarChart3, TrendingUp } from "lucide-react";
 import { Cell as UICell } from "@/components/ui/Cell/Cell";
 import { AgeDistributionChart, GenderDistributionChart } from "../charts";
+import { ExplainationToolTip } from "@/components/shared/ExplainationToolTip/ExplainationToolTip";
 
 interface DemographicsSectionProps {
   ageTotals: Record<string, number>;
@@ -23,9 +24,12 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
                 <BarChart3 className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 text-lg">
-                  Age Distribution
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 text-lg">
+                    Age Distribution
+                  </h3>
+                  <ExplainationToolTip label="Age Demographics" />
+                </div>
                 <p className="text-gray-600 text-sm">
                   Demographic breakdown by age groups
                 </p>
@@ -45,9 +49,12 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
                 <TrendingUp className="w-5 h-5 text-pink-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 text-lg">
-                  Gender Distribution
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 text-lg">
+                    Gender Distribution
+                  </h3>
+                  <ExplainationToolTip label="Gender Demographics" />
+                </div>
                 <p className="text-gray-600 text-sm">
                   Audience composition by gender
                 </p>

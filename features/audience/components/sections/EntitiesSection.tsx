@@ -3,6 +3,7 @@ import { Users, Sparkles } from "lucide-react";
 import { Cell as UICell } from "@/components/ui/Cell/Cell";
 import { EntityCard } from "../EntityCard/EntityCard";
 import { Entity } from "@/types/entities";
+import { ExplainationToolTip } from "@/components/shared/ExplainationToolTip/ExplainationToolTip";
 
 interface EntitiesSectionProps {
   entities: Entity[];
@@ -26,9 +27,12 @@ export const EntitiesSection: React.FC<EntitiesSectionProps> = ({
                 <Users className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 text-lg">
-                  Selected Interests
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 text-lg">
+                    Selected Interests
+                  </h3>
+                  <ExplainationToolTip label="Input Entities" />
+                </div>
                 <p className="text-gray-600 text-sm">
                   User-defined interests and preferences
                 </p>
@@ -56,9 +60,12 @@ export const EntitiesSection: React.FC<EntitiesSectionProps> = ({
                 <Sparkles className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 text-lg">
-                  AI Recommendations
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900 text-lg">
+                    AI Recommendations
+                  </h3>
+                  <ExplainationToolTip label="Recommended Entities" />
+                </div>
                 <p className="text-gray-600 text-sm">
                   {isEnhanced
                     ? "Intelligent recommendations based on cultural insights"
