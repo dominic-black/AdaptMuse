@@ -9,8 +9,10 @@ export const StatsOverview = ({
     recentJobs: number;
     totalAudiences: number;
     avgAudienceSize: number;
-  };
+  } | null;
 }) => {
+  if (!metrics) return null;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

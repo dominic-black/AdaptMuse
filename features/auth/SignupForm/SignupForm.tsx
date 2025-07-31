@@ -63,9 +63,7 @@ export default function SignupForm() {
       try {
         await sendEmailVerification(auth.currentUser);
         setSignupSuccess(true);
-        console.log("Verification email sent!");
-      } catch (emailError: any) {
-        console.error("Error sending verification email:", emailError);
+      } catch {
         setIsLoading(false);
         setErrors(
           "Account created, but failed to send verification email. Please check your spam folder or try again later."
