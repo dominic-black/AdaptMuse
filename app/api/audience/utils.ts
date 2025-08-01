@@ -372,7 +372,7 @@ export async function fetchMultipleRecommendedEntitiesForType(
     }
 
     const url = buildQlooInsightsUrl(config as unknown as InsightsConfig);
-
+    console.log("qloo insights url", url);
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
