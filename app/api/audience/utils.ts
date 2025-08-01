@@ -719,6 +719,7 @@ export async function fetchValidTagIds(genres: AudienceOption[], qlooApiKey: str
     const response = await fetch(url, {
       headers: createQlooHeaders(qlooApiKey)
     });
+    console.log('🔍 DEBUG::: Response:', response);
 
     if(response.ok) {
       const data = await response.json();
