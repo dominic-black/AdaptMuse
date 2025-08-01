@@ -13,8 +13,8 @@ import {
   QlooBiasTrends,
   QlooSortBy
 } from '@/types/qloo-insights-types';
-import OpenAI from 'openai';
-import { storage } from '@/lib/firebaseAdmin';
+// import OpenAI from 'openai';
+// import { storage } from '@/lib/firebaseAdmin';
 
 export const QLOO_API_BASE_URL = 'https://hackathon.api.qloo.com';
 export const QLOO_INSIGHTS_URL = `${QLOO_API_BASE_URL}/v2/insights`;
@@ -1011,81 +1011,81 @@ function calculateDiversityIndex(scores: number[]): number {
  * Generates and uploads an avatar image for the audience using OpenAI DALL-E
  * Falls back to default avatar if generation fails
  */
-export async function generateAndUploadAvatar(
-  audienceName: string,
-  ageGroup: AgeGroup[],
-  gender: string,
-  entities: Entity[],
-  audiences: AudienceOption[],
-  openai: OpenAI
-): Promise<string> {
-  const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${
-    gender !== "all" ? gender : ""
-  } individual aged: ${ageGroup.join(" and ")}.
+// export async function generateAndUploadAvatar(
+//   audienceName: string,
+//   ageGroup: AgeGroup[],
+//   gender: string,
+//   entities: Entity[],
+//   audiences: AudienceOption[],
+//   openai: OpenAI
+// ): Promise<string> {
+//   const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${
+//     gender !== "all" ? gender : ""
+//   } individual aged: ${ageGroup.join(" and ")}.
 
-The headshot should reflect a person who enjoys ${audiences
-    .map((e) => e.label)
-    .join(", ")} and is interested in ${entities
-    .map((e) => e.name)
-    .join(", ")}.
+// The headshot should reflect a person who enjoys ${audiences
+//     .map((e) => e.label)
+//     .join(", ")} and is interested in ${entities
+//     .map((e) => e.name)
+//     .join(", ")}.
 
-The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
+// The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
 
-  console.log("🎨 Generating avatar image for audience:", audienceName);
+//   console.log("🎨 Generating avatar image for audience:", audienceName);
 
-  const response = await openai.images.generate({
-    model: "dall-e-3",
-    prompt,
-    n: 1,
-    size: "1024x1024",
-  });
+//   const response = await openai.images.generate({
+//     model: "dall-e-3",
+//     prompt,
+//     n: 1,
+//     size: "1024x1024",
+//   });
 
-  const imageUrl =
-    response.data?.[0]?.url ||
-    "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
+//   const imageUrl =
+//     response.data?.[0]?.url ||
+//     "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
 
-  console.log("📸 Avatar image URL:", imageUrl);
+//   console.log("📸 Avatar image URL:", imageUrl);
 
-  const imageResponse = await fetch(imageUrl);
-  if (!imageResponse.ok) {
-    console.warn("⚠️ Failed to fetch generated image. Using fallback.");
-    return "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
-  }
+//   const imageResponse = await fetch(imageUrl);
+//   if (!imageResponse.ok) {
+//     console.warn("⚠️ Failed to fetch generated image. Using fallback.");
+//     return "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
+//   }
 
-  const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+//   const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
-  const bucket = storage.bucket();
-  console.log("📦 Using bucket:", bucket.name);
+//   const bucket = storage.bucket();
+//   console.log("📦 Using bucket:", bucket.name);
 
-  const fileName = `audience_avatars/${audienceName
-    .replace(/\s+/g, "_")
-    .toLowerCase()}_${Date.now()}.png`;
-  const file = bucket.file(fileName);
+//   const fileName = `audience_avatars/${audienceName
+//     .replace(/\s+/g, "_")
+//     .toLowerCase()}_${Date.now()}.png`;
+//   const file = bucket.file(fileName);
 
-  return new Promise((resolve, reject) => {
-    const stream = file.createWriteStream({
-      metadata: {
-        contentType: "image/png",
-      },
-    });
+//   return new Promise((resolve, reject) => {
+//     const stream = file.createWriteStream({
+//       metadata: {
+//         contentType: "image/png",
+//       },
+//     });
 
-    stream.on("error", (err) => {
-      console.error("🚨 Error uploading avatar image:", err);
-      reject(err);
-    });
+//     stream.on("error", (err) => {
+//       console.error("🚨 Error uploading avatar image:", err);
+//       reject(err);
+//     });
 
-    stream.on("finish", async () => {
-      try {
-        await file.makePublic();
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
-        console.log("✅ Avatar image uploaded:", publicUrl);
-        resolve(publicUrl);
-      } catch (err) {
-        console.error("🚨 Error making file public:", err);
-        reject(err);
-      }
-    });
+//     stream.on("finish", async () => {
+//       try {
+//         await file.makePublic();
+//         const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+//         console.log("✅ Avatar image uploaded:", publicUrl);
+//         resolve(publicUrl);
+//       } catch (err) {
+//         console.error("🚨 Error making file public:", err);
+//         reject(err);
+//       }
+//     });
 
-    stream.end(imageBuffer);
-  });
-}
+//     stream.end(imageBuffer);
+//   });
+// }

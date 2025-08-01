@@ -18,15 +18,14 @@ import {
   createQlooHeaders,
   QLOO_API_BASE_URL,
   ERRORS,
-  generateAndUploadAvatar,
 } from './utils';
-import OpenAI from 'openai';
+// import OpenAI from 'openai';
 import { TrendingAnalysisData, CulturalAnalysis, CrossCulturalInsights, TasteProfileInput, EntityData, DemographicsMap } from './types';
 
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY
+// });
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -142,15 +141,15 @@ export async function POST(request: NextRequest) {
     console.log('🎨 Phase 6.5: Avatar generation...');
     const avatarStart = Date.now();
 
-
-    const imageUrl = await generateAndUploadAvatar(
-        audienceName,
-        ageGroup,
-        gender,
-        inputEntities,
-        allAudienceOptions,
-        openai
-      );
+    const imageUrl = "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
+    // const imageUrl = await generateAndUploadAvatar(
+    //     audienceName,
+    //     ageGroup,
+    //     gender,
+    //     inputEntities,
+    //     allAudienceOptions,
+    //     openai
+    //   );
 
 
     const avatarTime = Date.now() - avatarStart;
