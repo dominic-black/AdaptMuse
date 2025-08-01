@@ -9,7 +9,9 @@ export const LandingScreen = ({ isMobile }: { isMobile: boolean }) => {
         initial={isMobile ? {} : { opacity: 0, y: 40 }}
         animate={isMobile ? {} : { opacity: 1, y: 0 }}
         transition={isMobile ? {} : { duration: 0.8, ease: "easeOut" }}
-        className="flex flex-col justify-center items-center gap-4 sm:gap-6 bg-white/60 shadow-xl backdrop-blur-lg px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-2xl text-center"
+        className={`flex flex-col justify-center items-center gap-4 sm:gap-6 bg-white/60 shadow-xl px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-2xl text-center ${
+          !isMobile ? "backdrop-blur-lg" : ""
+        }`}
       >
         <span className="inline-block bg-clip-text bg-gradient-to-r from-purple-400 via-pink-300 to-indigo-400 mb-1 sm:mb-2 font-semibold text-transparent text-xs sm:text-sm uppercase tracking-widest">
           CULTURAL INTELLIGENCE MEETS AI

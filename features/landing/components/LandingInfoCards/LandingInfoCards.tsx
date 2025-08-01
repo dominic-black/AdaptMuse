@@ -5,7 +5,9 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <section
       id="features"
-      className="z-10 relative bg-[var(--color-background)]/80 backdrop-blur-sm py-12 sm:py-16 lg:py-20 xl:py-28"
+      className={`z-10 relative bg-[var(--color-background)]/80 py-12 sm:py-16 lg:py-20 xl:py-28 ${
+        !isMobile ? "backdrop-blur-sm" : ""
+      }`}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <motion.div
@@ -36,7 +38,9 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
               whileInView={isMobile ? {} : { opacity: 1, y: 0 }}
               viewport={isMobile ? {} : { once: true, amount: 0.3 }}
               transition={isMobile ? {} : { duration: 0.7, delay: idx * 0.12 }}
-              className="flex flex-col items-center bg-white shadow-lg p-5 sm:p-6 lg:p-7 border border-[var(--color-background-secondary-cell)] rounded-xl sm:rounded-2xl text-center lg:hover:scale-[1.03] transition-transform duration-300"
+              className={`flex flex-col items-center bg-white shadow-lg p-5 sm:p-6 lg:p-7 border border-[var(--color-background-secondary-cell)] rounded-xl sm:rounded-2xl text-center transition-transform duration-300 ${
+                !isMobile ? "lg:hover:scale-[1.03]" : ""
+              }`}
             >
               <span className="flex justify-center items-center bg-gradient-to-tr from-purple-400 to-indigo-400 mb-3 sm:mb-4 rounded-lg w-10 sm:w-12 h-10 sm:h-12">
                 {feature.icon}
