@@ -1019,7 +1019,6 @@ export async function generateAndUploadAvatar(
   audiences: AudienceOption[],
   openai: OpenAI
 ): Promise<string> {
-  try {
     const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender !== 'all' ? gender : ''} individual aged: ${ageGroup.join(' and ')}.
     
     The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(', ')} and is interested in ${entities.map((e: Entity) => e.name).join(', ')}.
@@ -1035,13 +1034,10 @@ export async function generateAndUploadAvatar(
       size: '1024x1024'
     });
 
-    console.log('🎨 OpenAI image generation response received');
+    console.log("DELE RESPOSNE = ", response);
+    console.log("DELE RESPOSNE DATA = ", JSON.stringify(response));
 
-    const imageUrl = response.data?.[0]?.url;
-    console.log("imageUrl", imageUrl);
-    if (!imageUrl) {
-      throw new Error('Failed to generate image - no URL returned');
-    }
+    const imageUrl = response.data?.[0]?.url || "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
 
     // Fetch the generated image
     const imageResponse = await fetch(imageUrl);
@@ -1084,9 +1080,4 @@ export async function generateAndUploadAvatar(
       stream.end(Buffer.from(imageBuffer));
     });
 
-  } catch (error) {
-    console.error('🚨 Error generating avatar image:', error);
-    console.log('⚠️ Falling back to default avatar URL');
-    return DEFAULT_AVATAR_URL;
-  }
 }
