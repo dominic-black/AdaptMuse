@@ -1019,64 +1019,73 @@ export async function generateAndUploadAvatar(
   audiences: AudienceOption[],
   openai: OpenAI
 ): Promise<string> {
-    const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender !== 'all' ? gender : ''} individual aged: ${ageGroup.join(' and ')}.
-    
-    The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(', ')} and is interested in ${entities.map((e: Entity) => e.name).join(', ')}.
-    
-    The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
+  const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${
+    gender !== "all" ? gender : ""
+  } individual aged: ${ageGroup.join(" and ")}.
 
-    console.log('🎨 Generating avatar image for audience:', audienceName);
+The headshot should reflect a person who enjoys ${audiences
+    .map((e) => e.label)
+    .join(", ")} and is interested in ${entities
+    .map((e) => e.name)
+    .join(", ")}.
 
-    const response = await openai.images.generate({
-      model: 'dall-e-3',
-      prompt: prompt,
-      n: 1,
-      size: '1024x1024'
-    });
+The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
 
-    console.log("DELE RESPOSNE = ", response);
-    console.log("DELE RESPOSNE DATA = ", JSON.stringify(response));
+  console.log("🎨 Generating avatar image for audience:", audienceName);
 
-    const imageUrl = response.data?.[0]?.url || "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
+  const response = await openai.images.generate({
+    model: "dall-e-3",
+    prompt,
+    n: 1,
+    size: "1024x1024",
+  });
 
-    // Fetch the generated image
-    const imageResponse = await fetch(imageUrl);
-    console.log("imageResponse", imageResponse);
-    if (!imageResponse.ok) {
-      return "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
-    }
-    const imageBuffer = await imageResponse.arrayBuffer();
+  const imageUrl =
+    response.data?.[0]?.url ||
+    "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
 
-    // Upload to Firebase Storage
-    const bucket = storage.bucket();
-    const fileName = `audience_avatars/${audienceName.replace(/\s+/g, '_')}_${Date.now()}.png`;
-    const file = bucket.file(fileName);
+  console.log("📸 Avatar image URL:", imageUrl);
 
+  const imageResponse = await fetch(imageUrl);
+  if (!imageResponse.ok) {
+    console.warn("⚠️ Failed to fetch generated image. Using fallback.");
+    return "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
+  }
+
+  const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+
+  const bucket = storage.bucket();
+  console.log("📦 Using bucket:", bucket.name);
+
+  const fileName = `audience_avatars/${audienceName
+    .replace(/\s+/g, "_")
+    .toLowerCase()}_${Date.now()}.png`;
+  const file = bucket.file(fileName);
+
+  return new Promise((resolve, reject) => {
     const stream = file.createWriteStream({
       metadata: {
-        contentType: 'image/png'
+        contentType: "image/png",
+      },
+    });
+
+    stream.on("error", (err) => {
+      console.error("🚨 Error uploading avatar image:", err);
+      reject(err);
+    });
+
+    stream.on("finish", async () => {
+      try {
+        await file.makePublic();
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+        console.log("✅ Avatar image uploaded:", publicUrl);
+        resolve(publicUrl);
+      } catch (err) {
+        console.error("🚨 Error making file public:", err);
+        reject(err);
       }
     });
 
-    return new Promise((resolve, reject) => {
-      stream.on('error', (err) => {
-        console.error('🚨 Error uploading avatar image:', err);
-        reject(err);
-      });
-
-      stream.on('finish', async () => {
-        try {
-          await file.makePublic();
-          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
-          console.log('✅ Avatar image uploaded successfully:', publicUrl);
-          resolve(publicUrl);
-        } catch (error) {
-          console.error('🚨 Error making file public:', error);
-          reject(error);
-        }
-      });
-
-      stream.end(Buffer.from(imageBuffer));
-    });
-
+    stream.end(imageBuffer);
+  });
 }
