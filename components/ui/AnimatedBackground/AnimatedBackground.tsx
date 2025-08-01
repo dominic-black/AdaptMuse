@@ -17,7 +17,6 @@ export function AnimatedBackground() {
   }, []);
 
   if (isMobile) {
-    // Static background for mobile - same colors, no animations
     return (
       <div
         className="fixed inset-0 w-full h-full pointer-events-none"
@@ -56,7 +55,6 @@ export function AnimatedBackground() {
     );
   }
 
-  // Animated background for desktop
   return (
     <div
       className="fixed inset-0 w-full h-full pointer-events-none"
