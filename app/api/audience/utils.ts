@@ -546,6 +546,7 @@ export async function fetchDemographics(
 
     // Use the demographics insights API to get demographic data for all entities
     const url = `${QLOO_API_BASE_URL}/v2/insights?filter.type=urn:demographics&signal.interests.entities=${entityIds.join(',')}`;
+    console.log("Demographics API URL: ", url);
 
     const response = await fetch(url, {
       headers: createQlooHeaders(qlooApiKey)
@@ -1037,12 +1038,14 @@ export async function generateAndUploadAvatar(
     console.log('🎨 OpenAI image generation response received');
 
     const imageUrl = response.data?.[0]?.url;
+    console.log("imageUrl", imageUrl);
     if (!imageUrl) {
       throw new Error('Failed to generate image - no URL returned');
     }
 
     // Fetch the generated image
     const imageResponse = await fetch(imageUrl);
+    console.log("imageResponse", imageResponse);
     if (!imageResponse.ok) {
       throw new Error('Failed to fetch the generated image');
     }
