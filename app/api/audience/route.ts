@@ -143,10 +143,7 @@ export async function POST(request: NextRequest) {
     console.log('🎨 Phase 6.5: Avatar generation...');
     const avatarStart = Date.now();
 
-    let imageUrl = DEFAULT_AVATAR_URL;
-    const adminIds = process.env.ADMIN_UIDS?.split(',') || [];
-    if (adminIds.includes(uid)) {
-      imageUrl = await generateAndUploadAvatar(
+    const imageUrl = await generateAndUploadAvatar(
         audienceName,
         ageGroup,
         gender,
@@ -154,9 +151,7 @@ export async function POST(request: NextRequest) {
         allAudienceOptions,
         openai
       );
-    } else {
-      console.log('Not an admin, skipping avatar generation');
-    }
+
 
     const avatarTime = Date.now() - avatarStart;
     console.log(`✅ Avatar generation completed in ${avatarTime}ms: ${imageUrl}`);
