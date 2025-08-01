@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+
 import { FEATURES } from "./Features";
 
 export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
@@ -10,13 +10,7 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
       }`}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <motion.div
-          initial={isMobile ? {} : { opacity: 0, y: 32 }}
-          whileInView={isMobile ? {} : { opacity: 1, y: 0 }}
-          viewport={isMobile ? {} : { once: true, amount: 0.3 }}
-          transition={isMobile ? {} : { duration: 0.7 }}
-          className="text-center"
-        >
+        <div className="text-center">
           <h2 className="bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 mb-2 sm:mb-3 font-semibold text-transparent text-sm sm:text-base uppercase tracking-widest">
             A Complete AI Audience Platform
           </h2>
@@ -28,16 +22,12 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
             cultural insights, enabling unprecedented audience engagement
             without compromising privacy.
           </p>
-        </motion.div>
+        </div>
 
         <div className="gap-4 sm:gap-6 lg:gap-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8 sm:mt-12 lg:mt-16">
           {FEATURES.map((feature, idx) => (
-            <motion.div
+            <div
               key={feature.title}
-              initial={isMobile ? {} : { opacity: 0, y: 32 }}
-              whileInView={isMobile ? {} : { opacity: 1, y: 0 }}
-              viewport={isMobile ? {} : { once: true, amount: 0.3 }}
-              transition={isMobile ? {} : { duration: 0.7, delay: idx * 0.12 }}
               className={`flex flex-col items-center bg-white shadow-lg p-5 sm:p-6 lg:p-7 border border-[var(--color-background-secondary-cell)] rounded-xl sm:rounded-2xl text-center transition-transform duration-300 ${
                 !isMobile ? "lg:hover:scale-[1.03]" : ""
               }`}
@@ -51,7 +41,7 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
               <p className="opacity-80 text-[var(--color-text)] text-sm sm:text-base leading-relaxed">
                 {feature.description}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

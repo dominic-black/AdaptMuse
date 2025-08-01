@@ -1,14 +1,10 @@
 import { Button } from "@/components/ui/Button";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
 
 export const LandingScreen = ({ isMobile }: { isMobile: boolean }) => {
   return (
     <main className="flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12 h-screen">
-      <motion.div
-        initial={isMobile ? {} : { opacity: 0, y: 40 }}
-        animate={isMobile ? {} : { opacity: 1, y: 0 }}
-        transition={isMobile ? {} : { duration: 0.8, ease: "easeOut" }}
+      <div
         className={`flex flex-col justify-center items-center gap-4 sm:gap-6 bg-white/60 shadow-xl px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-2xl text-center ${
           !isMobile ? "backdrop-blur-lg" : ""
         }`}
@@ -49,7 +45,7 @@ export const LandingScreen = ({ isMobile }: { isMobile: boolean }) => {
             <ArrowRight className="ml-1 sm:ml-2 w-3 sm:w-4 h-3 sm:h-4" />
           </Button>
         </div>
-      </motion.div>
+      </div>
     </main>
   );
 };
