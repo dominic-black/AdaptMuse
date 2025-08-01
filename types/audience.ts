@@ -1,10 +1,6 @@
 import { Entity, AgeGroup, Gender, EntityType } from './entities';
 
-// Re-export EntityType for convenience
 export type { EntityType };
-
-// Alias Entity as QlooEntity for backward compatibility
-export type QlooEntity = Entity;
 
 export interface AudienceCategory {
   label: string;
@@ -25,13 +21,13 @@ export interface Audience {
   entities: Entity[];
   ageTotals: Record<AgeGroup, number>;
   genderTotals: Record<Gender, number>;
-  demographics: { label: string; value: string }[]; // Legacy field - to be deprecated
-  categorizedSelections?: CategorizedSelections; // New structured data
+  demographics: { label: string; value: string }[];
+  categorizedSelections?: CategorizedSelections;
 }
 
 export type AudienceData = {
   audienceName: string;
   entities: string[];
-  gender: Gender | 'all'; // 'all' is not in Gender, so keep it as a union
+  gender: Gender | 'all'; 
   ageGroup: AgeGroup;
 };

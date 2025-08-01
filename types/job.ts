@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { jobIcons } from "@/features/jobs/JobList/JobList";
+import { jobIcons } from "@/features/jobs/components/JobList/JobList";
 
 export interface Job {
   id: string;

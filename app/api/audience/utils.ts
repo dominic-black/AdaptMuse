@@ -922,13 +922,13 @@ export async function generateTasteProfile(
   qlooApiKey: string
 ): Promise<{
   tasteVector: Record<string, number>;
-  culturalSegments: Array<{id: string, label: string}>;
+  culturalSegments: Array<{value: string, label: string}>;
   affinityScore: number;
   diversityIndex: number;
 }> {
   const profile = {
     tasteVector: {},
-    culturalSegments: [] as Array<{id: string, label: string}>,
+    culturalSegments: [] as Array<{value: string, label: string}>,
     affinityScore: 0,
     diversityIndex: 0
   };
@@ -980,7 +980,7 @@ export async function generateTasteProfile(
     profile.diversityIndex = calculateDiversityIndex(scores);
     profile.tasteVector = tasteScores;
 
-    profile.culturalSegments = validAudiences.slice(0, 5).map(a => ({id: a.id, label: a.name})); // Top 5 cultural segments
+    profile.culturalSegments = validAudiences.slice(0, 5).map(a => ({value: a.id, label: a.name})); // Top 5 cultural segments
 
     console.log(`Generated comprehensive taste profile with ${Object.keys(tasteScores).length} dimensions`);
 

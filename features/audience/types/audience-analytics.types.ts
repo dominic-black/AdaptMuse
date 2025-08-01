@@ -4,7 +4,7 @@ export interface QlooTasteProfile {
   affinityScore: number;
   diversityIndex: number;
   interpretation: string;
-  culturalSegments: Array<{id: string, label: string}>;
+  culturalSegments: Array<{value: string, label: string}>;
   tasteVector: Record<string, number>;
 }
 
