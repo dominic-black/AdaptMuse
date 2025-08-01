@@ -15,18 +15,17 @@ import {
   fetchTrendingEntities,
   performDemographicAnalysis,
   generateTasteProfile,
-  generateAndUploadAvatar,
   createQlooHeaders,
   QLOO_API_BASE_URL,
   ERRORS,
 } from './utils';
-import OpenAI from 'openai';
+// import OpenAI from 'openai';
 import { TrendingAnalysisData, CulturalAnalysis, CrossCulturalInsights, TasteProfileInput, EntityData, DemographicsMap } from './types';
 
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY
+// });
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
