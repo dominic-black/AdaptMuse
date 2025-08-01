@@ -12,84 +12,9 @@ import { format } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
-import {
-  Pencil,
-  FileText,
-  ArrowLeft,
-  Copy,
-  Check,
-  ExternalLink,
-} from "lucide-react";
-
-// Loading Skeleton Component
-const JobDetailsSkeleton = () => (
-  <div className="space-y-8">
-    {/* Content Sections Skeleton */}
-    <div className="gap-8 grid grid-cols-1 lg:grid-cols-2">
-      <Cell>
-        <div className="space-y-4 p-6 animate-pulse">
-          <div className="bg-gray-200 rounded w-32 h-6"></div>
-          <div className="space-y-3">
-            <div className="bg-gray-200 rounded w-full h-4"></div>
-            <div className="bg-gray-200 rounded w-3/4 h-4"></div>
-            <div className="bg-gray-200 rounded w-1/2 h-4"></div>
-          </div>
-        </div>
-      </Cell>
-
-      <Cell>
-        <div className="space-y-4 p-6 animate-pulse">
-          <div className="bg-gray-200 rounded w-40 h-6"></div>
-          <div className="bg-gray-100 p-4 rounded-lg">
-            <div className="flex items-center gap-3">
-              <div className="bg-gray-200 rounded-full w-12 h-12"></div>
-              <div className="space-y-2">
-                <div className="bg-gray-200 rounded w-24 h-4"></div>
-                <div className="bg-gray-200 rounded w-32 h-3"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Cell>
-    </div>
-
-    {/* Context Skeleton */}
-    <Cell>
-      <div className="space-y-4 p-6 animate-pulse">
-        <div className="bg-gray-200 rounded w-24 h-6"></div>
-        <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
-          <div className="space-y-3">
-            <div className="bg-gray-200 rounded w-full h-4"></div>
-            <div className="bg-gray-200 rounded w-3/4 h-4"></div>
-            <div className="bg-gray-200 rounded w-1/2 h-4"></div>
-          </div>
-        </div>
-      </div>
-    </Cell>
-
-    {/* Generated Content Skeleton */}
-    <Cell>
-      <div className="space-y-4 p-6 animate-pulse">
-        <div className="flex justify-between items-center">
-          <div className="bg-gray-200 rounded w-48 h-6"></div>
-          <div className="bg-gray-200 rounded w-20 h-8"></div>
-        </div>
-        <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
-          <div className="space-y-3">
-            <div className="bg-gray-200 rounded w-full h-4"></div>
-            <div className="bg-gray-200 rounded w-full h-4"></div>
-            <div className="bg-gray-200 rounded w-3/4 h-4"></div>
-            <div className="bg-gray-200 rounded w-full h-4"></div>
-            <div className="bg-gray-200 rounded w-1/2 h-4"></div>
-          </div>
-        </div>
-        <div className="flex justify-end">
-          <div className="bg-gray-200 rounded w-32 h-10"></div>
-        </div>
-      </div>
-    </Cell>
-  </div>
-);
+import { Pencil, Copy, Check, ExternalLink } from "lucide-react";
+import { EmptyJob } from "@/features/jobs/components/EmptyJob/EmptyJob";
+import { JobDetailsSkeleton } from "@/features/jobs/components/JobDetails/JobDetailsSkeleton";
 
 export default function JobPage() {
   const { jobId } = useParams();
@@ -139,34 +64,13 @@ export default function JobPage() {
   }
 
   if (!job) {
-    return (
-      <Screen heading="Job Not Found">
-        <div className="flex flex-col justify-center items-center py-16">
-          <div className="bg-gray-100 mb-4 p-4 rounded-full w-16 h-16">
-            <FileText className="w-8 h-8 text-gray-400" />
-          </div>
-          <h3 className="mb-2 font-semibold text-gray-900 text-lg">
-            Job Not Found
-          </h3>
-          <p className="mb-6 max-w-md text-gray-600 text-center">
-            The job you&apos;re looking for doesn&apos;t exist or you don&apos;t
-            have permission to view it.
-          </p>
-          <Button href="/jobs" variant="outline">
-            <ArrowLeft className="mr-2 w-4 h-4" />
-            Back to Jobs
-          </Button>
-        </div>
-      </Screen>
-    );
+    return <EmptyJob />;
   }
 
   return (
     <Screen heading={job.title || job.contentType}>
       <div className="space-y-8">
-        {/* Content Sections */}
         <div className="gap-8 grid grid-cols-1 lg:grid-cols-2">
-          {/* Job Details */}
           <Cell>
             <div className="p-6">
               <h3 className="mb-4 font-semibold text-gray-900 text-lg">
