@@ -8,25 +8,12 @@ import { LandingInfoCards } from "@/features/landing/components/LandingInfoCards
 import { Footer } from "@/features/landing/components/Footer/Footer";
 
 export default function Home() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 1100);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
   return (
     <div className="relative flex flex-col min-h-screen">
-      {!isMobile && <AnimatedBackground />}
+      <AnimatedBackground />
       <Header />
-      <LandingScreen isMobile={isMobile} />
-      <LandingInfoCards isMobile={isMobile} />
+      <LandingScreen />
+      <LandingInfoCards />
       <Footer />
     </div>
   );

@@ -1,13 +1,13 @@
+"use client";
+
 import { Button } from "@/components/ui/Button";
 import { ArrowRight } from "lucide-react";
 
-export const LandingScreen = ({ isMobile }: { isMobile: boolean }) => {
+export const LandingScreen = () => {
   return (
-    <main className="flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12 h-screen">
+    <main className="safe-top safe-bottom flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12 h-screen">
       <div
-        className={`flex flex-col justify-center items-center gap-4 sm:gap-6 bg-white/60 shadow-xl px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-2xl text-center ${
-          !isMobile ? "backdrop-blur-lg" : ""
-        }`}
+        className={`flex flex-col justify-center items-center gap-4 sm:gap-6 bg-white/60 shadow-xl px-4 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-2xl text-center backdrop-blur-lg`}
       >
         <span className="inline-block bg-clip-text bg-gradient-to-r from-purple-400 via-pink-300 to-indigo-400 mb-1 sm:mb-2 font-semibold text-transparent text-xs sm:text-sm uppercase tracking-widest">
           CULTURAL INTELLIGENCE MEETS AI

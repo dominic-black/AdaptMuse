@@ -5,7 +5,6 @@ import Link from "next/link";
 import LoginForm from "@/features/auth/LoginForm/LoginForm";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground/AnimatedBackground";
 
-
 export default function Login() {
   return (
     <div className="pb-[max(3rem,env(safe-area-inset-bottom))] relative pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[max(3rem,env(safe-area-inset-top))] flex justify-center items-center px-4 sm:px-6 lg:px-8 py-12 min-h-[100dvh] min-h-screen">
@@ -15,7 +14,7 @@ export default function Login() {
           <Image
             className="mx-auto w-auto h-12"
             src="/logo.png"
-            alt="AdaptMuse Logo"
+            alt=""
             width={48}
             height={48}
           />
