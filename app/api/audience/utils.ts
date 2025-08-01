@@ -1,10 +1,10 @@
 import { AgeGroup, Entity, AudienceOption, AudienceApiData, QlooApiEntity } from '@/types';
 import { EntityType } from '@/types/entities';
 import { EntityTypes } from '@/constants/entity';
-import { 
-  QlooFilterType, 
-  EntityTypeToQlooFilter, 
-  convertAgeGroups, 
+import {
+  QlooFilterType,
+  EntityTypeToQlooFilter,
+  convertAgeGroups,
   buildQlooInsightsUrl,
   InsightsConfig,
   YourAgeGroup,
@@ -16,27 +16,23 @@ import {
 import OpenAI from 'openai';
 import { storage } from '@/lib/firebaseAdmin';
 
-// Constants
 export const QLOO_API_BASE_URL = 'https://hackathon.api.qloo.com';
 export const QLOO_INSIGHTS_URL = `${QLOO_API_BASE_URL}/v2/insights`;
 export const DEFAULT_AVATAR_URL = 'https://cdn-icons-png.flaticon.com/512/1053/1053244.png';
 export const UNKNOWN_ENTITY_TYPE = 'UNKNOWN';
 export const DECIMAL_PRECISION = 4;
 
-// Optimized query configuration
 export const INSIGHTS_QUERY_CONFIG = {
-  DEFAULT_TAKE: 5, // Reduced for faster responses and fewer timeouts
-  MAX_TAKE: 10, // Maximum for complex queries
+  DEFAULT_TAKE: 5,
+  MAX_TAKE: 10,
   WEIGHT_HIGH: QlooWeight.High,
   WEIGHT_MEDIUM: QlooWeight.Medium,
-  BIAS_TRENDS: QlooBiasTrends.Low, // Reduced to avoid timeouts
+  BIAS_TRENDS: QlooBiasTrends.Low,
   SORT_BY: QlooSortBy.Affinity,
-  // Minimum signal requirements for valid API calls
   MIN_ENTITY_SIGNALS: 1,
-  MIN_TAG_SIGNALS: 1,
+  MIN_TAG_SIGNALS: 1
 } as const;
 
-// Error messages
 export const ERRORS = {
   MISSING_QLOO_API_KEY: 'Missing Qloo API key',
   MISSING_AUDIENCE_DATA: 'Missing audience name or audience data',
@@ -44,14 +40,13 @@ export const ERRORS = {
   QLOO_API_ERROR: 'Failed to fetch data from Qloo API',
   FAILED_TO_CREATE_AUDIENCE: 'Failed to create audience',
   INVALID_ENTITY_TYPE: 'Invalid entity type provided',
-  NO_VALID_SIGNALS: 'No valid signals provided for insights query',
+  NO_VALID_SIGNALS: 'No valid signals provided for insights query'
 } as const;
 
-// Input validation limits
 export const VALIDATION_LIMITS = {
   MAX_AUDIENCE_NAME_LENGTH: 100,
   MIN_AUDIENCE_NAME_LENGTH: 1,
-  MAX_ENTITIES: 50,
+  MAX_ENTITIES: 50
 } as const;
 
 /**
@@ -61,8 +56,8 @@ export function validateRequestData(audienceName: string, audienceData: Audience
   if (!audienceName || typeof audienceName !== 'string') {
     return ERRORS.INVALID_AUDIENCE_NAME;
   }
-  
-  if (audienceName.length < VALIDATION_LIMITS.MIN_AUDIENCE_NAME_LENGTH || 
+
+  if (audienceName.length < VALIDATION_LIMITS.MIN_AUDIENCE_NAME_LENGTH ||
       audienceName.length > VALIDATION_LIMITS.MAX_AUDIENCE_NAME_LENGTH) {
     return `Audience name must be between ${VALIDATION_LIMITS.MIN_AUDIENCE_NAME_LENGTH} and ${VALIDATION_LIMITS.MAX_AUDIENCE_NAME_LENGTH} characters`;
   }
@@ -90,7 +85,7 @@ export function validateRequestData(audienceName: string, audienceData: Audience
 export function createQlooHeaders(apiKey: string): Record<string, string> {
   return {
     'x-api-key': apiKey,
-    'accept': 'application/json',
+    'accept': 'application/json'
   };
 }
 
@@ -99,13 +94,13 @@ export function createQlooHeaders(apiKey: string): Record<string, string> {
  */
 export function transformQlooEntity(inputEntity: QlooApiEntity, entityType?: string): Entity {
   const detectedType = entityType || inputEntity.types[0]?.split(':').pop()?.toUpperCase() || UNKNOWN_ENTITY_TYPE;
-  
+
   return {
     id: inputEntity.entity_id,
     name: inputEntity.name,
     popularity: inputEntity.popularity ?? 0,
     type: detectedType as EntityType,
-    imageUrl: inputEntity.properties?.image?.url || null,
+    imageUrl: inputEntity.properties?.image?.url || null
   };
 }
 
@@ -174,13 +169,13 @@ export async function buildOptimizedInsightsConfig(
   const filterType = getQlooFilterType(entityType);
   const qlooGender = mapGenderToQloo(gender);
   const qlooAgeGroups = mapAgeGroupsToQloo(ageGroups);
-  
+
   // Build configuration with all possible properties
   const config: OptimizedInsightsConfig = {
     filterType,
     take: INSIGHTS_QUERY_CONFIG.DEFAULT_TAKE,
     sortBy: INSIGHTS_QUERY_CONFIG.SORT_BY,
-    biasTrends: INSIGHTS_QUERY_CONFIG.BIAS_TRENDS,
+    biasTrends: INSIGHTS_QUERY_CONFIG.BIAS_TRENDS
   };
 
   // Add demographic signals with proper weights
@@ -209,7 +204,7 @@ export async function buildOptimizedInsightsConfig(
     config.signalInterestsEntitiesWeight = INSIGHTS_QUERY_CONFIG.WEIGHT_HIGH;
   }
 
-  // Fetch valid Qloo tag IDs (CRITICAL FIX for 400 errors)  
+  // Fetch valid Qloo tag IDs (CRITICAL FIX for 400 errors)
   if (genres.length > 0) {
     const validTagIds = await fetchValidTagIds(genres, qlooApiKey);
     if (validTagIds.length > 0) {
@@ -229,17 +224,17 @@ export function validateInsightsConfig(config: OptimizedInsightsConfig): boolean
   const hasEntitySignal = Boolean(config.signalInterestsEntities?.length && config.signalInterestsEntities.length >= INSIGHTS_QUERY_CONFIG.MIN_ENTITY_SIGNALS);
   const hasTagSignal = Boolean(config.signalInterestsTags?.length && config.signalInterestsTags.length >= INSIGHTS_QUERY_CONFIG.MIN_TAG_SIGNALS);
   const hasDemographicSignal = Boolean(config.signalDemographicsAge) || Boolean(config.signalDemographicsGender);
-  
+
   // Enhanced validation: Require either entities OR (demographics + tags/audiences) for valid queries
   const hasStrongSignal = hasEntitySignal || hasAudienceSignal;
   const hasWeakSignalCombination = hasDemographicSignal && (hasTagSignal || hasAudienceSignal);
-  
+
   const isValid = hasStrongSignal || hasWeakSignalCombination;
-  
+
   if (!isValid) {
     console.warn('Insights config validation failed:', {
       hasEntitySignal,
-      hasAudienceSignal, 
+      hasAudienceSignal,
       hasTagSignal,
       hasDemographicSignal,
       entityCount: config.signalInterestsEntities?.length || 0,
@@ -247,7 +242,7 @@ export function validateInsightsConfig(config: OptimizedInsightsConfig): boolean
       audienceCount: config.signalDemographicsAudiences?.length || 0
     });
   }
-  
+
   return isValid;
 }
 
@@ -265,10 +260,10 @@ export async function fetchInputEntities(entities: Entity[], qlooApiKey: string)
   }
 
   const url = `${QLOO_API_BASE_URL}/entities?entity_ids=${entityIds.join(',')}`;
-  
+
   try {
     const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
+      headers: createQlooHeaders(qlooApiKey)
     });
 
     if (!response.ok) {
@@ -277,7 +272,7 @@ export async function fetchInputEntities(entities: Entity[], qlooApiKey: string)
     }
 
     const data = await response.json();
-    
+
     if (!data?.results?.length) {
       return entities; // Return original entities as fallback
     }
@@ -321,7 +316,7 @@ export async function fetchRecommendedEntityForType(
     const url = buildQlooInsightsUrl(config as unknown as InsightsConfig);
 
     const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
+      headers: createQlooHeaders(qlooApiKey)
     });
 
     if (!response.ok) {
@@ -330,7 +325,7 @@ export async function fetchRecommendedEntityForType(
     }
 
     const data = await response.json();
-    
+
     if (!data?.results?.entities?.length) {
       console.warn(`No entities returned for type ${entityType}`);
       return null;
@@ -377,14 +372,14 @@ export async function fetchMultipleRecommendedEntitiesForType(
     }
 
     const url = buildQlooInsightsUrl(config as unknown as InsightsConfig);
-    
+
     // Add timeout to prevent hanging requests
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
     const response = await fetch(url, {
       headers: createQlooHeaders(qlooApiKey),
-      signal: controller.signal,
+      signal: controller.signal
     });
 
     clearTimeout(timeoutId);
@@ -401,7 +396,7 @@ export async function fetchMultipleRecommendedEntitiesForType(
     }
 
     const data = await response.json();
-    
+
     if (!data?.results?.entities?.length) {
       console.warn(`No entities returned for ${entityType}`);
       return [];
@@ -414,7 +409,7 @@ export async function fetchMultipleRecommendedEntitiesForType(
 
     console.log(`Successfully fetched ${entities.length}/${count} entities for ${entityType}`);
     return entities;
-    
+
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       console.warn(`Request timeout for entity type ${entityType}`);
@@ -429,15 +424,15 @@ export async function fetchMultipleRecommendedEntitiesForType(
  * Priority order for entity types based on engagement and reliability
  */
 const ENTITY_TYPE_PRIORITY = [
-  'MOVIE',     // Most reliable and popular
-  'ARTIST',    // High engagement
-  'BOOK',      // Good demographic data
-  'TV_SHOW',   // Popular content type
-  'PERSON',    // Personality-based insights
-  'BRAND',     // Commercial relevance
-  'PLACE',     // Location-based insights
+  'MOVIE', // Most reliable and popular
+  'ARTIST', // High engagement
+  'BOOK', // Good demographic data
+  'TV_SHOW', // Popular content type
+  'PERSON', // Personality-based insights
+  'BRAND', // Commercial relevance
+  'PLACE', // Location-based insights
   'VIDEO_GAME', // Gaming demographic
-  'PODCAST'    // Audio content
+  'PODCAST' // Audio content
 ];
 
 /**
@@ -453,19 +448,19 @@ export async function fetchRecommendedEntities(
 ): Promise<Entity[]> {
   // Use priority-ordered entity types for more reliable results
   const entityTypes = ENTITY_TYPE_PRIORITY.filter(type => type in EntityTypes);
-  
+
   // Reduce concurrent requests to avoid timeouts
   const MAX_CONCURRENT = 3;
   const uniqueEntities: Entity[] = [];
   const inputEntityIds = new Set(inputEntities.map(e => e.id));
   const seenIds = new Set<string>();
-  
+
   console.log(`Fetching entities for ${entityTypes.length} types with max ${MAX_CONCURRENT} concurrent requests`);
-  
+
   // Process entity types in batches to avoid overwhelming the API
   for (let i = 0; i < entityTypes.length; i += MAX_CONCURRENT) {
     const batch = entityTypes.slice(i, i + MAX_CONCURRENT);
-    
+
     const batchPromises = batch.map(async (entityType) => {
       try {
         // Fetch fewer entities per type but more reliably
@@ -479,7 +474,7 @@ export async function fetchRecommendedEntities(
           qlooApiKey,
           1 // Reduced to 1 entity per type for reliability
         );
-        
+
         // Add unique entities to the result
         for (const entity of entities) {
           if (!inputEntityIds.has(entity.id) && !seenIds.has(entity.id)) {
@@ -487,31 +482,31 @@ export async function fetchRecommendedEntities(
             uniqueEntities.push(entity);
           }
         }
-        
+
         return entities.length;
       } catch (error) {
         console.error(`Error fetching entities for type ${entityType}:`, error);
         return 0;
       }
     });
-    
+
     const batchResults = await Promise.all(batchPromises);
     const batchTotal = batchResults.reduce((sum, count) => sum + count, 0);
-    
+
     console.log(`Batch ${Math.floor(i / MAX_CONCURRENT) + 1}: fetched ${batchTotal} entities from types [${batch.join(', ')}]`);
-    
+
     // Stop if we have enough entities (15+ is good coverage)
     if (uniqueEntities.length >= 15) {
       console.log(`Reached target entity count (${uniqueEntities.length}), stopping early`);
       break;
     }
-    
+
     // Small delay between batches to be respectful to the API
     if (i + MAX_CONCURRENT < entityTypes.length) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
-  
+
   console.log(`Successfully fetched ${uniqueEntities.length} unique recommended entities`);
   return uniqueEntities;
 }
@@ -532,11 +527,11 @@ interface DemographicData {
  * This uses the same approach as your previous working implementation
  */
 export async function fetchDemographics(
-  entities: Entity[], 
+  entities: Entity[],
   qlooApiKey: string
 ): Promise<Record<string, { age: Record<string, number>, gender: Record<string, number> }>> {
   const demographicsMap: Record<string, { age: Record<string, number>, gender: Record<string, number> }> = {};
-  
+
   if (entities.length === 0) {
     return demographicsMap;
   }
@@ -544,16 +539,16 @@ export async function fetchDemographics(
   try {
     // Get entity IDs for the demographics API call
     const entityIds = entities.map(e => e.id).filter(Boolean);
-    
+
     if (entityIds.length === 0) {
       return demographicsMap;
     }
 
     // Use the demographics insights API to get demographic data for all entities
     const url = `${QLOO_API_BASE_URL}/v2/insights?filter.type=urn:demographics&signal.interests.entities=${entityIds.join(',')}`;
-    
+
     const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
+      headers: createQlooHeaders(qlooApiKey)
     });
 
     if (!response.ok) {
@@ -575,7 +570,7 @@ export async function fetchDemographics(
 
     console.log(`✅ Successfully fetched demographics for ${Object.keys(demographicsMap).length}/${entities.length} entities`);
     return demographicsMap;
-    
+
   } catch (error) {
     console.error('Error fetching demographics:', error);
     return {};
@@ -609,12 +604,12 @@ export function calculateDemographicTotals(entities: Entity[]): {
     '30_to_34': 0,
     '35_to_44': 0,
     '45_to_54': 0,
-    '55_and_older': 0,
+    '55_and_older': 0
   };
 
   const genderTotals: Record<'male' | 'female', number> = {
     male: 0,
-    female: 0,
+    female: 0
   };
 
   // Sum the affinity scores for each demographic category
@@ -666,7 +661,7 @@ export function calculateDemographicTotals(entities: Entity[]): {
 export function roundNumericObject<T extends Record<string, number>>(obj: T, decimals = DECIMAL_PRECISION): T {
   const result: Record<string, number> = {};
   const multiplier = 10 ** decimals;
-  
+
   for (const key in obj) {
     const value = obj[key];
     if (typeof value === 'number' && !isNaN(value)) {
@@ -675,7 +670,7 @@ export function roundNumericObject<T extends Record<string, number>>(obj: T, dec
       result[key] = 0;
     }
   }
-  
+
   return result as T;
 }
 
@@ -686,11 +681,11 @@ export function sanitizeForFirestore<T>(obj: T): T {
   if (obj === null || obj === undefined) {
     return null as T;
   }
-  
+
   if (Array.isArray(obj)) {
     return obj.map(item => sanitizeForFirestore(item)) as T;
   }
-  
+
   if (typeof obj === 'object') {
     const sanitized: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
@@ -704,7 +699,7 @@ export function sanitizeForFirestore<T>(obj: T): T {
     }
     return sanitized as T;
   }
-  
+
   return obj;
 }
 
@@ -715,18 +710,18 @@ export function sanitizeForFirestore<T>(obj: T): T {
  */
 export async function fetchValidTagIds(genres: AudienceOption[], qlooApiKey: string): Promise<string[]> {
   if (genres.length === 0) return [];
-  
+
   const validTagIds: string[] = [];
-  
+
   try {
     for (const genre of genres) {
       const query = encodeURIComponent(genre.label);
       const url = `${QLOO_API_BASE_URL}/v2/tags?query=${query}&take=3`;
-      
+
       const response = await fetch(url, {
-        headers: createQlooHeaders(qlooApiKey),
+        headers: createQlooHeaders(qlooApiKey)
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.results?.length > 0) {
@@ -739,7 +734,7 @@ export async function fetchValidTagIds(genres: AudienceOption[], qlooApiKey: str
   } catch (error) {
     console.error('Error fetching tag IDs:', error);
   }
-  
+
   console.log(`Successfully mapped ${validTagIds.length}/${genres.length} genres to valid tag IDs`);
   return validTagIds;
 }
@@ -749,21 +744,21 @@ export async function fetchValidTagIds(genres: AudienceOption[], qlooApiKey: str
  */
 export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApiKey: string): Promise<string[]> {
   if (audiences.length === 0) return [];
-  
+
   const validAudienceIds: string[] = [];
-  
+
   try {
     // Get all available audiences first
     const url = `${QLOO_API_BASE_URL}/v2/audiences?take=100`;
-    
+
     const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
+      headers: createQlooHeaders(qlooApiKey)
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       const availableAudiences = data.results || [];
-      
+
       // Match user selections to available Qloo audiences
       for (const audience of audiences) {
         const match = availableAudiences.find((qa: { id: string; name?: string }) => {
@@ -771,7 +766,7 @@ export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApi
           return qa.name.toLowerCase().includes(audience.label.toLowerCase()) ||
                  audience.label.toLowerCase().includes(qa.name.toLowerCase());
         });
-        
+
         if (match && match.name) {
           validAudienceIds.push(match.id);
           console.log(`Mapped "${audience.label}" to Qloo audience: ${match.name} (${match.id})`);
@@ -781,7 +776,7 @@ export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApi
   } catch (error) {
     console.error('Error fetching audience IDs:', error);
   }
-  
+
   console.log(`Successfully mapped ${validAudienceIds.length}/${audiences.length} audiences to valid Qloo IDs`);
   return validAudienceIds;
 }
@@ -791,19 +786,19 @@ export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApi
  */
 export async function validateAndEnrichEntities(entities: Entity[], qlooApiKey: string): Promise<Entity[]> {
   if (entities.length === 0) return [];
-  
+
   const enrichedEntities: Entity[] = [];
-  
+
   try {
     for (const entity of entities) {
       // Search for the entity by name to get proper Qloo entity data
       const query = encodeURIComponent(entity.name);
       const url = `${QLOO_API_BASE_URL}/search?query=${query}&take=3`;
-      
+
       const response = await fetch(url, {
-        headers: createQlooHeaders(qlooApiKey),
+        headers: createQlooHeaders(qlooApiKey)
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.results?.length > 0) {
@@ -823,11 +818,10 @@ export async function validateAndEnrichEntities(entities: Entity[], qlooApiKey: 
     console.error('Error validating entities:', error);
     return entities; // Return originals on error
   }
-  
+
   console.log(`Successfully validated ${enrichedEntities.length}/${entities.length} entities`);
   return enrichedEntities;
 }
-
 
 /**
  * Fetches trending entities for enhanced recommendations
@@ -837,15 +831,15 @@ export async function fetchTrendingEntities(entityType: string, qlooApiKey: stri
   try {
     const filterType = getQlooFilterType(entityType);
     const url = `${QLOO_API_BASE_URL}/v2/trending?filter.type=${encodeURIComponent(filterType)}&take=10`;
-    
+
     const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
+      headers: createQlooHeaders(qlooApiKey)
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       if (data.results?.entities?.length > 0) {
-        const trendingEntities = data.results.entities.map((entity: QlooApiEntity) => 
+        const trendingEntities = data.results.entities.map((entity: QlooApiEntity) =>
           transformQlooEntity(entity, entityType)
         );
         console.log(`Found ${trendingEntities.length} trending ${entityType} entities`);
@@ -855,7 +849,7 @@ export async function fetchTrendingEntities(entityType: string, qlooApiKey: stri
   } catch (error) {
     console.error(`Error fetching trending ${entityType} entities:`, error);
   }
-  
+
   return [];
 }
 
@@ -864,7 +858,7 @@ export async function fetchTrendingEntities(entityType: string, qlooApiKey: stri
  * This provides deeper cultural intelligence about audience segments
  */
 export async function performDemographicAnalysis(
-  entities: Entity[], 
+  entities: Entity[],
   qlooApiKey: string
 ): Promise<{
   detailedAge: Record<string, number>;
@@ -875,7 +869,7 @@ export async function performDemographicAnalysis(
   // Simplified implementation to avoid conflicts with main demographic calculation
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const _ = { entities, qlooApiKey };
-  
+
   return {
     detailedAge: {},
     detailedGender: {},
@@ -893,19 +887,19 @@ export async function fetchLocationInsights(
   qlooApiKey: string
 ): Promise<Entity[]> {
   if (!locationQuery) return [];
-  
+
   try {
     const encodedLocation = encodeURIComponent(locationQuery);
     const url = `${QLOO_API_BASE_URL}/v2/insights?filter.type=urn:entity:place&filter.location.query=${encodedLocation}&take=15&sort_by=distance`;
-    
+
     const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
+      headers: createQlooHeaders(qlooApiKey)
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       if (data.results?.entities?.length > 0) {
-        const locationEntities = data.results.entities.map((entity: QlooApiEntity) => 
+        const locationEntities = data.results.entities.map((entity: QlooApiEntity) =>
           transformQlooEntity(entity, 'PLACE')
         );
         console.log(`Found ${locationEntities.length} location-based insights for "${locationQuery}"`);
@@ -915,7 +909,7 @@ export async function fetchLocationInsights(
   } catch (error) {
     console.error(`Error fetching location insights for "${locationQuery}":`, error);
   }
-  
+
   return [];
 }
 
@@ -939,17 +933,17 @@ export async function generateTasteProfile(
     affinityScore: 0,
     diversityIndex: 0
   };
-  
+
   if (inputEntities.length === 0) return profile;
-  
+
   try {
     // Get valid audience IDs for analysis
     const validAudienceIds = await fetchValidAudienceIds(audiences, qlooApiKey);
-    
+
     // Perform taste analysis across multiple entity types
     const entityTypes = ENTITY_TYPE_PRIORITY.filter(type => type in EntityTypes);
     const tasteScores: Record<string, number> = {};
-    
+
     for (const entityType of entityTypes) {
       const config = await buildOptimizedInsightsConfig(
         entityType,
@@ -960,42 +954,42 @@ export async function generateTasteProfile(
         '',
         qlooApiKey
       );
-      
+
       if (validateInsightsConfig(config)) {
         const url = buildQlooInsightsUrl(config as unknown as InsightsConfig);
-        
+
         const response = await fetch(url, {
-          headers: createQlooHeaders(qlooApiKey),
+          headers: createQlooHeaders(qlooApiKey)
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           if (data.results?.entities?.length > 0) {
             // Calculate affinity scores for this entity type
-            const avgPopularity = data.results.entities.reduce((sum: number, entity: QlooApiEntity) => 
+            const avgPopularity = data.results.entities.reduce((sum: number, entity: QlooApiEntity) =>
               sum + (entity.popularity || 0), 0) / data.results.entities.length;
-            
+
             tasteScores[entityType] = avgPopularity;
           }
         }
       }
     }
-    
+
     // Calculate overall taste metrics
     const scores = Object.values(tasteScores);
     profile.affinityScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     profile.diversityIndex = calculateDiversityIndex(scores);
     profile.tasteVector = tasteScores;
-    
+
     // Extract cultural segments from audience mappings
     profile.culturalSegments = validAudienceIds.slice(0, 5); // Top 5 cultural segments
-    
+
     console.log(`Generated comprehensive taste profile with ${Object.keys(tasteScores).length} dimensions`);
-    
+
   } catch (error) {
     console.error('Error generating taste profile:', error);
   }
-  
+
   return profile;
 }
 
@@ -1004,11 +998,11 @@ export async function generateTasteProfile(
  */
 function calculateDiversityIndex(scores: number[]): number {
   if (scores.length <= 1) return 0;
-  
+
   const mean = scores.reduce((sum, score) => sum + score, 0) / scores.length;
   const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length;
   const standardDeviation = Math.sqrt(variance);
-  
+
   // Normalize to 0-1 range
   return Math.min(standardDeviation / mean, 1);
 }
@@ -1018,30 +1012,30 @@ function calculateDiversityIndex(scores: number[]): number {
  * Falls back to default avatar if generation fails
  */
 export async function generateAndUploadAvatar(
-  audienceName: string, 
-  ageGroup: AgeGroup[], 
-  gender: string, 
-  entities: Entity[], 
+  audienceName: string,
+  ageGroup: AgeGroup[],
+  gender: string,
+  entities: Entity[],
   audiences: AudienceOption[],
   openai: OpenAI
 ): Promise<string> {
   try {
-    const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender !== "all" ? gender : ""} individual aged: ${ageGroup.join(" and ")}.
+    const prompt = `Create a clean, vector-style cartoon profile picture as a close-up headshot of a ${gender !== 'all' ? gender : ''} individual aged: ${ageGroup.join(' and ')}.
     
-    The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(", ")} and is interested in ${entities.map((e: Entity) => e.name).join(", ")}.
+    The headshot should reflect a person who enjoys ${audiences.map((e: AudienceOption) => e.label).join(', ')} and is interested in ${entities.map((e: Entity) => e.name).join(', ')}.
     
     The image should be cartoonish and modern. It should only include the head and shoulders, with a neutral or friendly expression, and no text or logos. Avoid photorealism. No background. IMPORTANT: The image should contain no words at all.`;
-    
+
     console.log('🎨 Generating avatar image for audience:', audienceName);
-    
+
     const response = await openai.images.generate({
-      model: "dall-e-3",
+      model: 'dall-e-3',
       prompt: prompt,
       n: 1,
-      size: "1024x1024",
+      size: '1024x1024'
     });
-    
-    console.log("🎨 OpenAI image generation response received");
+
+    console.log('🎨 OpenAI image generation response received');
 
     const imageUrl = response.data?.[0]?.url;
     if (!imageUrl) {
@@ -1060,11 +1054,11 @@ export async function generateAndUploadAvatar(
     const bucket = storage.bucket(bucketName);
     const fileName = `audience_avatars/${audienceName.replace(/\s+/g, '_')}_${Date.now()}.png`;
     const file = bucket.file(fileName);
-    
+
     const stream = file.createWriteStream({
       metadata: {
-        contentType: 'image/png',
-      },
+        contentType: 'image/png'
+      }
     });
 
     return new Promise((resolve, reject) => {
@@ -1072,7 +1066,7 @@ export async function generateAndUploadAvatar(
         console.error('🚨 Error uploading avatar image:', err);
         reject(err);
       });
-      
+
       stream.on('finish', async () => {
         try {
           await file.makePublic();
@@ -1084,7 +1078,7 @@ export async function generateAndUploadAvatar(
           reject(error);
         }
       });
-      
+
       stream.end(Buffer.from(imageBuffer));
     });
 

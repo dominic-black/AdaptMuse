@@ -1,27 +1,27 @@
-import OpenAI from "openai";
-import { db } from "@/lib/firebaseAdmin";
-import { Entity } from "@/types";
-import { Timestamp as AdminTimestamp } from "firebase-admin/firestore";
-import { Timestamp } from "firebase/firestore";
-import { Job } from "@/types/job";
-import { jobIconNames } from "@/constants/jobIcons";
-import { jobIcons } from "@/features/jobs/JobList/JobList";
+import OpenAI from 'openai';
+import { db } from '@/lib/firebaseAdmin';
+import { Entity } from '@/types';
+import { Timestamp as AdminTimestamp } from 'firebase-admin/firestore';
+import { Timestamp } from 'firebase/firestore';
+import { Job } from '@/types/job';
+import { jobIconNames } from '@/constants/jobIcons';
+import { jobIcons } from '@/features/jobs/components/JobList/JobList';
 
 // Constants
 export const CONTENT_MAX_LENGTH = 5000;
 export const CONTEXT_MAX_LENGTH = 2000;
-export const OPENAI_MODEL = "gpt-4o";
+export const OPENAI_MODEL = 'gpt-4o';
 
 // Error messages
 export const ERRORS = {
-  MISSING_REQUIRED_FIELDS: "audienceId, generationJobTitle, contentType, and context are required",
+  MISSING_REQUIRED_FIELDS: 'audienceId, generationJobTitle, contentType, and context are required',
   CONTENT_TOO_LONG: `Content must be less than ${CONTENT_MAX_LENGTH} characters`,
   CONTEXT_TOO_LONG: `Context must be less than ${CONTEXT_MAX_LENGTH} characters`,
-  AUDIENCE_NOT_FOUND: "Audience not found",
-  INVALID_CONTENT_TYPE: "Content type contains invalid characters",
-  INVALID_JOB_TITLE: "Job title contains invalid characters or is too long",
-  GENERATION_FAILED: "Failed to generate content",
-  ICON_GENERATION_FAILED: "Failed to generate icon",
+  AUDIENCE_NOT_FOUND: 'Audience not found',
+  INVALID_CONTENT_TYPE: 'Content type contains invalid characters',
+  INVALID_JOB_TITLE: 'Job title contains invalid characters or is too long',
+  GENERATION_FAILED: 'Failed to generate content',
+  ICON_GENERATION_FAILED: 'Failed to generate icon'
 } as const;
 
 // Interfaces
@@ -50,7 +50,7 @@ export function validateRequestBody(body: unknown): GenerateContentRequest | nul
   }
 
   const request = body as Partial<GenerateContentRequest>;
-  
+
   if (!request.audienceId || !request.generationJobTitle || !request.contentType || !request.context) {
     return null;
   }
@@ -60,7 +60,7 @@ export function validateRequestBody(body: unknown): GenerateContentRequest | nul
     generationJobTitle: request.generationJobTitle,
     contentType: request.contentType,
     content: request.content,
-    context: request.context,
+    context: request.context
   };
 }
 
@@ -80,7 +80,7 @@ export function sanitizeInput(input: string): string {
  */
 export function validateInputs(request: GenerateContentRequest): string | null {
   // Validate required fields are not empty after sanitization
-  if (!sanitizeInput(request.audienceId) || !sanitizeInput(request.generationJobTitle) || 
+  if (!sanitizeInput(request.audienceId) || !sanitizeInput(request.generationJobTitle) ||
       !sanitizeInput(request.contentType) || !sanitizeInput(request.context)) {
     return ERRORS.MISSING_REQUIRED_FIELDS;
   }
@@ -115,7 +115,7 @@ export function validateInputs(request: GenerateContentRequest): string | null {
  */
 export async function getAudienceData(uid: string, audienceId: string): Promise<AudienceData | null> {
   try {
-    const audienceRef = await db.collection("users").doc(uid).collection("audiences").doc(audienceId).get();
+    const audienceRef = await db.collection('users').doc(uid).collection('audiences').doc(audienceId).get();
     const audienceData = audienceRef.data();
 
     if (!audienceData) {
@@ -132,10 +132,10 @@ export async function getAudienceData(uid: string, audienceId: string): Promise<
       entities: audienceData.entities,
       ageTotals: audienceData.ageTotals || {},
       genderTotals: audienceData.genderTotals || {},
-      imageUrl: audienceData.imageUrl || null,
+      imageUrl: audienceData.imageUrl || null
     };
   } catch (error) {
-    console.error("Error fetching audience data:", error);
+    console.error('Error fetching audience data:', error);
     return null;
   }
 }
@@ -165,7 +165,7 @@ export function createContentPrompt(contentType: string, audienceData: AudienceD
  */
 export function createIconPrompt(contentType: string): string {
   const availableIcons = Object.keys(jobIconNames).join(', ');
-  
+
   const promptTemplate = `You are an AI assistant specialized in selecting the most appropriate icon for a given job. The job is {contentType}
     
     The icon options are: {availableIcons}
@@ -183,23 +183,23 @@ export function createIconPrompt(contentType: string): string {
  */
 export async function generateContentAndIcon(
   openai: OpenAI,
-  contentPrompt: string, 
+  contentPrompt: string,
   iconPrompt: string
 ): Promise<{ content: string; icon: string }> {
   try {
     const [chatCompletion, iconCompletion] = await Promise.all([
       openai.chat.completions.create({
         model: OPENAI_MODEL,
-        messages: [{ role: "user", content: contentPrompt }],
+        messages: [{ role: 'user', content: contentPrompt }],
         max_tokens: 1000,
-        temperature: 0.7,
+        temperature: 0.7
       }),
       openai.chat.completions.create({
         model: OPENAI_MODEL,
-        messages: [{ role: "user", content: iconPrompt }],
+        messages: [{ role: 'user', content: iconPrompt }],
         max_tokens: 10,
-        temperature: 0.3,
-      }),
+        temperature: 0.3
+      })
     ]);
 
     const generatedContent = chatCompletion.choices[0]?.message?.content;
@@ -215,10 +215,10 @@ export async function generateContentAndIcon(
 
     return {
       content: generatedContent.trim(),
-      icon: selectedIcon.trim(),
+      icon: selectedIcon.trim()
     };
   } catch (error) {
-    console.error("Error calling OpenAI API:", error);
+    console.error('Error calling OpenAI API:', error);
     throw new Error(ERRORS.GENERATION_FAILED);
   }
 }
@@ -234,28 +234,28 @@ export async function createJob(
   selectedIcon: string
 ): Promise<Job> {
   try {
-    const docRef = db.collection("users").doc(uid).collection("jobs").doc();
-    
+    const docRef = db.collection('users').doc(uid).collection('jobs').doc();
+
     const newJob: Job = {
       id: docRef.id,
       title: sanitizeInput(request.generationJobTitle),
       audience: {
         id: request.audienceId,
         name: audienceData.name,
-        imageUrl: audienceData.imageUrl || undefined,
+        imageUrl: audienceData.imageUrl || undefined
       },
       icon: (jobIcons.hasOwnProperty(selectedIcon) ? selectedIcon : 'Default') as keyof typeof jobIcons,
       contentType: sanitizeInput(request.contentType),
       generatedContent: generatedContent,
       originalContent: request.content ? sanitizeInput(request.content) : '',
       context: sanitizeInput(request.context),
-      createdAt: AdminTimestamp.fromDate(new Date()) as unknown as Timestamp,
+      createdAt: AdminTimestamp.fromDate(new Date()) as unknown as Timestamp
     };
 
     await docRef.set(newJob);
     return newJob;
   } catch (error) {
-    console.error("Error saving job to Firestore:", error);
-    throw new Error("Failed to save generated content");
+    console.error('Error saving job to Firestore:', error);
+    throw new Error('Failed to save generated content');
   }
 }

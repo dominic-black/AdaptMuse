@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
-import { requireAuth } from "@/lib/authMiddleware";
+import { NextRequest, NextResponse } from 'next/server';
+import OpenAI from 'openai';
+import { requireAuth } from '@/lib/authMiddleware';
 import {
   validateRequestBody,
   validateInputs,
@@ -9,12 +9,12 @@ import {
   createIconPrompt,
   generateContentAndIcon,
   createJob,
-  ERRORS,
-} from "./utils";
+  ERRORS
+} from './utils';
 
 // Initialize OpenAI
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -22,7 +22,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Authenticate user
     const user = await requireAuth(request);
     const uid = user.uid;
-
 
     const adminIds = process.env.ADMIN_IDS?.split(',') || [];
     if (!adminIds.includes(uid)) {
@@ -32,7 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Parse and validate request body
     const body = await request.json();
     const validatedRequest = validateRequestBody(body);
-    
+
     if (!validatedRequest) {
       return NextResponse.json(
         { error: ERRORS.MISSING_REQUIRED_FIELDS },
@@ -64,7 +63,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       audienceData,
       validatedRequest.context
     );
-    
+
     const iconPrompt = createIconPrompt(validatedRequest.contentType);
 
     // Generate content and icon
@@ -90,12 +89,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return error;
     }
 
-    console.error("Error in content generation:", error);
-    
+    console.error('Error in content generation:', error);
+
     // Return appropriate error message
-    const errorMessage = error instanceof Error 
-      ? error.message 
-      : "An unexpected error occurred while generating content";
+    const errorMessage = error instanceof Error
+      ? error.message
+      : 'An unexpected error occurred while generating content';
 
     return NextResponse.json(
       { error: errorMessage },

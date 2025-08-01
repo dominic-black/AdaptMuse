@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebaseAdmin';
 import { requireAuth } from '@/lib/authMiddleware';
 import { AudienceApiData } from '@/types';
-import { 
+import {
   validateRequestData,
   fetchInputEntities,
   fetchRecommendedEntities,
@@ -19,10 +19,9 @@ import {
   createQlooHeaders,
   QLOO_API_BASE_URL,
   ERRORS,
-  DEFAULT_AVATAR_URL,
+  DEFAULT_AVATAR_URL
 } from './utils';
 import OpenAI from 'openai';
-
 
 // ===============================
 // TYPE DEFINITIONS
@@ -59,8 +58,6 @@ interface TasteProfileInput {
   tasteVector: Record<string, number>;
 }
 
-
-
 interface EntityData {
   id: string;
   name: string;
@@ -81,12 +78,12 @@ interface DemographicsMap {
 
 // Initialize OpenAI
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  
+
   try {
     // Authentication
     const user = await requireAuth(request);
@@ -102,7 +99,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceApiData } = requestBody;
-    
+
     // Environment validation
     const qlooApiKey = process.env.QLOO_API_KEY;
     if (!qlooApiKey) {
@@ -133,17 +130,17 @@ export async function POST(request: NextRequest) {
     // Phase 1: Entity validation and enrichment
     console.log('🔍 Phase 1: Entity validation...');
     const entityValidationStart = Date.now();
-    
+
     const validatedEntities = await validateAndEnrichEntities(entities, qlooApiKey);
     const inputEntities = await fetchInputEntities(validatedEntities, qlooApiKey);
-    
+
     const entityValidationTime = Date.now() - entityValidationStart;
     console.log(`✅ Entity validation completed in ${entityValidationTime}ms: ${inputEntities.length} validated entities`);
 
     // Phase 2: Advanced insights generation
     console.log('🧠 Phase 2: Insights generation...');
     const insightsStart = Date.now();
-    
+
     const recommendedEntities = await fetchRecommendedEntities(
       inputEntities,
       allAudienceOptions,
@@ -152,47 +149,47 @@ export async function POST(request: NextRequest) {
       gender,
       qlooApiKey
     );
-    
+
     const insightsTime = Date.now() - insightsStart;
     console.log(`✅ Generated ${recommendedEntities.length} recommendations in ${insightsTime}ms`);
 
     // Phase 3: Trending analysis
     console.log('📈 Phase 3: Trending analysis...');
     const trendingStart = Date.now();
-    
+
     const trendingAnalysis = await performComprehensiveTrendingAnalysis(qlooApiKey);
-    
+
     const trendingTime = Date.now() - trendingStart;
     console.log(`✅ Trending analysis completed in ${trendingTime}ms`);
 
     // Phase 4: Cultural intelligence and taste profiling
     console.log('🎨 Phase 4: Cultural intelligence...');
     const culturalStart = Date.now();
-    
+
     const [tasteProfile, culturalAnalysis] = await Promise.all([
       generateTasteProfile(inputEntities, allAudienceOptions, qlooApiKey),
       performAdvancedCulturalAnalysis(inputEntities, recommendedEntities, qlooApiKey)
     ]);
-    
+
     const culturalTime = Date.now() - culturalStart;
     console.log(`✅ Cultural intelligence completed in ${culturalTime}ms`);
 
     // Phase 5: Demographic intelligence
     console.log('🔬 Phase 5: Demographics analysis...');
     const demographicsStart = Date.now();
-    
+
     const allEntities = [...inputEntities, ...recommendedEntities];
     const [demographicsMap, detailedDemographics] = await Promise.all([
       fetchDemographics(allEntities, qlooApiKey),
       performDemographicAnalysis(allEntities, qlooApiKey)
     ]);
-    
+
     const demographicsTime = Date.now() - demographicsStart;
     console.log(`✅ Demographics analysis completed in ${demographicsTime}ms`);
 
     // Phase 6: Data synthesis
     console.log('📊 Phase 6: Data synthesis...');
-    
+
     const entitiesWithDemo = addDemographicsToEntities(inputEntities, demographicsMap);
     const recommendedEntitiesWithDemo = addDemographicsToEntities(recommendedEntities, demographicsMap);
     const { ageTotals, genderTotals } = calculateDemographicTotals([...entitiesWithDemo, ...recommendedEntitiesWithDemo]);
@@ -204,31 +201,31 @@ export async function POST(request: NextRequest) {
     let imageUrl = DEFAULT_AVATAR_URL;
     const adminIds = process.env.ADMIN_UIDS?.split(',') || [];
     if (adminIds.includes(uid)) {
-        imageUrl = await generateAndUploadAvatar(
-            audienceName,
-            ageGroup,
-            gender,
-            inputEntities,
-            allAudienceOptions,
-            openai
-        );
-    }else{
-        console.log("Not an admin, skipping avatar generation");
+      imageUrl = await generateAndUploadAvatar(
+        audienceName,
+        ageGroup,
+        gender,
+        inputEntities,
+        allAudienceOptions,
+        openai
+      );
+    } else {
+      console.log('Not an admin, skipping avatar generation');
     }
-    
+
     const avatarTime = Date.now() - avatarStart;
     console.log(`✅ Avatar generation completed in ${avatarTime}ms: ${imageUrl}`);
 
     // Phase 7: Generate comprehensive intelligence report
     const totalProcessingTime = Date.now() - startTime;
-    
+
     const culturalIntelligenceReport = {
       // Core audience data
       entities: entitiesWithDemo,
       recommendedEntities: recommendedEntitiesWithDemo,
       ageTotals: roundNumericObject(ageTotals),
       genderTotals: roundNumericObject(genderTotals),
-      
+
       // Advanced analytics (when available)
       qlooIntelligence: {
         // Multi-dimensional taste analysis
@@ -239,14 +236,14 @@ export async function POST(request: NextRequest) {
           tasteVector: tasteProfile.tasteVector,
           interpretation: interpretTasteProfile(tasteProfile)
         },
-        
+
         // Real-time trending insights
         trendingAnalysis: {
           ...trendingAnalysis,
           userAlignmentScore: calculateTrendingAlignment(inputEntities, trendingAnalysis),
           trendingRecommendations: generateTrendingRecommendations(trendingAnalysis)
         },
-        
+
         // Enhanced demographic intelligence
         demographicIntelligence: {
           standardDemographics: { ageTotals, genderTotals },
@@ -254,14 +251,14 @@ export async function POST(request: NextRequest) {
           demographicConfidence: calculateDemographicConfidence(demographicsMap),
           culturalCorrelations: culturalAnalysis.correlations
         },
-        
+
         // Advanced cultural analysis
         culturalProfile: {
           ...culturalAnalysis,
           culturalDiversityScore: calculateCulturalDiversity(allEntities),
           crossCulturalInsights: await generateCrossCulturalInsights(inputEntities, qlooApiKey)
         },
-        
+
         // Performance and quality metrics
         analysisMetrics: {
           totalEntities: allEntities.length,
@@ -276,13 +273,13 @@ export async function POST(request: NextRequest) {
           ]
         }
       },
-      
+
       // Traditional categorized selections (maintained for compatibility)
       categorizedSelections: {
         genres: genres || [],
         audienceOptions: audienceOptions || {}
       },
-      
+
       // Audience metadata
       name: audienceName,
       imageUrl: imageUrl,
@@ -304,17 +301,17 @@ export async function POST(request: NextRequest) {
     try {
       const docRef = db.collection('users').doc(uid).collection('audiences').doc();
       const sanitizedAudience = sanitizeForFirestore(culturalIntelligenceReport);
-      
+
       await docRef.set(sanitizedAudience);
-      
+
       console.log(`🎯 Successfully saved audience: ${audienceName} (${docRef.id})`);
-      
-      return NextResponse.json({ 
-        ...culturalIntelligenceReport, 
+
+      return NextResponse.json({
+        ...culturalIntelligenceReport,
         id: docRef.id,
         success: true
       });
-      
+
     } catch (firestoreError) {
       console.error('Firestore save failed:', firestoreError);
       return NextResponse.json(
@@ -356,15 +353,15 @@ async function performComprehensiveTrendingAnalysis(qlooApiKey: string): Promise
     count: number;
     avgPopularity: number;
   }> = {};
-  
+
   // Fetch trending data for multiple entity types
   const trendingPromises = entityTypes.map(async (entityType) => {
     const trending = await fetchTrendingEntities(entityType, qlooApiKey);
     return { entityType, trending };
   });
-  
+
   const results = await Promise.all(trendingPromises);
-  
+
   for (const { entityType, trending } of results) {
     trendingData[entityType] = {
       entities: trending.slice(0, 3),
@@ -372,7 +369,7 @@ async function performComprehensiveTrendingAnalysis(qlooApiKey: string): Promise
       avgPopularity: trending.reduce((sum, e) => sum + (e.popularity || 0), 0) / trending.length || 0
     };
   }
-  
+
   return {
     byCategory: trendingData,
     mostTrendingCategory: Object.entries(trendingData)
@@ -385,19 +382,19 @@ async function performComprehensiveTrendingAnalysis(qlooApiKey: string): Promise
  * Advanced cultural analysis using multiple APIs
  */
 async function performAdvancedCulturalAnalysis(
-  inputEntities: EntityData[], 
-  recommendedEntities: EntityData[], 
+  inputEntities: EntityData[],
+  recommendedEntities: EntityData[],
   qlooApiKey: string
 ): Promise<CulturalAnalysis> {
   try {
     // Use Analysis API for cultural correlations
     const entityIds = [...inputEntities, ...recommendedEntities].map(e => e.id).slice(0, 10);
     const url = `${QLOO_API_BASE_URL}/v2/analysis?entity_ids=${entityIds.join(',')}&include_correlations=true`;
-    
+
     const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey),
+      headers: createQlooHeaders(qlooApiKey)
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       return {
@@ -410,7 +407,7 @@ async function performAdvancedCulturalAnalysis(
   } catch (error) {
     console.error('Advanced cultural analysis error:', error);
   }
-  
+
   return {
     correlations: [],
     culturalClusters: [],
@@ -429,19 +426,19 @@ async function generateCrossCulturalInsights(entities: EntityData[], qlooApiKey:
     regionalVariations: {},
     universalThemes: []
   };
-  
+
   try {
     // Use multiple regions for comparison
     const regions = ['US', 'UK', 'CA', 'AU'];
     const entityIds = entities.map(e => e.id).slice(0, 5).join(',');
-    
+
     for (const region of regions) {
       const url = `${QLOO_API_BASE_URL}/v2/insights?filter.type=urn:entity:movie&signal.interests.entities=${entityIds}&filter.release_country=${region}&take=5`;
-      
+
       const response = await fetch(url, {
-        headers: createQlooHeaders(qlooApiKey),
+        headers: createQlooHeaders(qlooApiKey)
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         insights.regionalVariations[region] = data.results?.entities?.length || 0;
@@ -450,7 +447,7 @@ async function generateCrossCulturalInsights(entities: EntityData[], qlooApiKey:
   } catch (error) {
     console.error('Cross-cultural analysis error:', error);
   }
-  
+
   return insights;
 }
 
@@ -460,15 +457,15 @@ async function generateCrossCulturalInsights(entities: EntityData[], qlooApiKey:
 
 function interpretTasteProfile(profile: TasteProfileInput): string {
   const { affinityScore, diversityIndex } = profile;
-  
+
   if (affinityScore > 0.7 && diversityIndex > 0.6) {
-    return "Sophisticated & Diverse - High cultural engagement across multiple domains";
+    return 'Sophisticated & Diverse - High cultural engagement across multiple domains';
   } else if (affinityScore > 0.7) {
-    return "Focused Excellence - Deep expertise in specific cultural areas";
+    return 'Focused Excellence - Deep expertise in specific cultural areas';
   } else if (diversityIndex > 0.6) {
-    return "Cultural Explorer - Broad interests across diverse entertainment";
+    return 'Cultural Explorer - Broad interests across diverse entertainment';
   } else {
-    return "Emerging Taste - Developing cultural preferences";
+    return 'Emerging Taste - Developing cultural preferences';
   }
 }
 
@@ -477,7 +474,7 @@ function calculateTrendingAlignment(entities: EntityData[], trendingData: Trendi
   const userEntityIds = new Set(entities.map(e => e.id));
   let alignmentScore = 0;
   let totalTrending = 0;
-  
+
   Object.values(trendingData.byCategory).forEach((category) => {
     category.entities.forEach((entity) => {
       totalTrending++;
@@ -488,34 +485,34 @@ function calculateTrendingAlignment(entities: EntityData[], trendingData: Trendi
       }
     });
   });
-  
+
   return totalTrending > 0 ? alignmentScore / totalTrending : 0;
 }
 
 function generateTrendingRecommendations(trendingData: TrendingAnalysisData): string[] {
   const recommendations = [];
-  
+
   if (trendingData.mostTrendingCategory) {
     recommendations.push(`Explore trending ${trendingData.mostTrendingCategory.toLowerCase()} content`);
   }
-  
-  recommendations.push("Consider diversifying with trending content from multiple categories");
-  recommendations.push("Stay current with cultural movements for enhanced relevance");
-  
+
+  recommendations.push('Consider diversifying with trending content from multiple categories');
+  recommendations.push('Stay current with cultural movements for enhanced relevance');
+
   return recommendations;
 }
 
 function calculateDemographicConfidence(demographicsMap: DemographicsMap): number {
   const totalEntities = Object.keys(demographicsMap).length;
   if (totalEntities === 0) return 0;
-  
+
   let entitiesWithCompleteData = 0;
   Object.values(demographicsMap).forEach((demo) => {
     if (demo.age && demo.gender && Object.keys(demo.age).length > 0 && Object.keys(demo.gender).length > 0) {
       entitiesWithCompleteData++;
     }
   });
-  
+
   return entitiesWithCompleteData / totalEntities;
 }
 
@@ -529,11 +526,11 @@ function calculateDataQualityScore(entities: EntityData[], demographicsMap: Demo
   const hasNames = entities.filter(e => e.name).length;
   const hasPopularity = entities.filter(e => e.popularity).length;
   const hasDemographics = Object.keys(demographicsMap).length;
-  
+
   const nameScore = hasNames / entities.length;
   const popularityScore = hasPopularity / entities.length;
   const demographicsScore = hasDemographics / entities.length;
-  
+
   return (nameScore + popularityScore + demographicsScore) / 3;
 }
 
