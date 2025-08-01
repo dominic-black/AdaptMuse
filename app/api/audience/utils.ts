@@ -1043,7 +1043,7 @@ export async function generateAndUploadAvatar(
     const imageResponse = await fetch(imageUrl);
     console.log("imageResponse", imageResponse);
     if (!imageResponse.ok) {
-      throw new Error('Failed to fetch the generated image');
+      return "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
     }
     const imageBuffer = await imageResponse.arrayBuffer();
 

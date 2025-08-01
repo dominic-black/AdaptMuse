@@ -18,6 +18,7 @@ import {
   createQlooHeaders,
   QLOO_API_BASE_URL,
   ERRORS,
+  generateAndUploadAvatar,
 } from './utils';
 import OpenAI from 'openai';
 import { TrendingAnalysisData, CulturalAnalysis, CrossCulturalInsights, TasteProfileInput, EntityData, DemographicsMap } from './types';
@@ -142,15 +143,14 @@ export async function POST(request: NextRequest) {
     const avatarStart = Date.now();
 
 
-    const imageUrl = "https://cdn-icons-png.flaticon.com/512/1053/1053244.png";
-    // const imageUrl = await generateAndUploadAvatar(
-    //     audienceName,
-    //     ageGroup,
-    //     gender,
-    //     inputEntities,
-    //     allAudienceOptions,
-    //     openai
-    //   );
+    const imageUrl = await generateAndUploadAvatar(
+        audienceName,
+        ageGroup,
+        gender,
+        inputEntities,
+        allAudienceOptions,
+        openai
+      );
 
 
     const avatarTime = Date.now() - avatarStart;
