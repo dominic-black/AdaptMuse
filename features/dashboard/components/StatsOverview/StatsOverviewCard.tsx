@@ -18,7 +18,7 @@ export const StatsOverviewCard = ({
 }) => {
   return (
     <Cell>
-      <div className="p-6">
+      <div className="p-2">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-3">
             <div className={`bg-${backgroundColor} p-3 rounded-xl`}>{icon}</div>

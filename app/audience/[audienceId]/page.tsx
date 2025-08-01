@@ -15,7 +15,7 @@ import {
 import {
   TasteProfileAnalysis,
   QualityMetrics,
-} from "@/features/audience/components/analytics";
+} from "@/features/audience/components/Analytics";
 import { AudienceErrorBoundary } from "@/features/audience/components/ErrorBoundary";
 
 const AudienceNotFound = () => (

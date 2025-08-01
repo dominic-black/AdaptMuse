@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/Button";
-import { JobList } from "@/features/jobs/JobList/JobList";
+import { JobList } from "@/features/jobs/components/JobList/JobList";
 import { FileText, Sparkles } from "lucide-react";
 import { Job } from "@/types/job";
 

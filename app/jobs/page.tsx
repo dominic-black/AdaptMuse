@@ -3,8 +3,8 @@
 import { Screen } from "@/components/shared/Screen/Screen";
 import { useJobs } from "@/providers/JobsProvider";
 import { useAuth } from "@/hooks/useAuth";
-import { JobList } from "@/features/jobs/JobList/JobList";
-import { InfoCell } from "@/features/jobs/InfoCell/InfoCell";
+import { JobList } from "@/features/jobs/components/JobList/JobList";
+import { InfoCell } from "@/features/jobs/components/InfoCell/InfoCell";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { FileText, Plus, Sparkles } from "lucide-react";
