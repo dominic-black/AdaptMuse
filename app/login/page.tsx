@@ -4,10 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "@/features/auth/LoginForm/LoginForm";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground/AnimatedBackground";
+import { useEffect, useState } from "react";
 
 export default function Login() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
-    <div className="relative pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[max(3rem,env(safe-area-inset-top))] flex justify-center items-center px-4 sm:px-6 lg:px-8 py-12 h-[100dvh]">
+    <div
+      className={`relative flex justify-center items-center px-4 sm:px-6 lg:px-8 py-12 h-[100dvh] ${
+        isClient
+          ? "pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[max(3rem,env(safe-area-inset-top))]"
+          : ""
+      }`}
+    >
       <AnimatedBackground />
       <div className="z-10 relative space-y-8 bg-white/60 shadow-xl backdrop-blur-lg p-8 sm:p-10 border border-white/50 rounded-2xl sm:rounded-3xl w-full max-w-md">
         <div>

@@ -2,7 +2,6 @@
 
 import { LandingScreen } from "@/features/landing/components/LandingScreen/LandingScreen";
 import { AnimatedBackground } from "@/components/ui/AnimatedBackground/AnimatedBackground";
-import { useEffect, useState } from "react";
 import { Header } from "@/features/landing/components/Header/Header";
 import { LandingInfoCards } from "@/features/landing/components/LandingInfoCards/LandingInfoCards";
 import { Footer } from "@/features/landing/components/Footer/Footer";
