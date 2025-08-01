@@ -65,9 +65,7 @@ export default function Home() {
         <WelcomeBanner name={userProfile?.firstName || ""} />
         <StatsOverview metrics={metrics} />
         <div className="gap-8 grid grid-cols-1 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <RecentActivity jobs={jobs} jobsLoading={!isDataReady} />
-          </div>
+          <RecentActivity jobs={jobs} jobsLoading={!isDataReady} />
           <div className="lg:col-span-1">
             <SavedAudiences
               audiences={audiences}
