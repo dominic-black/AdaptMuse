@@ -19,7 +19,6 @@ import {
   createQlooHeaders,
   QLOO_API_BASE_URL,
   ERRORS,
-  DEFAULT_AVATAR_URL
 } from './utils';
 import OpenAI from 'openai';
 import { TrendingAnalysisData, CulturalAnalysis, CrossCulturalInsights, TasteProfileInput, EntityData, DemographicsMap } from './types';
