@@ -13,10 +13,8 @@ import {
   EntitiesSection,
 } from "@/features/audience/components/sections";
 
-import {
-  QualityMetrics,
-  TasteProfileAnalysis,
-} from "@/features/audience/components/Analytics";
+import { QualityMetrics } from "@/features/audience/components/Analytics/QualityMetrics";
+import { TasteProfileAnalysis } from "@/features/audience/components/Analytics/TasteProfileAnalysis";
 import { AudienceErrorBoundary } from "@/features/audience/components/ErrorBoundary";
 
 const AudienceNotFound = () => (
