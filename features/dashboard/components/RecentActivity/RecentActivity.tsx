@@ -29,7 +29,7 @@ export const RecentActivity = ({
   jobsLoading: boolean;
 }) => {
   return (
-    <div className="lg:col-span-2 bg-white shadow-sm p-6 rounded-lg">
+    <div className="lg:col-span-2 bg-white shadow-sm p-4 lg:p-6 rounded-lg">
       <h2 className="mb-4 font-semibold text-gray-800 text-xl">
         Recent Activity
       </h2>

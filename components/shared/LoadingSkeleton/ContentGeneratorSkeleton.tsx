@@ -26,7 +26,7 @@ export const ContentGeneratorSkeleton = () => {
       </div>
 
       {/* Generation Panel Skeleton */}
-      <div className="lg:col-span-2 bg-white shadow-sm p-6 rounded-lg animate-pulse">
+      <div className="lg:col-span-2 bg-white shadow-sm p-4 lg:p-6 rounded-lg animate-pulse">
         {/* Header */}
         <div className="mb-6">
           <div className="bg-gray-300 mb-2 rounded w-40 h-6" />

@@ -31,7 +31,7 @@ export const WelcomeBanner = ({ name }: { name: string }) => {
           <Button
             href="/generate-content"
             variant="outline"
-            className="w-full lg:w-auto"
+            className="relative w-full lg:w-auto"
           >
             <Sparkles className="mr-2 w-full lg:w-4 h-full lg:h-4" />
             Generate Content

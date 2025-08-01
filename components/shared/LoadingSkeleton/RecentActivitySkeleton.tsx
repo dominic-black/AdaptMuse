@@ -1,6 +1,6 @@
 export const RecentActivitySkeleton = () => {
   return (
-    <div className="lg:col-span-2 bg-white shadow-sm p-6 rounded-lg animate-pulse">
+    <div className="lg:col-span-2 bg-white shadow-sm p-4 lg:p-6 rounded-lg animate-pulse">
       {/* Header */}
       <div className="mb-4">
         <div className="bg-gray-300 rounded w-32 h-6" />

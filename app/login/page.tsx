@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 
 export default function Login() {
   return (
-    <div className="relative flex justify-center items-center px-4 sm:px-6 lg:px-8 py-12 min-h-screen">
+    <div className="pb-[max(3rem,env(safe-area-inset-bottom))] relative pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] pt-[max(3rem,env(safe-area-inset-top))] flex justify-center items-center px-4 sm:px-6 lg:px-8 py-12 min-h-[100dvh] min-h-screen">
       <AnimatedBackground />
       <motion.div
         initial={{ opacity: 0, y: 40 }}

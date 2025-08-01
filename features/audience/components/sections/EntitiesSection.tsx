@@ -43,7 +43,7 @@ export const EntitiesSection: React.FC<EntitiesSectionProps> = ({
             </span>
           </div>
 
-          <div className="gap-4 grid grid-cols-3">
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-3">
             {entities.map((entity: Entity, index: number) => (
               <EntityCard key={`input-${entity.id}-${index}`} entity={entity} />
             ))}
@@ -78,7 +78,7 @@ export const EntitiesSection: React.FC<EntitiesSectionProps> = ({
             </span>
           </div>
 
-          <div className="gap-4 grid grid-cols-3">
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-3">
             {recommendedEntities.map((entity: Entity, index: number) => (
               <EntityCard
                 key={`recommended-${entity.id}-${index}`}

@@ -73,15 +73,19 @@ export default function JobsPage() {
             </div>
           ) : (
             <div>
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex-1 max-w-sm">
+              <div className="flex md:flex-row flex-col justify-between items-center space-y-6 md:space-y-0 mb-6 w-full">
+                <div className="flex-1 w-full max-w-sm">
                   <SearchBar
                     placeholder="Search by job title..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <Button href="/generate-content" variant="outline">
+                <Button
+                  href="/generate-content"
+                  variant="outline"
+                  className="w-full md:w-auto"
+                >
                   <Plus className="mr-2 w-4 h-4" />
                   Create New
                 </Button>

@@ -54,15 +54,19 @@ export default function AudiencePage() {
 
   return (
     <Screen heading="Audiences">
-      <div className="items-start gap-8 grid grid-cols-1 lg:grid-cols-3">
-        <div className="lg:col-span-2 bg-white shadow-sm p-6 rounded-lg">
+      <div className="items-start gap-8 grid grid-cols-1 md:grid-cols-3">
+        <div className="md:col-span-2 bg-white shadow-sm p-4 md:p-6 rounded-lg">
           {!isDataReady ? (
             <>
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex md:flex-row flex-col justify-between items-center mb-6">
                 <h2 className="font-semibold text-gray-800 text-xl">
                   Your Audiences
                 </h2>
-                <Button href="/audience/create" variant="outline">
+                <Button
+                  href="/audience/create"
+                  variant="outline"
+                  className="w-full md:w-auto"
+                >
                   <Plus className="w-4 h-4" />
                   Create New
                 </Button>
@@ -87,11 +91,15 @@ export default function AudiencePage() {
             </div>
           ) : (
             <div>
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex md:flex-row flex-col justify-between items-center space-y-4 mb-6 w-full">
                 <h2 className="font-semibold text-gray-800 text-xl">
                   Your Audiences
                 </h2>
-                <Button href="/audience/create" variant="outline">
+                <Button
+                  href="/audience/create"
+                  variant="outline"
+                  className="w-full md:w-auto"
+                >
                   <Plus className="w-4 h-4" />
                   Create New
                 </Button>

@@ -18,7 +18,7 @@ export const GenerationPanel = ({
   ...formProps
 }: GenerationPanelProps) => {
   return (
-    <div className="flex flex-col lg:col-span-2 bg-white shadow-sm p-6 rounded-lg h-full">
+    <div className="flex flex-col lg:col-span-2 bg-white shadow-sm p-4 lg:p-6 rounded-lg h-full">
       <GenerationForm {...formProps} />
       <div className="flex justify-end pt-6 border-gray-200 border-t">
         <Button disabled={!selectedAudience || isLoading} onClick={onSubmit}>

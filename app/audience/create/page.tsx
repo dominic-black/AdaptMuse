@@ -363,7 +363,7 @@ export default function CreateAudiencePage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex justify-between pt-4 border-t">
+                <div className="flex md:flex-row flex-col justify-between space-y-4 md:space-y-0 pt-4 border-t">
                   <Button
                     variant="outline"
                     onClick={() => {
