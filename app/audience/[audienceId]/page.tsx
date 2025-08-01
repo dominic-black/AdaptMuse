@@ -12,9 +12,8 @@ import {
   PreferencesSection,
   EntitiesSection,
 } from "@/features/audience/components/sections";
-
-import { QualityMetrics } from "@/features/audience/components/Analytics/QualityMetrics";
-import { TasteProfileAnalysis } from "@/features/audience/components/Analytics/TasteProfileAnalysis";
+import { TasteProfileAnalytics } from "@/features/audience/components/Analytics/TasteProfileAnalytics";
+import { QualityMetricsAnalytics } from "@/features/audience/components/Analytics/QualityMetricsAnalytics";
 import { AudienceErrorBoundary } from "@/features/audience/components/ErrorBoundary";
 
 const AudienceNotFound = () => (
@@ -78,12 +77,14 @@ const AdvancedAnalyticsTab: React.FC<{
     <div className="space-y-8">
       {/* Taste Profile Analysis */}
       {qlooIntelligence.tasteProfile && (
-        <TasteProfileAnalysis tasteProfile={qlooIntelligence.tasteProfile} />
+        <TasteProfileAnalytics tasteProfile={qlooIntelligence.tasteProfile} />
       )}
 
       {/* Analytics Quality Metrics */}
       {qlooIntelligence.analysisMetrics && (
-        <QualityMetrics analysisMetrics={qlooIntelligence.analysisMetrics} />
+        <QualityMetricsAnalytics
+          analysisMetrics={qlooIntelligence.analysisMetrics}
+        />
       )}
     </div>
   );

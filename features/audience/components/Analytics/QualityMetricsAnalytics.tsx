@@ -8,7 +8,7 @@ interface QualityMetricsProps {
   analysisMetrics: QlooAnalysisMetrics;
 }
 
-export const QualityMetrics: React.FC<QualityMetricsProps> = ({
+export const QualityMetricsAnalytics: React.FC<QualityMetricsProps> = ({
   analysisMetrics,
 }) => {
   return (

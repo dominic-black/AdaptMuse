@@ -9,7 +9,7 @@ interface TasteProfileAnalysisProps {
   tasteProfile: QlooTasteProfile;
 }
 
-export const TasteProfileAnalysis: React.FC<TasteProfileAnalysisProps> = ({
+export const TasteProfileAnalytics: React.FC<TasteProfileAnalysisProps> = ({
   tasteProfile,
 }) => {
   return (
