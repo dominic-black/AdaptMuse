@@ -1048,7 +1048,7 @@ export async function generateAndUploadAvatar(
     const imageBuffer = await imageResponse.arrayBuffer();
 
     // Upload to Firebase Storage
-    const bucketName = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID + '.appspot.com';
+    const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.appspot.com`;
     const bucket = storage.bucket(bucketName);
     const fileName = `audience_avatars/${audienceName.replace(/\s+/g, '_')}_${Date.now()}.png`;
     const file = bucket.file(fileName);
