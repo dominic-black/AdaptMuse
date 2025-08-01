@@ -146,7 +146,7 @@ interface OptimizedInsightsConfig {
   signalDemographicsAgeWeight?: QlooWeight;
   signalDemographicsGender?: QlooGender;
   signalDemographicsGenderWeight?: QlooWeight;
-  signalDemographicsAudiences?: string[];
+  signalDemographicsAudiences?: Array<{value: string, label: string}>;
   signalDemographicsAudiencesWeight?: QlooWeight;
   signalInterestsEntities?: string[];
   signalInterestsEntitiesWeight?: QlooWeight;
@@ -193,7 +193,7 @@ export async function buildOptimizedInsightsConfig(
   if (audiences.length > 0) {
     const validAudienceIds = await fetchValidAudienceIds(audiences, qlooApiKey);
     if (validAudienceIds.length > 0) {
-      config.signalDemographicsAudiences = validAudienceIds;
+      config.signalDemographicsAudiences = validAudienceIds.map(a => ({value: a.id, label: a.name}));
       config.signalDemographicsAudiencesWeight = INSIGHTS_QUERY_CONFIG.WEIGHT_HIGH;
     }
   }
@@ -714,23 +714,21 @@ export async function fetchValidTagIds(genres: AudienceOption[], qlooApiKey: str
   const validTagIds: string[] = [];
 
   try {
-    for (const genre of genres) {
-      const query = encodeURIComponent(genre.label);
-      const url = `${QLOO_API_BASE_URL}/v2/tags?query=${query}&take=3`;
+    const url = `${QLOO_API_BASE_URL}/v2/tags?filter.results.tags=${genres.map(g => g.value).join(',')}`;
+    console.log('🔍 Fetching valid tag IDs from:', url);
+    const response = await fetch(url, {
+      headers: createQlooHeaders(qlooApiKey)
+    });
 
-      const response = await fetch(url, {
-        headers: createQlooHeaders(qlooApiKey)
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.results?.length > 0) {
-          // Use the first matching tag ID
-          validTagIds.push(data.results[0].id);
-          console.log(`Found valid tag ID for "${genre.label}": ${data.results[0].id}`);
-        }
+    if(response.ok) {
+      const data = await response.json();
+      if(data.results?.length > 0) {
+        validTagIds.push(data.results[0].id);
       }
+    } else {
+      console.error('Error fetching tag IDs:', response.statusText);
     }
+    
   } catch (error) {
     console.error('Error fetching tag IDs:', error);
   }
@@ -742,14 +740,14 @@ export async function fetchValidTagIds(genres: AudienceOption[], qlooApiKey: str
 /**
  * Fetches valid Qloo audience IDs using the Find Audiences API
  */
-export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApiKey: string): Promise<string[]> {
+export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApiKey: string): Promise<Array<{id: string, name: string}>> {
   if (audiences.length === 0) return [];
 
-  const validAudienceIds: string[] = [];
+  const validAudienceIds: Array<{id: string, name: string}> = [];
 
   try {
     // Get all available audiences first
-    const url = `${QLOO_API_BASE_URL}/v2/audiences?take=100`;
+    const url = `${QLOO_API_BASE_URL}/v2/audiences?filter.results.audiences=${audiences.map(a => a.value).join(',')}`;
 
     const response = await fetch(url, {
       headers: createQlooHeaders(qlooApiKey)
@@ -757,9 +755,8 @@ export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApi
 
     if (response.ok) {
       const data = await response.json();
-      const availableAudiences = data.results || [];
-
-      // Match user selections to available Qloo audiences
+      const availableAudiences = data.results.audiences || [];
+      
       for (const audience of audiences) {
         const match = availableAudiences.find((qa: { id: string; name?: string }) => {
           if (!qa.name) return false;
@@ -768,8 +765,10 @@ export async function fetchValidAudienceIds(audiences: AudienceOption[], qlooApi
         });
 
         if (match && match.name) {
-          validAudienceIds.push(match.id);
+          validAudienceIds.push({id: match.id, name: match.name});
           console.log(`Mapped "${audience.label}" to Qloo audience: ${match.name} (${match.id})`);
+        }else{
+          console.log(`No match found for "${audience.label}"`);
         }
       }
     }
@@ -923,13 +922,13 @@ export async function generateTasteProfile(
   qlooApiKey: string
 ): Promise<{
   tasteVector: Record<string, number>;
-  culturalSegments: string[];
+  culturalSegments: Array<{id: string, label: string}>;
   affinityScore: number;
   diversityIndex: number;
 }> {
   const profile = {
     tasteVector: {},
-    culturalSegments: [] as string[],
+    culturalSegments: [] as Array<{id: string, label: string}>,
     affinityScore: 0,
     diversityIndex: 0
   };
@@ -938,7 +937,7 @@ export async function generateTasteProfile(
 
   try {
     // Get valid audience IDs for analysis
-    const validAudienceIds = await fetchValidAudienceIds(audiences, qlooApiKey);
+    const validAudiences = await fetchValidAudienceIds(audiences, qlooApiKey);
 
     // Perform taste analysis across multiple entity types
     const entityTypes = ENTITY_TYPE_PRIORITY.filter(type => type in EntityTypes);
@@ -981,8 +980,7 @@ export async function generateTasteProfile(
     profile.diversityIndex = calculateDiversityIndex(scores);
     profile.tasteVector = tasteScores;
 
-    // Extract cultural segments from audience mappings
-    profile.culturalSegments = validAudienceIds.slice(0, 5); // Top 5 cultural segments
+    profile.culturalSegments = validAudiences.slice(0, 5).map(a => ({id: a.id, label: a.name})); // Top 5 cultural segments
 
     console.log(`Generated comprehensive taste profile with ${Object.keys(tasteScores).length} dimensions`);
 

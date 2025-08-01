@@ -25,7 +25,7 @@ export const TasteProfileRadarChart: React.FC<TasteProfileRadarChartProps> = ({
   );
 
   return (
-    <div className="w-full h-80">
+    <div className="pb-10 w-full h-80">
       <h4 className="mb-4 font-semibold text-gray-900">
         Cultural Preference Analysis
       </h4>

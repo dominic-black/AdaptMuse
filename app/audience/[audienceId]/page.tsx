@@ -72,7 +72,7 @@ const AdvancedAnalyticsTab: React.FC<{
   audience: NonNullable<ReturnType<typeof useAudienceData>["audience"]>;
 }> = ({ audience }) => {
   const { qlooIntelligence } = audience;
-
+  console.log("Qloo Intelligence = ", qlooIntelligence);
   if (!qlooIntelligence) return null;
 
   return (

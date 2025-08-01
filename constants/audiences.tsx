@@ -18,400 +18,434 @@ export interface AudienceOption {
 export const AUDIENCE_OPTIONS: Record<string, AudienceOption[]> = {
   SPENDING_HABITS: [
     {
-      value: "7553AEF3-0213-4419-8C17-E4CDF28B2BB0",
+      value: "urn:audience:spending_habits:vintage_apparel",
       label: "Vintage Apparel",
     },
     {
-      value: "F9619A04-A80C-4FB8-BBD4-7E653E31075F",
+      value: "urn:audience:spending_habits:technology_enthusiast",
       label: "Technology Enthusiast",
     },
     {
-      value: "B966ABDA-92B7-4C91-B598-C65CE6013C9B",
+      value: "urn:audience:spending_habits:watch_collecting",
       label: "Watch Collecting",
     },
     {
-      value: "F66B9D4E-1503-4BA1-8ABB-745652CA2A12",
+      value: "urn:audience:spending_habits:boutique_hotels",
       label: "Boutique Hotels",
     },
     {
-      value: "B374F423-E1E6-4783-AA1E-48A6B2B5635F",
+      value: "urn:audience:spending_habits:discount_shoppers",
       label: "Discount Shoppers",
     },
     {
-      value: "ED8798A4-1EB1-4E53-80EA-4FD08BD3C148",
+      value: "urn:audience:spending_habits:gourmand_fine_dining",
       label: "Gourmand Fine Dining",
     },
   ],
   POLITICAL_PREFERENCES: [
     {
-      value: "B3A035FD-0D99-4980-98FD-A5B81D7E402A",
+      value: "urn:audience:political_preferences:politically_progressive",
       label: "Politically Progressive",
     },
     {
-      value: "A2F107FD-2A38-4100-AFFB-037A6A2DF338",
+      value: "urn:audience:political_preferences:politically_center",
       label: "Politically Center",
     },
     {
-      value: "555258C9-2696-496A-B1C1-C46A6F7795C8",
+      value: "urn:audience:political_preferences:politically_conservative",
       label: "Politically Conservative",
     },
   ],
   LIFESTYLE_PREFERENCES_BELIEFS: [
     {
-      value: "5F4CF648-08CD-4031-A17E-491E90A4DD4C",
+      value: "urn:audience:lifestyle_preferences_beliefs:astrology",
       label: "Astrology",
     },
     {
-      value: "D3839B31-2A5F-4DA3-8C04-528D9611039E",
+      value: "urn:audience:lifestyle_preferences_beliefs:organic_ingredients",
       label: "Organic Ingredients",
     },
     {
-      value: "2A7B1369-BF0D-46E2-AAEE-780817162FF4",
+      value: "urn:audience:lifestyle_preferences_beliefs:christianity",
       label: "Christianity",
     },
     {
-      value: "F854077D-E466-4181-A7E4-4CDA52981EA2",
+      value: "urn:audience:lifestyle_preferences_beliefs:healthy_eating",
       label: "Healthy Eating",
     },
     {
-      value: "399883E7-F468-4BD6-9209-91DAD7BF3537",
+      value: "urn:audience:lifestyle_preferences_beliefs:judaism",
       label: "Judaism",
     },
     {
-      value: "7819CC7E-FEAF-4FC6-B0D8-EFED92CD46AE",
+      value: "urn:audience:lifestyle_preferences_beliefs:veganism",
       label: "Veganism",
     },
     {
-      value: "439B29E4-F9B2-4FA7-8095-123F6833DE5F",
+      value: "urn:audience:lifestyle_preferences_beliefs:spirituality",
       label: "Spirituality",
     },
     {
-      value: "87A86EE9-5CA0-4C1F-8237-E3EE73C72281",
+      value: "urn:audience:lifestyle_preferences_beliefs:islam",
       label: "Islam",
     },
   ],
   LIFE_STAGES: [
     {
-      value: "22D0A7AF-7833-49F3-8E36-42E8D91EEC8B",
+      value: "urn:audience:life_stage:parents_with_young_children",
       label: "Parents With Young Children",
     },
     {
-      value: "DBF3D836-74E1-4A50-BAF7-6F3426ADA64A",
+      value: "urn:audience:life_stage:engaged",
       label: "Engaged",
     },
     {
-      value: "61419C52-AA82-48FB-A68E-F873A417E040",
+      value: "urn:audience:life_stage:single",
       label: "Single",
     },
     {
-      value: "B88B7B93-BD33-4910-B44E-24B06C6C8164",
+      value: "urn:audience:life_stage:retirement",
       label: "Retirement",
     },
   ],
   LEISURE_INTERESTS: [
     {
-      value: "539308D1-B0B5-4C9D-8B67-E7B565B59B09",
+      value: "urn:audience:leisure:political_junkie",
       label: "Political Junkie",
     },
     {
-      value: "AAF408EF-5947-4035-BD34-6678F4A94994",
+      value: "urn:audience:leisure:arts_culture",
       label: "Arts Culture",
     },
     {
-      value: "F86C9FE1-16D1-4CFA-8E33-77AD4FEDBB60",
+      value: "urn:audience:leisure:foodie",
       label: "Foodie",
     },
     {
-      value: "D1F0EE4A-FDB3-48DC-919C-5A94F3D4EC85",
+      value: "urn:audience:leisure:cooking",
       label: "Cooking",
     },
     {
-      value: "8371AF94-2F4C-4139-BC87-E3FBEA695D88",
+      value: "urn:audience:leisure:museums",
       label: "Museums",
     },
     {
-      value: "AB40A444-E528-43FE-BE78-E014301CFD80",
+      value: "urn:audience:leisure:cinephile",
       label: "Cinephile",
     },
     {
-      value: "61D4EAAB-8591-4CCC-BEFC-5F0D18C4F3BD",
+      value: "urn:audience:leisure:music_festivals",
       label: "Music Festivals",
     },
     {
-      value: "2EFF1AB9-814F-48D2-B2DE-D418ED8385AE",
+      value: "urn:audience:leisure:avid_reader",
       label: "Avid Reader",
     },
     {
-      value: "E1C2F640-4C29-4F79-AD75-82CDE3DB4622",
+      value: "urn:audience:leisure:exercising",
       label: "Exercising",
     },
     {
-      value: "AFA24856-F432-40E3-AADF-C939A033F77E",
+      value: "urn:audience:leisure:coffee",
       label: "Coffee",
     },
     {
-      value: "3A9990DA-AA86-4934-AC8D-4088E91700AA",
+      value: "urn:audience:leisure:news_junkie",
       label: "News Junkie",
     },
   ],
   INVESTING_INTERESTS: [
     {
-      value: "1B2E2B7F-2FF5-495F-9389-FD4D35A03144",
+      value: "urn:audience:investing_interests:stocks_bonds",
       label: "Stocks Bonds",
     },
     {
-      value: "2C606C12-C64F-46B1-BAE6-4FB0C278E612",
+      value: "urn:audience:investing_interests:angel_start_up_investing",
       label: "Angel Start Up Investing",
     },
     {
-      value: "2248A93C-17C0-4BCD-A671-19DB6BDB98D3",
+      value: "urn:audience:investing_interests:real_estate",
       label: "Real Estate",
     },
     {
-      value: "35DD51F5-4C89-436D-9A36-1C6BDD1D1508",
+      value: "urn:audience:investing_interests:nft_collectors",
       label: "NFT Collectors",
     },
     {
-      value: "C11DC8FF-5EDC-4B64-9504-1CD64C1B10FA",
+      value: "urn:audience:investing_interests:cryptocurrency_enthusiasts",
       label: "Cryptocurrency Enthusiasts",
     },
     {
-      value: "42D6F3D0-AD4A-4AC8-B3EE-229775638336",
+      value: "urn:audience:investing_interests:art_collectibles",
       label: "Art Collectibles",
     },
   ],
   HOBBIES_AND_INTERESTS: [
     {
-      value: "8F0407D3-64F3-47BF-A6B1-BA4C30465F71",
+      value: "urn:audience:hobbies_and_interests:health_and_beauty",
       label: "Health And Beauty",
     },
     {
-      value: "DBDCB7B7-B015-425F-9C3E-619C9C4245EB",
+      value: "urn:audience:hobbies_and_interests:adventuring",
       label: "Adventuring",
     },
     {
-      value: "7DCA3589-E6FF-4582-BE24-5A2D09D71336",
+      value: "urn:audience:hobbies_and_interests:photography",
       label: "Photography",
     },
     {
-      value: "965CD575-A0AD-4128-88B6-DE0C599D644F",
+      value: "urn:audience:hobbies_and_interests:tattoos",
       label: "Tattoos",
     },
     {
-      value: "1C3735D4-FE2D-4CDE-811A-9B2BFE767DAD",
+      value: "urn:audience:hobbies_and_interests:meditation",
       label: "Meditation",
     },
     {
-      value: "1CA32D17-6D03-453C-8B91-12B4604076E1",
+      value: "urn:audience:hobbies_and_interests:hockey",
       label: "Hockey",
     },
     {
-      value: "31C1423A-6A88-4028-ADEC-C3042BE765B9",
+      value: "urn:audience:hobbies_and_interests:american_football",
       label: "American Football",
     },
     {
-      value: "663BAA0C-44CF-4794-8827-E36FBEF3E5F5",
+      value: "urn:audience:hobbies_and_interests:martial_arts",
       label: "Martial Arts",
     },
     {
-      value: "EEFA88EB-0D5D-4290-B0AB-F7840DE970DB",
+      value: "urn:audience:hobbies_and_interests:running",
       label: "Running",
     },
     {
-      value: "471BEA15-6E9F-4347-B3DF-46E4A6045B8E",
+      value: "urn:audience:hobbies_and_interests:secret_unravelers",
       label: "Secret Unravelers",
     },
     {
-      value: "107AE5DB-906C-430C-969E-3886C39BDD8C",
+      value: "urn:audience:hobbies_and_interests:motorcycles",
       label: "Motorcycles",
     },
     {
-      value: "ED9B04EF-C693-44C8-82DE-C2B138710601",
+      value: "urn:audience:hobbies_and_interests:jewellery",
       label: "Jewellery",
     },
     {
-      value: "73B662F7-7DB7-4D0C-A36B-2E8E75ACDF49",
+      value: "urn:audience:hobbies_and_interests:hiking",
       label: "Hiking",
     },
     {
-      value: "40A2CD3E-0A56-4341-9996-9EF819D39398",
+      value: "urn:audience:hobbies_and_interests:watches",
       label: "Watches",
     },
     {
-      value: "174B1FE8-CDCE-4896-ADF5-E59981B9AE95",
+      value: "urn:audience:hobbies_and_interests:spy_enthusiast",
       label: "Spy Enthusiast",
     },
     {
-      value: "604A723B-3E2C-4795-89AA-DF5BA0C3B3C5",
+      value: "urn:audience:hobbies_and_interests:arts_crafts",
       label: "Arts Crafts",
     },
     {
-      value: "FE2A1718-8970-46D1-947F-D23B199F906D",
+      value: "urn:audience:hobbies_and_interests:wrestling",
       label: "Wrestling",
     },
     {
-      value: "9130A837-ED3C-4BA9-9825-5D0D57D119CD",
+      value: "urn:audience:hobbies_and_interests:home_organization",
       label: "Home Organization",
     },
     {
-      value: "D4B24E84-C439-4D7C-B2DC-92F7C704DE76",
+      value: "urn:audience:hobbies_and_interests:sneakerheads",
       label: "Sneakerheads",
     },
     {
-      value: "7CB916B9-1D27-4D76-8D97-2CC5950385CA",
+      value: "urn:audience:hobbies_and_interests:travel",
       label: "Travel",
     },
     {
-      value: "566BE3C4-C712-4B76-916D-2EFC0D26BD81",
+      value: "urn:audience:hobbies_and_interests:golf",
       label: "Golf",
     },
     {
-      value: "FA88A1F6-8CEF-4F6A-8FD1-FE7A739052D7",
+      value: "urn:audience:hobbies_and_interests:high_fashion",
       label: "High Fashion",
     },
     {
-      value: "7F86E72A-AF3C-4AA9-B125-7155E9261466",
+      value: "urn:audience:hobbies_and_interests:home_decor",
       label: "Home Decor",
     },
     {
-      value: "1F3BBF4D-D14C-4C1D-B9BD-8F8CDCEA55FA",
+      value: "urn:audience:hobbies_and_interests:street_fashion",
       label: "Street Fashion",
     },
     {
-      value: "803132BB-07E8-4D55-A37D-8B9EFB3E095F",
+      value: "urn:audience:hobbies_and_interests:video_gamer",
       label: "Video Gamer",
     },
     {
-      value: "689CB6FD-E1A9-4B06-9932-3093B8F61A97",
+      value: "urn:audience:hobbies_and_interests:tennis",
       label: "Tennis",
     },
     {
-      value: "7A1AEC8A-06B4-4834-B1E1-FD45648D9BE3",
+      value: "urn:audience:hobbies_and_interests:swimming",
       label: "Swimming",
     },
     {
-      value: "F8369494-BD42-4DA1-A056-2315241E2401",
+      value: "urn:audience:hobbies_and_interests:automotive",
       label: "Automotive",
     },
     {
-      value: "15D9D8DF-28AF-425A-AF2E-835DFB53E778",
+      value: "urn:audience:hobbies_and_interests:musician",
       label: "Musician",
     },
     {
-      value: "7010BFFD-33F5-460C-8660-3E49C570FF47",
+      value: "urn:audience:hobbies_and_interests:perfume",
       label: "Perfume",
     },
     {
-      value: "E7EC95B5-91D3-4B36-90CD-868680D13C93",
+      value: "urn:audience:hobbies_and_interests:casual_escapists",
       label: "Casual Escapists",
     },
     {
-      value: "9D36D8C6-B39C-48AE-87A6-F63E59328577",
+      value: "urn:audience:hobbies_and_interests:racing",
       label: "Racing",
     },
     {
-      value: "1D7AF41D-8ECF-414C-B6C9-7CA9FA276DBD",
+      value: "urn:audience:hobbies_and_interests:adrenaline_rushers",
       label: "Adrenaline Rushers",
     },
     {
-      value: "8C44B7FB-384C-445D-8FB0-01AD0BB54248",
+      value: "urn:audience:hobbies_and_interests:soccer",
       label: "Soccer",
     },
     {
-      value: "F488B2E4-21FE-4AFA-8B2E-0DA5A0F4E756",
+      value: "urn:audience:hobbies_and_interests:yoga",
       label: "Yoga",
     },
     {
-      value: "E8694D82-FE70-4EA5-A87B-53B90607EA75",
+      value: "urn:audience:hobbies_and_interests:baseball",
       label: "Baseball",
     },
     {
-      value: "67A1B149-175D-4005-85E1-C0A395A1FA4F",
+      value: "urn:audience:hobbies_and_interests:architecture",
       label: "Architecture",
     },
     {
-      value: "14F62034-5661-4B52-822B-D2D88A3D1B02",
+      value: "urn:audience:hobbies_and_interests:wine_enthusiast",
       label: "Wine Enthusiast",
     },
     {
-      value: "53E66B25-2B9E-4821-8257-65F66B62DD80",
+      value: "urn:audience:hobbies_and_interests:basketball",
       label: "Basketball",
     },
     {
-      value: "AAAE9FAA-FE3D-4732-9E82-BD4CED485D60",
+      value: "urn:audience:hobbies_and_interests:outdoors",
       label: "Outdoors",
     },
     {
-      value: "2D160ADC-1673-4D12-9530-D6E78DE07087",
+      value: "urn:audience:hobbies_and_interests:fishing",
       label: "Fishing",
     },
     {
-      value: "1B095F7B-1A06-4F65-AE32-BB9E9EAC26D6",
+      value: "urn:audience:hobbies_and_interests:dance",
       label: "Dance",
     },
   ],
   COMMUNITIES: [
     {
-      value: "DA61B8AD-6D79-4B0C-BEA0-EC966C93902E",
+      value: "urn:audience:communities:aapi",
       label: "AAPI",
     },
     {
-      value: "E47478B9-8ED2-449B-B854-6344059742E3",
+      value: "urn:audience:communities:latino",
       label: "Latino",
     },
     {
-      value: "6BED625C-E312-47E9-A4B5-F978C7778269",
+      value: "urn:audience:communities:lgbtq",
       label: "LGBTQ",
     },
     {
-      value: "A8A43978-5291-46DC-8952-D58EDC7FF82B",
+      value: "urn:audience:communities:black",
       label: "Black",
     },
   ],
   GLOBAL_ISSUES: [
     {
-      value: "FB61D98E-C4BA-4959-A571-0861FD2AC850",
+      value: "urn:audience:global_issues:climate_activism",
       label: "Climate Activism",
     },
     {
-      value: "B7970242-69CC-40FB-AFB6-0A5781E613DB",
+      value: "urn:audience:global_issues:gender_equality",
       label: "Gender Equality",
     },
     {
-      value: "9D25E87E-030C-4EE7-B049-F24967AAD596",
+      value: "urn:audience:global_issues:racial_justice",
       label: "Racial Justice",
     },
     {
-      value: "616F4741-3864-41FD-BFCF-49B76AA025C8",
+      value: "urn:audience:global_issues:education_issues",
       label: "Education Issues",
     },
     {
-      value: "BAC54F13-A15E-49E8-A645-BCACD5683B14",
+      value: "urn:audience:global_issues:ocean_health",
       label: "Ocean Health",
     },
     {
-      value: "1EFF8636-B50C-4B57-86DD-6CB2D4F8F397",
+      value: "urn:audience:global_issues:foreign_affairs",
       label: "Foreign Affairs",
     },
     {
-      value: "C956BAAF-4449-4B0B-BCA1-D3B06644B165",
+      value: "urn:audience:global_issues:wealth_inequality",
       label: "Wealth Inequality",
     },
     {
-      value: "784D31A2-99A5-4E8C-8B89-047B01760CC2",
+      value: "urn:audience:global_issues:animal_issues",
       label: "Animal Issues",
     },
     {
-      value: "B48DAA8A-7398-4C76-9DB0-80E12669ABFD",
+      value: "urn:audience:global_issues:mental_health",
       label: "Mental Health",
     },
     {
-      value: "109574B3-A21D-4935-AC94-1DC3C7B56BEC",
+      value: "urn:audience:global_issues:sustainability",
       label: "Sustainability",
     },
     {
-      value: "2EE4FA44-9A90-470F-839F-2CF54A273E59",
+      value: "urn:audience:global_issues:fair_wages",
       label: "Fair Wages",
+    },
+  ],
+  PROFESSIONAL_AREAS: [
+    {
+      value: "urn:audience:professional_area:business_professional",
+      label: "Business Professional",
+    },
+    {
+      value: "urn:audience:professional_area:hospitality_professional",
+      label: "Hospitality Professional",
+    },
+    {
+      value: "urn:audience:professional_area:medical_professional",
+      label: "Medical Professional",
+    },
+    {
+      value: "urn:audience:professional_area:advertising_design",
+      label: "Advertising Design",
+    },
+    {
+      value: "urn:audience:professional_area:technology_professional",
+      label: "Technology Professional",
+    },
+    {
+      value: "urn:audience:professional_area:marketing_professional",
+      label: "Marketing Professional",
+    },
+    {
+      value: "urn:audience:professional_area:retail_professional",
+      label: "Retail Professional",
+    },
+    {
+      value: "urn:audience:professional_area:finance_professional",
+      label: "Finance Professional",
     },
   ],
 };

@@ -25,7 +25,7 @@ export interface CrossCulturalInsights {
 export interface TasteProfileInput {
     affinityScore: number;
     diversityIndex: number;
-    culturalSegments: string[];
+    culturalSegments: Array<{value: string, label: string}>;
     tasteVector: Record<string, number>;
   }
 

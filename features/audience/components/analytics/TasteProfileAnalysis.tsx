@@ -96,7 +96,7 @@ export const TasteProfileAnalysis: React.FC<TasteProfileAnalysisProps> = ({
                         key={index}
                         className="bg-yellow-200 px-2 py-1 rounded-full text-yellow-800 text-sm"
                       >
-                        {segment}
+                        {segment.label}
                       </span>
                     ))}
                 </div>

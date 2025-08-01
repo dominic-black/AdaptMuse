@@ -22,61 +22,9 @@ import {
   DEFAULT_AVATAR_URL
 } from './utils';
 import OpenAI from 'openai';
+import { TrendingAnalysisData, CulturalAnalysis, CrossCulturalInsights, TasteProfileInput, EntityData, DemographicsMap } from './types';
 
-// ===============================
-// TYPE DEFINITIONS
-// ===============================
 
-interface TrendingAnalysisData {
-  byCategory: Record<string, {
-    entities: unknown[];
-    count: number;
-    avgPopularity: number;
-  }>;
-  mostTrendingCategory: string;
-  totalTrendingEntities: number;
-}
-
-interface CulturalAnalysis {
-  correlations: unknown[];
-  culturalClusters: unknown[];
-  affinityMatrix: Record<string, unknown>;
-  analysisConfidence: number;
-}
-
-interface CrossCulturalInsights {
-  globalRelevance: number;
-  culturalBridges: unknown[];
-  regionalVariations: Record<string, number>;
-  universalThemes: unknown[];
-}
-
-interface TasteProfileInput {
-  affinityScore: number;
-  diversityIndex: number;
-  culturalSegments: string[];
-  tasteVector: Record<string, number>;
-}
-
-interface EntityData {
-  id: string;
-  name: string;
-  type: string;
-  popularity?: number;
-}
-
-interface DemographicsMap {
-  [entityId: string]: {
-    age?: Record<string, number>;
-    gender?: Record<string, number>;
-  };
-}
-
-// ===============================
-// MAIN API HANDLER
-// ===============================
-
-// Initialize OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
@@ -85,11 +33,9 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    // Authentication
     const user = await requireAuth(request);
     const uid = user.uid;
 
-    // Input validation and parsing
     let requestBody;
     try {
       requestBody = await request.json();
@@ -100,14 +46,12 @@ export async function POST(request: NextRequest) {
 
     const { audienceName, audienceData }: { audienceName: string; audienceData: AudienceApiData } = requestBody;
 
-    // Environment validation
     const qlooApiKey = process.env.QLOO_API_KEY;
     if (!qlooApiKey) {
       console.error('Qloo API key is missing from environment variables');
       return NextResponse.json({ error: ERRORS.MISSING_QLOO_API_KEY }, { status: 500 });
     }
 
-    // Data validation
     const validationError = validateRequestData(audienceName, audienceData);
     if (validationError) {
       console.warn('Validation failed:', validationError);
@@ -149,6 +93,7 @@ export async function POST(request: NextRequest) {
       gender,
       qlooApiKey
     );
+    console.log('🔍 Recommended entities:', recommendedEntities);
 
     const insightsTime = Date.now() - insightsStart;
     console.log(`✅ Generated ${recommendedEntities.length} recommendations in ${insightsTime}ms`);
