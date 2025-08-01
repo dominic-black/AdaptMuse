@@ -142,14 +142,15 @@ export async function POST(request: NextRequest) {
     console.log('🎨 Phase 6.5: Avatar generation...');
     const avatarStart = Date.now();
 
-    const imageUrl = await generateAndUploadAvatar(
-        audienceName,
-        ageGroup,
-        gender,
-        inputEntities,
-        allAudienceOptions,
-        openai
-      );
+    // const imageUrl = await generateAndUploadAvatar(
+    //     audienceName,
+    //     ageGroup,
+    //     gender,
+    //     inputEntities,
+    //     allAudienceOptions,
+    //     openai
+    //   );
+    const imageUrl = 'https://cdn-icons-png.flaticon.com/512/1053/1053244.png';
 
 
     const avatarTime = Date.now() - avatarStart;
