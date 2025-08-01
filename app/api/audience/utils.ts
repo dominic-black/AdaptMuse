@@ -723,7 +723,6 @@ export async function fetchValidTagIds(genres: AudienceOption[], qlooApiKey: str
 
     if(response.ok) {
       const data = await response.json();
-      console.log('🔍 DEBUG::: Data:', JSON.stringify(data));
       if(data.results?.length > 0) {
         validTagIds.push(data.results[0].id);
       }
@@ -1050,7 +1049,7 @@ export async function generateAndUploadAvatar(
     const imageBuffer = await imageResponse.arrayBuffer();
 
     // Upload to Firebase Storage
-    const bucketName = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID + '.firebasestorage.app';
+    const bucketName = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID + '.appspot.com';
     const bucket = storage.bucket(bucketName);
     const fileName = `audience_avatars/${audienceName.replace(/\s+/g, '_')}_${Date.now()}.png`;
     const file = bucket.file(fileName);

@@ -27,7 +27,7 @@ const adminConfig = {
     clientEmail: requiredEnvVars.FIREBASE_CLIENT_EMAIL!,
     privateKey: requiredEnvVars.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
   }),
-  storageBucket: `${requiredEnvVars.FIREBASE_PROJECT_ID}.firebasestorage.app`,
+  storageBucket: `${requiredEnvVars.FIREBASE_PROJECT_ID}.appspot.com`,
 };
 
 const app: App = !getApps().length ? initializeApp(adminConfig) : getApps()[0];

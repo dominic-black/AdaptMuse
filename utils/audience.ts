@@ -130,15 +130,15 @@ const getUserFriendlyError = (errorMessage: string): string => {
 export const createAudience = async (
   requestData: CreateAudienceRequest
 ): Promise<CreateAudienceResponse> => {
-  const response = await fetch("/api/audience", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  });
-  console.log('🔍 DEBUG::: Response:', JSON.stringify(response));
   try {
+    const response = await fetch("/api/audience", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+    console.log('🔍 DEBUG::: Response:', JSON.stringify(response));
 
     if (!response.ok) {
       const errorData = await response.text();
