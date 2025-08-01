@@ -1,20 +1,9 @@
 "use client";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { ConditionalMotion } from "@/components/ui/ConditionalMotion/ConditionalMotion";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export function AnimatedBackground() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  const { isMobile } = useIsMobile();
 
   if (isMobile) {
     return (
@@ -61,7 +50,7 @@ export function AnimatedBackground() {
       style={{ zIndex: -1 }}
       id="background-desktop"
     >
-      <motion.div
+      <ConditionalMotion
         className="-top-32 -right-32 absolute opacity-90 blur-xl rounded-full w-[520px] h-[520px]"
         style={{
           background:
@@ -70,7 +59,7 @@ export function AnimatedBackground() {
         animate={{ scale: [1, 1.09, 1] }}
         transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
       />
-      <motion.div
+      <ConditionalMotion
         className="bottom-0 left-0 absolute opacity-80 blur-lg rounded-full w-[380px] h-[380px]"
         style={{
           background:
@@ -79,7 +68,7 @@ export function AnimatedBackground() {
         animate={{ scale: [1.09, 1, 1.09] }}
         transition={{ repeat: Infinity, duration: 13, ease: "easeInOut" }}
       />
-      <motion.div
+      <ConditionalMotion
         className="top-[58%] left-1/2 absolute opacity-70 blur-lg rounded-full w-[600px] h-[120px] -translate-x-1/2"
         style={{
           background:
@@ -88,7 +77,7 @@ export function AnimatedBackground() {
         animate={{ x: [0, 40, -40, 0] }}
         transition={{ repeat: Infinity, duration: 18, ease: "easeInOut" }}
       />
-      <motion.div
+      <ConditionalMotion
         className="top-1/2 left-1/2 absolute opacity-60 blur-2xl rounded-full w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2"
         style={{
           background:

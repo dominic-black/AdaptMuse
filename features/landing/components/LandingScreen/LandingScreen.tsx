@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/Button";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { ConditionalMotion } from "@/components/ui/ConditionalMotion/ConditionalMotion";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
-export const LandingScreen = ({ isMobile }: { isMobile: boolean }) => {
+export const LandingScreen = () => {
+  const { isMobile } = useIsMobile();
+
   return (
     <main className="flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12 h-screen">
-      <motion.div
+      <ConditionalMotion
         initial={isMobile ? {} : { opacity: 0, y: 40 }}
         animate={isMobile ? {} : { opacity: 1, y: 0 }}
         transition={isMobile ? {} : { duration: 0.8, ease: "easeOut" }}
@@ -49,7 +52,7 @@ export const LandingScreen = ({ isMobile }: { isMobile: boolean }) => {
             <ArrowRight className="ml-1 sm:ml-2 w-3 sm:w-4 h-3 sm:h-4" />
           </Button>
         </div>
-      </motion.div>
+      </ConditionalMotion>
     </main>
   );
 };

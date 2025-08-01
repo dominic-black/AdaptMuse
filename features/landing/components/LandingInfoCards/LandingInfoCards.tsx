@@ -1,7 +1,10 @@
-import { motion } from "framer-motion";
+import { ConditionalMotion } from "@/components/ui/ConditionalMotion/ConditionalMotion";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { FEATURES } from "./Features";
 
-export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
+export const LandingInfoCards = () => {
+  const { isMobile } = useIsMobile();
+
   return (
     <section
       id="features"
@@ -10,7 +13,7 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
       }`}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-        <motion.div
+        <ConditionalMotion
           initial={isMobile ? {} : { opacity: 0, y: 32 }}
           whileInView={isMobile ? {} : { opacity: 1, y: 0 }}
           viewport={isMobile ? {} : { once: true, amount: 0.3 }}
@@ -28,11 +31,11 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
             cultural insights, enabling unprecedented audience engagement
             without compromising privacy.
           </p>
-        </motion.div>
+        </ConditionalMotion>
 
         <div className="gap-4 sm:gap-6 lg:gap-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8 sm:mt-12 lg:mt-16">
           {FEATURES.map((feature, idx) => (
-            <motion.div
+            <ConditionalMotion
               key={feature.title}
               initial={isMobile ? {} : { opacity: 0, y: 32 }}
               whileInView={isMobile ? {} : { opacity: 1, y: 0 }}
@@ -51,7 +54,7 @@ export const LandingInfoCards = ({ isMobile }: { isMobile: boolean }) => {
               <p className="opacity-80 text-[var(--color-text)] text-sm sm:text-base leading-relaxed">
                 {feature.description}
               </p>
-            </motion.div>
+            </ConditionalMotion>
           ))}
         </div>
       </div>
