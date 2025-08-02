@@ -4,7 +4,6 @@ import { Screen } from "@/components/shared/Screen/Screen";
 import { useAudiences } from "@/features/audience/hooks/useAudiences";
 import { useJobs } from "@/providers/JobsProvider";
 import { useAuth } from "@/hooks/useAuth";
-import VerifyEmailBanner from "@/features/auth/banners/VerifyEmail/VerifyEmailBanner";
 import { SavedAudiences } from "@/features/dashboard/components/SavedAudiences/SavedAudiences";
 import { RecentActivity } from "@/features/dashboard/components/RecentActivity/RecentActivity";
 import { useMemo } from "react";
