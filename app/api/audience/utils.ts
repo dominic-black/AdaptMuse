@@ -512,17 +512,6 @@ export async function fetchRecommendedEntities(
 }
 
 /**
- * Interface for demographic data returned by Qloo API
- */
-interface DemographicData {
-  entity_id: string;
-  query: {
-    age: Record<string, number>;
-    gender: Record<string, number>;
-  };
-}
-
-/**
  * Fetches demographics data for entities using the Qloo demographics insights API
  * This uses the same approach as your previous working implementation
  */
