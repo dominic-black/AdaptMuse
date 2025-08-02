@@ -61,7 +61,6 @@ export default function Home() {
   return (
     <Screen heading="Dashboard">
       <div className="space-y-8">
-        {user && !user.emailVerified && <VerifyEmailBanner />}
         <WelcomeBanner name={userProfile?.firstName || ""} />
         <StatsOverview metrics={metrics} />
         <div className="gap-8 grid grid-cols-1 lg:grid-cols-3">
