@@ -526,57 +526,40 @@ interface DemographicData {
  * Fetches demographics data for entities using the Qloo demographics insights API
  * This uses the same approach as your previous working implementation
  */
-export async function fetchDemographics(
-  entities: Entity[],
-  qlooApiKey: string
-): Promise<Record<string, { age: Record<string, number>, gender: Record<string, number> }>> {
-  const demographicsMap: Record<string, { age: Record<string, number>, gender: Record<string, number> }> = {};
-
-  if (entities.length === 0) {
-    return demographicsMap;
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const res = await fetch(url, options);
+    if (res.status !== 429) return res;
+    console.warn('Rate limited, retrying in 1s...');
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
-
-  try {
-    // Get entity IDs for the demographics API call
-    const entityIds = entities.map(e => e.id).filter(Boolean);
-
-    if (entityIds.length === 0) {
-      return demographicsMap;
-    }
-
-    // Use the demographics insights API to get demographic data for all entities
-    const url = `${QLOO_API_BASE_URL}/v2/insights?filter.type=urn:demographics&signal.interests.entities=${entityIds.join(',')}`;
-    console.log("Demographics API URL: ", url);
-
-    const response = await fetch(url, {
-      headers: createQlooHeaders(qlooApiKey)
-    });
-
-    if (!response.ok) {
-      console.warn(`Demographics API responded with status ${response.status}`);
-      return demographicsMap;
-    }
-
-    const demographicsData = await response.json();
-    const demographicsList: DemographicData[] = demographicsData.results?.demographics || [];
-
-    // Build demographics map from API response
-    for (const demographic of demographicsList) {
-      const entityId = demographic.entity_id;
-      const age = demographic.query?.age || {};
-      const gender = demographic.query?.gender || {};
-
-      demographicsMap[entityId] = { age, gender };
-    }
-
-    console.log(`✅ Successfully fetched demographics for ${Object.keys(demographicsMap).length}/${entities.length} entities`);
-    return demographicsMap;
-
-  } catch (error) {
-    console.error('Error fetching demographics:', error);
-    return {};
-  }
+  throw new Error('Qloo API rate limit exceeded');
 }
+export async function fetchDemographics(entities: Entity[], qlooApiKey: string) {
+  const demographicsMap: Record<string, { age: Record<string, number>; gender: Record<string, number> }> = {};
+  const entityIds = entities.map(e => e.id);
+  
+  for (let i = 0; i < entityIds.length; i += 5) {
+    const batch = entityIds.slice(i, i + 5);
+    const url = `${QLOO_API_BASE_URL}/v2/insights?filter.type=urn:demographics&signal.interests.entities=${batch.join(',')}`;
+    
+    const response = await fetchWithRetry(url, { headers: createQlooHeaders(qlooApiKey) });
+    if (!response.ok) continue;
+    
+    const data = await response.json();
+    for (const demographic of data.results?.demographics || []) {
+      demographicsMap[demographic.entity_id ] = {
+        age: demographic.query?.age || {},
+        gender: demographic.query?.gender || {},
+      };
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 250)); // slight delay
+  }
+
+  return demographicsMap;
+}
+
 
 /**
  * Adds demographic data to entities
